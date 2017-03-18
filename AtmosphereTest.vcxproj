@@ -183,37 +183,21 @@
     <Image Include="icon1.ico" />
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="Common.cg" />
     <CustomBuild Include="GroundFromAtmosphere.frag" />
     <CustomBuild Include="GroundFromAtmosphere.vert" />
-    <CustomBuild Include="GroundFromAtmosphereCg.frag" />
-    <CustomBuild Include="GroundFromAtmosphereCg.vert" />
     <CustomBuild Include="GroundFromSpace.frag" />
     <CustomBuild Include="GroundFromSpace.vert" />
-    <CustomBuild Include="GroundFromSpaceCg.frag" />
-    <CustomBuild Include="GroundFromSpaceCg.vert" />
     <CustomBuild Include="HDR.vert" />
-    <CustomBuild Include="HDRCg.vert" />
     <CustomBuild Include="HDRRect.frag" />
-    <CustomBuild Include="HDRRectCg.frag" />
     <CustomBuild Include="HDRSquare.frag" />
-    <CustomBuild Include="HDRSquareCg.frag" />
     <CustomBuild Include="SkyFromAtmosphere.frag" />
     <CustomBuild Include="SkyFromAtmosphere.vert" />
-    <CustomBuild Include="SkyFromAtmosphereCg.frag" />
-    <CustomBuild Include="SkyFromAtmosphereCg.vert" />
     <CustomBuild Include="SkyFromSpace.frag" />
     <CustomBuild Include="SkyFromSpace.vert" />
-    <CustomBuild Include="SkyFromSpaceCg.frag" />
-    <CustomBuild Include="SkyFromSpaceCg.vert" />
     <CustomBuild Include="SpaceFromAtmosphere.frag" />
     <CustomBuild Include="SpaceFromAtmosphere.vert" />
-    <CustomBuild Include="SpaceFromAtmosphereCg.frag" />
-    <CustomBuild Include="SpaceFromAtmosphereCg.vert" />
     <CustomBuild Include="SpaceFromSpace.frag" />
     <CustomBuild Include="SpaceFromSpace.vert" />
-    <CustomBuild Include="SpaceFromSpaceCg.frag" />
-    <CustomBuild Include="SpaceFromSpaceCg.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
