@@ -4,6 +4,7 @@
 *.user
 tags
 .ctags
+AtmosphereTest.log
 
 Debug/
 Release/
