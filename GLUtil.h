@@ -36,27 +36,6 @@ public:
 	HGLRC GetHGLRC()				{ return m_hGLRC; }
 	void MakeCurrent()				{ wglMakeCurrent(m_hDC, m_hGLRC); }
 	bool IsATI()					{ return m_bATI; }
-
-	void BeginOrtho2D(int nWidth=640, int nHeight=480)
-	{
-		glDisable(GL_DEPTH_TEST);
-		glDisable(GL_LIGHTING);
-		glMatrixMode(GL_MODELVIEW);
-		glPushMatrix();
-		glLoadIdentity();
-		glMatrixMode(GL_PROJECTION);
-		glPushMatrix();
-		glLoadIdentity();
-		gluOrtho2D(0, nWidth, 0, nHeight);
-	}
-	void EndOrtho2D()
-	{
-		glPopMatrix();
-		glMatrixMode(GL_MODELVIEW);
-		glPopMatrix();
-		glEnable(GL_LIGHTING);
-		glEnable(GL_DEPTH_TEST);
-	}
 };
 
 inline CGLUtil *GLUtil()			{ return CGLUtil::m_pMain; }
