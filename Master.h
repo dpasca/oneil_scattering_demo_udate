@@ -35,6 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 // C Runtime headers
 #define _CRTDBG_MAP_ALLOC
+#define _CRT_SECURE_NO_WARNINGS
 #include <stdlib.h>
 #include <crtdbg.h>
 #include <string.h>
