@@ -31,9 +31,16 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "Master.h"
 #include "PixelBuffer.h"
 
+#define USE_NANOJPEG
+
 // LibJPEG headers
 extern "C" {
-	#include "jpeglib.h"
+#ifdef USE_NANOJPEG
+# define _NJ_INCLUDE_HEADER_ONLY
+# include "nanojpeg.c"
+#else
+# include "jpeglib.h"
+#endif
 };
 
 
@@ -44,6 +51,28 @@ bool CPixelBuffer::LoadJPEG(const char *pszFile)
 	if(pFile == NULL)
 		return false;
 
+#ifdef USE_NANOJPEG
+    fseek(pFile, 0, SEEK_END);
+    auto size = (int) ftell(pFile);
+    auto buf = (char*) malloc(size);
+    fseek(pFile, 0, SEEK_SET);
+    fread(buf, 1, size, pFile);
+	fclose(pFile);
+
+    njInit();
+    if (njDecode(buf, size)) {
+        free((void*)buf);
+        printf("Error decoding the input file.\n");
+        return false;
+    }
+    free((void*)buf);
+
+	Init( njGetWidth(), njGetHeight(), 1 );
+
+    memcpy((char *)m_pBuffer, njGetImage(), njGetImageSize());
+
+    njDone();
+#else
 	jpeg_decompress_struct cinfo;
 	jpeg_error_mgr jerr;
 	cinfo.err = jpeg_std_error(&jerr);
@@ -65,9 +94,12 @@ bool CPixelBuffer::LoadJPEG(const char *pszFile)
 	jpeg_destroy_decompress(&cinfo);
 
 	fclose(pFile);
+#endif
+
 	return true;
 }
 
+#ifndef USE_NANOJPEG
 bool CPixelBuffer::SaveJPEG(const char *pszFile, int nQuality)
 {
 	if(m_nChannels != 3 || m_nFormat != GL_RGB)
@@ -109,6 +141,7 @@ bool CPixelBuffer::SaveJPEG(const char *pszFile, int nQuality)
 	delete row;
 	return true;
 }
+#endif
 
 void CPixelBuffer::MakeCloudCell(float fExpose, float fSizeDisc)
 {
