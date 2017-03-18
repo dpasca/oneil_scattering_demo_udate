@@ -40,6 +40,7 @@ POSSIBILITY OF SUCH DAMAGE.
 #include <crtdbg.h>
 #include <string.h>
 #include <stdio.h>
+#define _USE_MATH_DEFINES
 #include <math.h>
 #include <float.h>
 

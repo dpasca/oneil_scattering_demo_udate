@@ -33,6 +33,44 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "GameEngine.h"
 #include "GLUtil.h"
 
+#define DONT_USE_GLU
+
+#ifdef DONT_USE_GLU
+//==================================================================
+static void drawSphere(double r, int lats, int longs)
+{
+    auto output_vertex = [=](int lat, int lon)
+    {
+        //static const double pi = 3.14159265358979323846;
+        auto la = (float)(2.0*M_PI) * (float)lat / (float)lats;
+        auto lo = (float)(2.0*M_PI) * (float)lon / (float)longs;
+        /* this is unoptimized */
+        float v[3] {
+            cos(lo)*sin(la),
+            sin(lo)*sin(la),
+            cos(la)
+        };
+
+        glNormal3fv(v);
+
+        for (auto &x : v) x *= (float)r;
+        glVertex3fv(v);
+    };
+
+    /* this is probably doing almost exactly the same thing as gluSphere */
+    for (int lat=0; lat<lats; ++lat)
+    {
+        glBegin(GL_TRIANGLE_STRIP);
+        for (int lon=0; lon<=longs; ++lon)
+        {
+            /* glColor3f(FRAND(), FRAND(), FRAND()); */
+            output_vertex(lat, lon);
+            output_vertex(lat+1, lon);
+        }
+        glEnd();
+    }
+}
+#endif
 
 CGameEngine::CGameEngine()
 {
@@ -238,11 +276,17 @@ void CGameEngine::RenderFrame(int nMilliseconds)
 		pGroundShader->SetUniformParameter1f("g2", -0.75f * -0.75f);
 	}
 	*/
+#ifdef DONT_USE_GLU
+	m_tEarth.Enable();
+	drawSphere(m_fInnerRadius, 100, 50);
+	m_tEarth.Disable();
+#else
 	GLUquadricObj *pSphere = gluNewQuadric();
 	m_tEarth.Enable();
 	gluSphere(pSphere, m_fInnerRadius, 100, 50);
 	m_tEarth.Disable();
 	gluDeleteQuadric(pSphere);
+#endif
 	pGroundShader->Disable();
 
 	CShaderObject *pSkyShader;
@@ -288,9 +332,13 @@ void CGameEngine::RenderFrame(int nMilliseconds)
 	//glEnable(GL_BLEND);
 	glBlendFunc(GL_ONE, GL_ONE);
 
+#ifdef DONT_USE_GLU
+	drawSphere(m_fOuterRadius, 100, 50);
+#else
 	pSphere = gluNewQuadric();
 	gluSphere(pSphere, m_fOuterRadius, 100, 50);
 	gluDeleteQuadric(pSphere);
+#endif
 
 	//glDisable(GL_BLEND);
 	glFrontFace(GL_CCW);
