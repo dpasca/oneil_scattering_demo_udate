@@ -31,6 +31,8 @@ POSSIBILITY OF SUCH DAMAGE.
 #ifndef __Font_h__
 #define __Font_h__
 
+//#define DISABLE_CFONT // DAVIDE - necessary to use NVIDIA Nsight
+
 /*******************************************************************************
 * Class: CFont
 ********************************************************************************
@@ -49,6 +51,7 @@ protected:
 public:
 	CFont(HDC hDC=NULL)
 	{
+#ifndef DISABLE_CFONT
 		m_nListBase = -1;
 		m_fXPos = 0;
 		m_fYPos = 0;
@@ -57,21 +60,26 @@ public:
 			m_nListBase = glGenLists(256);
 			wglUseFontBitmaps(hDC, 0, 255, m_nListBase);
 		}
+#endif
 	}
 	~CFont()	{ Cleanup(); }
 	void Init(HDC hDC)
 	{
+#ifndef DISABLE_CFONT
 		Cleanup();
 		m_nListBase = glGenLists(256);
 		wglUseFontBitmaps(hDC, 0, 255, m_nListBase);
+#endif
 	}
 	void Cleanup()
 	{
+#ifndef DISABLE_CFONT
 		if(m_nListBase != -1)
 		{
 			glDeleteLists(m_nListBase, 256);
 			m_nListBase = -1;
 		}
+#endif
 	}
 	void SetPosition(int x, int y)
 	{
@@ -80,6 +88,7 @@ public:
 	}
 	void Begin()
 	{
+#ifndef DISABLE_CFONT
 		glDisable(GL_LIGHTING);
 		glPushMatrix();
 		glLoadIdentity();
@@ -87,19 +96,24 @@ public:
 		glPushMatrix();
 		glLoadIdentity();
 		glOrtho(0, GetGameApp()->GetWidth(), GetGameApp()->GetHeight(), 0, -1, 1);
+#endif
 	}
 	void Print(const char *pszMessage)
 	{
+#ifndef DISABLE_CFONT
 		glRasterPos2f(m_fXPos, m_fYPos+11);
 		glListBase(m_nListBase);
 		glCallLists(strlen(pszMessage), GL_UNSIGNED_BYTE, pszMessage);
+#endif
 	}
 	void End()
 	{
+#ifndef DISABLE_CFONT
 		glPopMatrix();
 		glMatrixMode(GL_MODELVIEW);
 		glPopMatrix();
 		glEnable(GL_LIGHTING);
+#endif
 	}
 };
 
