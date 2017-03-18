@@ -160,6 +160,8 @@ int CGameApp::OnCreate(HWND hWnd)
 		return -1;
 	}
 
+    glewInit(); // DAVIDE - ready to initialize glew here
+
 	m_pGameEngine = new CGameEngine;
 	return 0;
 }
