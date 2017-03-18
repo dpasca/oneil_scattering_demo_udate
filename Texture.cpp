@@ -63,19 +63,41 @@ void CTexture::Init(CPixelBuffer *pBuffer, bool bClamp, bool bMipmap)
 
 	switch(m_nType)
 	{
-		case GL_TEXTURE_1D:
-			if(bMipmap)
-				gluBuild1DMipmaps(m_nType, pBuffer->GetChannels(), pBuffer->GetWidth(), pBuffer->GetFormat(), pBuffer->GetDataType(), pBuffer->GetBuffer());
-			else
-				glTexImage1D(m_nType, 0, pBuffer->GetChannels(), pBuffer->GetWidth(), 0, pBuffer->GetFormat(), pBuffer->GetDataType(), pBuffer->GetBuffer());
-			break;
-		case GL_TEXTURE_2D:
-		case GL_TEXTURE_RECTANGLE_EXT:
-			if(bMipmap)
-				gluBuild2DMipmaps(m_nType, pBuffer->GetChannels(), pBuffer->GetWidth(), pBuffer->GetHeight(), pBuffer->GetFormat(), pBuffer->GetDataType(), pBuffer->GetBuffer());
-			else
-				glTexImage2D(m_nType, 0, pBuffer->GetChannels(), pBuffer->GetWidth(), pBuffer->GetHeight(), 0, pBuffer->GetFormat(), pBuffer->GetDataType(), pBuffer->GetBuffer());
-			break;
+    case GL_TEXTURE_1D:
+        glTexImage1D(
+                m_nType,
+                0,
+                pBuffer->GetChannels(),
+                pBuffer->GetWidth(),
+                0,
+                pBuffer->GetFormat(),
+                pBuffer->GetDataType(),
+                pBuffer->GetBuffer());
+
+        if ( bMipmap )
+            glGenerateMipmap( GL_TEXTURE_1D );
+        break;
+
+    case GL_TEXTURE_2D:
+    case GL_TEXTURE_RECTANGLE_EXT:
+        glTexImage2D(
+                m_nType,
+                0,
+                pBuffer->GetChannels(),
+                pBuffer->GetWidth(),
+                pBuffer->GetHeight(),
+                0,
+                pBuffer->GetFormat(),
+                pBuffer->GetDataType(),
+                pBuffer->GetBuffer());
+
+        if ( bMipmap )
+            glGenerateMipmap( GL_TEXTURE_2D );
+        break;
+
+    default:
+        assert(0);
+        break;
 	}
 }
 
