@@ -61,6 +61,9 @@ public:
 
 inline CGLUtil *GLUtil()			{ return CGLUtil::m_pMain; }
 
+//
+void GLUTIL_SetupErrorIntercept();
+
 #endif // __GLUtil_h__
 
 

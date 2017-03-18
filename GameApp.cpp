@@ -162,6 +162,8 @@ int CGameApp::OnCreate(HWND hWnd)
 
     glewInit(); // DAVIDE - ready to initialize glew here
 
+    GLUTIL_SetupErrorIntercept();
+
 	m_pGameEngine = new CGameEngine;
 	return 0;
 }

@@ -13,7 +13,6 @@ CGprofile CShaderObject::m_cgVertexProfile;
 CGprofile CShaderObject::m_cgFragmentProfile;
 #endif
 
-
 CGLUtil::CGLUtil()
 {
 	// Start by clearing out all the member variables
@@ -62,3 +61,90 @@ void CGLUtil::InitRenderContext(HDC hDC, HGLRC hGLRC)
 
 	wglMakeCurrent(m_hDC, m_hGLRC);
 }
+
+#if defined(GL_ARB_debug_output) && !defined(__linux__)
+//==================================================================
+static void GLAPIENTRY errorCallbackARB(
+                GLenum source,
+                GLenum type,
+                GLuint id,
+                GLenum severity,
+                GLsizei length,
+                const GLchar *pMessage,
+                const void *pUserParam )
+{
+    const char *pSource = "";
+    switch ( source )
+    {
+    case GL_DEBUG_SOURCE_API            : pSource = "API"; break;
+    case GL_DEBUG_SOURCE_WINDOW_SYSTEM  : pSource = "Window System"; break;
+    case GL_DEBUG_SOURCE_SHADER_COMPILER: pSource = "Shader Compiler"; break;
+    case GL_DEBUG_SOURCE_THIRD_PARTY    : pSource = "3rd Party"; break;
+    case GL_DEBUG_SOURCE_APPLICATION    : pSource = "App"; break;
+    case GL_DEBUG_SOURCE_OTHER          : pSource = "Other"; break;
+    default: pSource = "Unknown"; break;
+    }
+
+    const char *pType = "";
+    switch ( type )
+    {
+    case GL_DEBUG_TYPE_ERROR              : pType = "Error"; break;
+    case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR: pType = "Deprecated"; break;
+    case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR : pType = "Undefined"; break;
+    case GL_DEBUG_TYPE_PORTABILITY        : pType = "Portability"; break;
+    case GL_DEBUG_TYPE_PERFORMANCE        : pType = "Performance"; break;
+    case GL_DEBUG_TYPE_OTHER              : pType = "Other"; break;
+    default: pType = "Unknown"; break;
+    }
+
+    const char *pSeverity = "";
+    switch ( severity )
+    {
+    case GL_DEBUG_SEVERITY_HIGH  : pSeverity = "H"; break;
+    case GL_DEBUG_SEVERITY_MEDIUM: pSeverity = "M"; break;
+    case GL_DEBUG_SEVERITY_LOW   : pSeverity = "L"; break;
+    case GL_DEBUG_SEVERITY_NOTIFICATION: pSeverity = "Not"; break;
+    default: pSeverity = "Unk"; break;
+    }
+
+    (void)pSource;
+    (void)id;
+    printf( "* GLERR: %s(%s) -- %s\n", pType, pSeverity, pMessage );
+}
+#endif
+
+#if defined(GL_ARB_debug_output) && !defined(__linux__)
+static constexpr bool INTERCEPT_LOW = false;
+static constexpr bool INTERCEPT_MED = false;
+static constexpr bool INTERCEPT_NOT = false;
+#endif
+
+//==================================================================
+void GLUTIL_SetupErrorIntercept()
+{
+#if defined(GL_ARB_debug_output) && !defined(__linux__)
+    if ( glDebugMessageCallback )
+    {
+        glEnable( GL_DEBUG_OUTPUT_SYNCHRONOUS );
+        glDebugMessageCallback( errorCallbackARB, NULL );
+
+        auto enableServerity = []( auto sev, bool onOff )
+        {
+            glDebugMessageControl(
+                GL_DONT_CARE,
+                GL_DONT_CARE,
+                sev,
+                0,
+                nullptr,
+                onOff ? GL_TRUE : GL_FALSE );
+        };
+
+        enableServerity( GL_DONT_CARE, true );
+        enableServerity( GL_DEBUG_SEVERITY_LOW, INTERCEPT_LOW );
+        enableServerity( GL_DEBUG_SEVERITY_MEDIUM, INTERCEPT_MED );
+        enableServerity( GL_DEBUG_SEVERITY_NOTIFICATION, INTERCEPT_NOT );
+    }
+#endif
+}
+
+//==================================================================
