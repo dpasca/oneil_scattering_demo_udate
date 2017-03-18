@@ -28,8 +28,6 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-#define interface struct
-
 //#pragma inline_depth( 255 )
 //#pragma inline_recursion( on )
 //#pragma auto_inline( on )
@@ -45,8 +43,8 @@ POSSIBILITY OF SUCH DAMAGE.
 #include <float.h>
 
 // Windows headers
-#define STRICT
-#define WIN32_LEAN_AND_MEAN
+// DAVIDE - #define STRICT
+// DAVIDE - #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include <mmsystem.h>
 

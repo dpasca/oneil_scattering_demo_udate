@@ -1,0 +1,8 @@
+*.suo
+*.db
+*.opendb
+
+Debug/
+Release/
+
+ipch/

@@ -124,7 +124,7 @@ inline void Normalize(float *f, int n)
 	for(int i=0; i<n; i++)
 		fMagnitude += f[i]*f[i];
 	fMagnitude = 1 / sqrtf(fMagnitude);
-	for(i=0; i<n; i++)
+	for(int i=0; i<n; i++)
 		f[i] *= fMagnitude;
 }
 
@@ -184,7 +184,7 @@ protected:
 		for(int i=0; i<m_nDimensions; i++)
 			nIndex = m_nMap[(nIndex + n[i]) & 0xFF];
 		float fValue = 0;
-		for(i=0; i<m_nDimensions; i++)
+		for(int i=0; i<m_nDimensions; i++)
 			fValue += m_nBuffer[nIndex][i] * f[i];
 		return fValue;
 	}

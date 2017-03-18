@@ -67,7 +67,7 @@ inline CGLUtil *GLUtil()			{ return CGLUtil::m_pMain; }
 #ifndef __ShaderObject_h__
 #define __ShaderObject_h__
 
-#define USE_CG
+//#define USE_CG
 #ifdef USE_CG
 #include <Cg\cg.h>
 #include <Cg\cgGL.h>

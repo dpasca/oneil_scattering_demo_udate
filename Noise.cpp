@@ -185,6 +185,7 @@ float CFractal::fBm(float *f, float fOctaves)
 		fTemp[i] = f[i];
 
 	// Inner loop of spectral construction, where the fractal is built
+    int i;
 	for(i=0; i<fOctaves; i++)
 	{
 		fValue += Noise(fTemp) * m_fExponent[i];
@@ -267,6 +268,7 @@ float CFractal::Turbulence(float *f, float fOctaves)
 		fTemp[i] = f[i];
 
 	// Inner loop of spectral construction, where the fractal is built
+    int i;
 	for(i=0; i<fOctaves; i++)
 	{
 		fValue += Abs(Noise(fTemp)) * m_fExponent[i];
@@ -290,6 +292,7 @@ float CFractal::Multifractal(float *f, float fOctaves, float fOffset)
 		fTemp[i] = f[i];
 
 	// Inner loop of spectral construction, where the fractal is built
+    int i;
 	for(i=0; i<fOctaves; i++)
 	{
 		fValue *= Noise(fTemp) * m_fExponent[i] + fOffset;
@@ -313,6 +316,7 @@ float CFractal::Heterofractal(float *f, float fOctaves, float fOffset)
 		fTemp[i] = f[i] * m_fLacunarity;
 
 	// Inner loop of spectral construction, where the fractal is built
+    int i;
 	for(i=1; i<fOctaves; i++)
 	{
 		fValue += (Noise(fTemp) + fOffset) * m_fExponent[i] * fValue;
@@ -337,6 +341,7 @@ float CFractal::HybridMultifractal(float *f, float fOctaves, float fOffset, floa
 		fTemp[i] = f[i] * m_fLacunarity;
 
 	// Inner loop of spectral construction, where the fractal is built
+    int i;
 	for(i=1; i<fOctaves; i++)
 	{
 		if(fWeight > 1)
@@ -371,7 +376,7 @@ float CFractal::RidgedMultifractal(float *f, float fOctaves, float fOffset, floa
 		fTemp[i] = f[i];
 
 	// Inner loop of spectral construction, where the fractal is built
-	for(i=1; i<fOctaves; i++)
+	for(int i=1; i<fOctaves; i++)
 	{
 		for(int j=0; j<m_nDimensions; j++)
 			fTemp[j] *= m_fLacunarity;
