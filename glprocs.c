@@ -15700,7 +15700,7 @@ static BOOL WINAPI InitRestoreBufferRegionARB (HANDLE hRegion, int x, int y, int
 	return wglRestoreBufferRegionARB(hRegion, x, y, width, height, xSrc, ySrc);
 }
 
-static const WINAPI InitGetExtensionsStringARB (HDC hdc)
+static const char* WINAPI InitGetExtensionsStringARB (HDC hdc)
 {
 	void *extproc;
 
@@ -15988,7 +15988,7 @@ static VOID WINAPI InitDestroyDisplayColorTableEXT (GLushort id)
 	wglDestroyDisplayColorTableEXT(id);
 }
 
-static const WINAPI InitGetExtensionsStringEXT (void)
+static const char* WINAPI InitGetExtensionsStringEXT (void)
 {
 	void *extproc;
 
