@@ -1,6 +1,9 @@
 *.suo
 *.db
 *.opendb
+*.user
+tags
+.ctags
 
 Debug/
 Release/
