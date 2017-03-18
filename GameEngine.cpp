@@ -33,6 +33,9 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "GameEngine.h"
 #include "GLUtil.h"
 
+// DAVIDE - this is dangerous... the camera may end up in a horrible place...
+//#define USE_SAVED_CAMERA_POS
+
 #define DONT_USE_GLU
 
 #ifdef DONT_USE_GLU
@@ -89,21 +92,28 @@ CGameEngine::CGameEngine()
 
 	//glEnable(GL_MULTISAMPLE_ARB);
 
-	// Read last camera position and orientation from registry
+    // setup starting position
 	CVector vPos(0, 0, 25);
-	const char *psz = GetApp()->GetProfileString("Camera", "Position", NULL);
-	if(psz)
+#ifdef USE_SAVED_CAMERA_POS
+	if ( const auto *psz = GetApp()->GetProfileString("Camera", "Position", NULL) )
 		sscanf(psz, "%f, %f, %f", &vPos.x, &vPos.y, &vPos.z);
+#endif
 	m_3DCamera.SetPosition(CDoubleVector(vPos));
+
+    // setup starting orientation
 	CQuaternion qOrientation(0.0f, 0.0f, 0.0f, 1.0f);
-	psz = GetApp()->GetProfileString("Camera", "Orientation", NULL);
-	if(psz)
+#ifdef USE_SAVED_CAMERA_POS
+	if ( const auto *psz = GetApp()->GetProfileString("Camera", "Orientation", NULL) )
 		sscanf(psz, "%f, %f, %f, %f", &qOrientation.x, &qOrientation.y, &qOrientation.z, &qOrientation.w);
+#endif
 	qOrientation.Normalize();
 	m_3DCamera = qOrientation;
 
+    // setup light source
 	m_vLight = CVector(0, 0, 1000);
 	m_vLightDirection = m_vLight / m_vLight.Magnitude();
+
+    //
 	CTexture::InitStaticMembers(238653, 256);
 
 	m_nSamples = 3;		// Number of sample rays to use in integral equation
