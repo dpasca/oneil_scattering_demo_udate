@@ -194,3 +194,26 @@ void CPBuffer::HandleModeSwitch()
 		}
 	}
 }
+
+void CPBuffer::BindTexture( float fExposure, bool bUseExposure )
+{
+    if(m_hBuffer && m_nTextureID)
+    {
+        if(bUseExposure)
+            m_shExposure.Enable();
+        m_shExposure.SetUniformParameter1i("s2Test", 0);
+        m_shExposure.SetUniformParameter1f("fExposure", fExposure);
+        glBindTexture(m_nTarget, m_nTextureID);
+        wglBindTexImageARB(m_hBuffer, WGL_FRONT_LEFT_ARB);
+        glEnable(m_nTarget);
+    }
+}
+
+void CPBuffer::ReleaseTexture()
+{
+    if(m_hBuffer && m_nTextureID)
+        wglReleaseTexImageARB(m_hBuffer, WGL_FRONT_LEFT_ARB);
+    glDisable(m_nTarget);
+    m_shExposure.Disable();
+}
+

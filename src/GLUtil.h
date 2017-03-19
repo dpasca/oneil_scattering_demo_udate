@@ -366,14 +366,6 @@ public:
 		return it->second;
 	}
 
-	/*
-	void BindTexture(const char *pszParameter, unsigned int nID)
-	{
-		GLint n = GetUniformParameterID(pszParameter);
-		glBindTexture(GL_TEXTURE_2D, nID);
-		glUniform1iARB(n, nID);
-	}
-	*/
 	void SetUniformParameter1i(const char *pszParameter, int n1)
 	{
 		glUniform1iARB(GetUniformParameterID(pszParameter), n1);

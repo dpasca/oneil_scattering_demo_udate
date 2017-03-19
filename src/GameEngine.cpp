@@ -349,9 +349,9 @@ void CGameEngine::RenderFrame(int nMilliseconds)
 	}
 	*/
 #ifdef DONT_USE_GLU
-	m_tEarth.Enable();
+	m_tEarth.EnableTexture();
 	drawSphere(m_fInnerRadius, 100, 50);
-	m_tEarth.Disable();
+	m_tEarth.DisableTexture();
 #else
 	GLUquadricObj *pSphere = gluNewQuadric();
 	m_tEarth.EnableTexture();
