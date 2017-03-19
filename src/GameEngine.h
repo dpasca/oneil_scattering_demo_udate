@@ -36,6 +36,9 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "PBuffer.h"
 #include "GameApp.h"
 #include "Font.h"
+#include "Matrix.h"
+#include "PixelBuffer.h"
+#include "Texture.h"
 
 class CGameEngine
 {

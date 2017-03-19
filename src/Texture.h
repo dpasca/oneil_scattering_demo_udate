@@ -77,9 +77,11 @@ public:
 	
 	DWORD GetID()						{ return m_nID; }
 	int GetType()						{ return m_nType; }
-	void BindTexture()					{ assert( m_nID != -1 ); glBindTexture(m_nType, m_nID); }
-	void EnableTexture()				{ BindTexture(); glEnable(m_nType); }
-	void DisableTexture()				{ assert( m_nID != -1 ); glDisable(m_nType); }
+
+    TextureBindScope BindTexture() const { return { (GLenum)m_nType, (GLuint)m_nID }; }
+
+	void EnableTexture()				{ glEnable(m_nType); }
+	void DisableTexture()				{ glDisable(m_nType); }
 
 	void Init(CPixelBuffer *pBuffer, bool bClamp=true, bool bMipmap=true);
 	void Update(CPixelBuffer *pBuffer, int nLevel=0);

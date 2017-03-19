@@ -2,6 +2,7 @@
 //
 
 #include "Master.h"
+#include "Matrix.h"
 #include "GLUtil.h"
 
 CGLUtil g_glUtil;

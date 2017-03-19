@@ -31,10 +31,14 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "Master.h"
 #include "GameApp.h"
 #include "GameEngine.h"
+#include "PixelBuffer.h"
+#include "Texture.h"
 #include "GLUtil.h"
 
 // DAVIDE - this is dangerous... the camera may end up in a horrible place...
 //#define USE_SAVED_CAMERA_POS
+
+#define NO_POSTFX
 
 // DAVIDE - currently acting weird... why ?!
 //#define DONT_USE_GLU
@@ -229,15 +233,14 @@ void CGameEngine::RenderFrame(int nMilliseconds)
     // se t the projection matrix at every frame
     setProjectionMatrix();
 
-#if 0
-	m_pBuffer.MakeCurrent();
-	glViewport(0, 0, 1024, 1024);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-#else
+#if defined(NO_POSTFX)
 	GLUtil()->MakeCurrent();
 	glViewport(0, 0, GetGameApp()->GetWidth(), GetGameApp()->GetHeight());
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+#else
+	m_pBuffer.MakeCurrent();
+	glViewport(0, 0, 1024, 1024);
 #endif
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glPushMatrix();
 
 #if 0
@@ -291,6 +294,8 @@ void CGameEngine::RenderFrame(int nMilliseconds)
 		pSpaceShader->SetUniformParameter1i("s2Test", 0);
 	}
 
+    {
+    auto bindScope = m_tMoonGlow.BindTexture();
 	m_tMoonGlow.EnableTexture();
 	glBegin(GL_QUADS);
 	glTexCoord2f(0, 0);
@@ -303,6 +308,7 @@ void CGameEngine::RenderFrame(int nMilliseconds)
 	glVertex3f(4.0f, 4.0f, -50.0f);
 	glEnd();
 	m_tMoonGlow.DisableTexture();
+    }
 
 	if(pSpaceShader)
 		pSpaceShader->Disable();
@@ -347,17 +353,19 @@ void CGameEngine::RenderFrame(int nMilliseconds)
 		pGroundShader->SetUniformParameter1f("g2", -0.75f * -0.75f);
 	}
 	*/
+
+    {
+    auto bindScope = m_tEarth.BindTexture();
+	m_tEarth.EnableTexture();
 #ifdef DONT_USE_GLU
-	m_tEarth.EnableTexture();
 	drawSphere(m_fInnerRadius, 100, 50);
-	m_tEarth.DisableTexture();
 #else
-	GLUquadricObj *pSphere = gluNewQuadric();
-	m_tEarth.EnableTexture();
+	auto *pSphere = gluNewQuadric();
 	gluSphere(pSphere, m_fInnerRadius, 100, 50);
-	m_tEarth.DisableTexture();
 	gluDeleteQuadric(pSphere);
 #endif
+	m_tEarth.DisableTexture();
+    }
 	pGroundShader->Disable();
 
 	CShaderObject *pSkyShader;
@@ -406,9 +414,11 @@ void CGameEngine::RenderFrame(int nMilliseconds)
 #ifdef DONT_USE_GLU
 	drawSphere(m_fOuterRadius, 100, 50);
 #else
-	pSphere = gluNewQuadric();
+    {
+    auto *pSphere = gluNewQuadric();
 	gluSphere(pSphere, m_fOuterRadius, 100, 50);
 	gluDeleteQuadric(pSphere);
+    }
 #endif
 
 	//glDisable(GL_BLEND);
@@ -418,12 +428,13 @@ void CGameEngine::RenderFrame(int nMilliseconds)
 	glPopMatrix();
 	glFlush();
 
+#if !defined(NO_POSTFX)
 	//CTexture tTest;
 	//tTest.InitCopy(0, 0, 1024, 1024);
 
 	GLUtil()->MakeCurrent();
 	glViewport(0, 0, GetGameApp()->GetWidth(), GetGameApp()->GetHeight());
-	//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glDisable(GL_LIGHTING);
 	glPushMatrix();
@@ -433,23 +444,24 @@ void CGameEngine::RenderFrame(int nMilliseconds)
 	glLoadIdentity();
 	glOrtho(0, 1, 0, 1, -1, 1);
 
-#if 0 // TEMP
+    {
 	//tTest.Enable();
-	m_pBuffer.BindTexture(m_fExposure, m_bUseHDR);
+	auto bindScope = m_pBuffer.BindTexture(m_fExposure, m_bUseHDR);
 	glBegin(GL_QUADS);
-	glTexCoord2f(0, 0); glVertex2f(0, 0);	// For rect texture, can't use 1 as the max texture coord
+	glTexCoord2f(0, 0); glVertex2f(0, 0);
 	glTexCoord2f(1, 0); glVertex2f(1, 0);
 	glTexCoord2f(1, 1); glVertex2f(1, 1);
 	glTexCoord2f(0, 1); glVertex2f(0, 1);
 	glEnd();
+    }
 	m_pBuffer.ReleaseTexture();
 	//tTest.Disable();
-#endif
 
 	glPopMatrix();
 	glMatrixMode(GL_MODELVIEW);
 	glPopMatrix();
 	glEnable(GL_LIGHTING);
+#endif
 
 	// Draw info in the top-left corner
 	char szBuffer[256];

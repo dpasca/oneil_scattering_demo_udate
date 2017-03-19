@@ -80,7 +80,7 @@ public:
 			wglMakeCurrent(m_hDC, m_hGLRC);
 	}
 
-	void BindTexture( float fExposure, bool bUseExposure=true );
+	TextureBindScope BindTexture( float fExposure, bool bUseExposure=true );
 	void ReleaseTexture();
 };
 

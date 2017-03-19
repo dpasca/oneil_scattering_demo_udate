@@ -56,7 +56,9 @@ void CTexture::Init(CPixelBuffer *pBuffer, bool bClamp, bool bMipmap)
 	m_nType = pBuffer->GetHeight() == 1 ? GL_TEXTURE_1D : GL_TEXTURE_2D;
 
 	glGenTextures(1, &m_nID);
-	BindTexture();
+
+	auto bindScope = BindTexture();
+
 	//glTexParameteri(m_nType, GL_TEXTURE_WRAP_R, bClamp ? GL_CLAMP : GL_REPEAT);
 	glTexParameteri(m_nType, GL_TEXTURE_WRAP_S, bClamp ? GL_CLAMP : GL_REPEAT);
 	glTexParameteri(m_nType, GL_TEXTURE_WRAP_T, bClamp ? GL_CLAMP : GL_REPEAT);
@@ -102,7 +104,8 @@ void CTexture::Init(CPixelBuffer *pBuffer, bool bClamp, bool bMipmap)
 
 void CTexture::Update(CPixelBuffer *pBuffer, int nLevel)
 {
-	BindTexture();
+	auto bindScope = BindTexture();
+
 	switch(m_nType)
 	{
 	case GL_TEXTURE_1D:
@@ -138,7 +141,9 @@ void CTexture::InitCopy(int x, int y, int nWidth, int nHeight, bool bClamp)
 	Cleanup();
 	m_nType = nHeight == 1 ? GL_TEXTURE_1D : GL_TEXTURE_2D;
 	glGenTextures(1, &m_nID);
-	BindTexture();
+
+	auto bindScope = BindTexture();
+
 	glTexParameteri(m_nType, GL_TEXTURE_WRAP_S, bClamp ? GL_CLAMP : GL_REPEAT);
 	glTexParameteri(m_nType, GL_TEXTURE_WRAP_T, bClamp ? GL_CLAMP : GL_REPEAT);
 	glTexParameteri(m_nType, GL_TEXTURE_MAG_FILTER, GL_LINEAR);

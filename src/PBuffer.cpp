@@ -39,11 +39,14 @@ bool CPBuffer::Init(int nWidth, int nHeight, int nFlags)
 	m_bATI = GLUtil()->IsATI();
 	m_nTarget = m_bATI ? GL_TEXTURE_2D : GL_TEXTURE_RECTANGLE_NV;	// Try 2D for nVidia if height and width are the same
 	glGenTextures(1, &m_nTextureID);
-	glBindTexture(m_nTarget, m_nTextureID);
+
+    {
+    auto bindScope = TextureBindScope( m_nTarget, m_nTextureID );
 	glTexParameteri(m_nTarget, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(m_nTarget, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(m_nTarget, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(m_nTarget, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    }
 
 	// Set up floating point attributes for pbuffer
 	int nFormatAttributes[2*MAX_ATTRIBS];
@@ -195,7 +198,7 @@ void CPBuffer::HandleModeSwitch()
 	}
 }
 
-void CPBuffer::BindTexture( float fExposure, bool bUseExposure )
+TextureBindScope CPBuffer::BindTexture( float fExposure, bool bUseExposure )
 {
     if(m_hBuffer && m_nTextureID)
     {
@@ -203,10 +206,16 @@ void CPBuffer::BindTexture( float fExposure, bool bUseExposure )
             m_shExposure.Enable();
         m_shExposure.SetUniformParameter1i("s2Test", 0);
         m_shExposure.SetUniformParameter1f("fExposure", fExposure);
-        glBindTexture(m_nTarget, m_nTextureID);
+
+        auto bindScope = TextureBindScope( m_nTarget, m_nTextureID );
+
         wglBindTexImageARB(m_hBuffer, WGL_FRONT_LEFT_ARB);
         glEnable(m_nTarget);
+
+        return bindScope;
     }
+
+    return {};
 }
 
 void CPBuffer::ReleaseTexture()
