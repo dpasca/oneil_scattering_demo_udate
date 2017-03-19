@@ -187,7 +187,6 @@ CGameEngine::~CGameEngine()
 	GetApp()->WriteProfileString("Camera", "Orientation", szBuffer);
 
 	m_pBuffer.Cleanup();
-	GLUtil()->Cleanup();
 }
 
 //==================================================================

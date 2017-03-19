@@ -7,21 +7,6 @@
 CGLUtil g_glUtil;
 CGLUtil *CGLUtil::m_pMain = &g_glUtil;
 
-#ifdef USE_CG
-CGcontext CShaderObject::m_cgContext;
-CGprofile CShaderObject::m_cgVertexProfile;
-CGprofile CShaderObject::m_cgFragmentProfile;
-#endif
-
-CGLUtil::CGLUtil()
-{
-	// Start by clearing out all the member variables
-}
-
-CGLUtil::~CGLUtil()
-{
-}
-
 void CGLUtil::Init()
 {
 	// Start by storing the current HDC and HGLRC
@@ -36,16 +21,6 @@ void CGLUtil::Init()
 
 	// Finally, initialize the default rendering context
 	InitRenderContext(m_hDC, m_hGLRC);
-#ifdef USE_CG
-	CShaderObject::InitContext();
-#endif
-}
-
-void CGLUtil::Cleanup()
-{
-#ifdef USE_CG
-	CShaderObject::ReleaseContext();
-#endif
 }
 
 void CGLUtil::InitRenderContext(HDC hDC, HGLRC hGLRC)
