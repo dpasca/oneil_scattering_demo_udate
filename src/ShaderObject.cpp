@@ -34,16 +34,30 @@ static std::string makeStringFromFile( const std::string &fname )
 {
     std::ifstream file( fname );
 
+    if ( file.fail() )
+    {
+        std::runtime_error( std::string("Could not load file: ") + fname );
+    }
+
     return { (std::istreambuf_iterator<char>(file)),
               std::istreambuf_iterator<char>() };
 }
 
 //==================================================================
-bool CShaderObject::compileShader( const std::string &fname, GLhandleARB handle )
+bool CShaderObject::compileShader(
+        const std::string &headerFName,
+        const std::string &sourceFName,
+        GLhandleARB handle )
 {
-    LogInfo( "Compiling GLSL shader %s", fname.c_str() );
+    LogInfo( "Compiling GLSL shader %s", sourceFName.c_str() );
 
-    auto src = makeStringFromFile( fname );
+    // load the header, if any
+    std::string header;
+    if ( !headerFName.empty() )
+        header = makeStringFromFile( headerFName );
+
+    // load the source, and places a header as aprefix
+    auto src = header + makeStringFromFile( sourceFName );
 
     const char *ppSrc[] = { src.c_str() };
     int nBytes = (int)src.size();
@@ -54,7 +68,7 @@ bool CShaderObject::compileShader( const std::string &fname, GLhandleARB handle 
 
     if (!bSuccess)
     {
-        LogError( "Failed to compile shader %s", fname.c_str() );
+        LogError( "Failed to compile shader %s", sourceFName.c_str() );
         LogGLErrors();
         LogGLInfoLog( handle );
         return false;
@@ -65,14 +79,15 @@ bool CShaderObject::compileShader( const std::string &fname, GLhandleARB handle 
 
 //==================================================================
 bool CShaderObject::LoadFromFile(
-            const std::string &baseVFName,
-                  std::string  baseFFName )
+            const std::string &headerFName,
+            const std::string &vertFName,
+            const std::string &fragFName )
 {
-    if ( baseFFName.empty() )
-        baseFFName = baseVFName;
+    if ( !compileShader( headerFName, vertFName, m_hVertexShader   ) )
+        return false;
 
-    if ( !compileShader( baseVFName + ".vert", m_hVertexShader   ) ) return false;
-    if ( !compileShader( baseFFName + ".frag", m_hFragmentShader ) ) return false;
+    if ( !compileShader( headerFName, fragFName, m_hFragmentShader ) )
+        return false;
 
     //
     glAttachObjectARB(m_hProgram, m_hVertexShader);
@@ -83,7 +98,7 @@ bool CShaderObject::LoadFromFile(
     glGetObjectParameterivARB(m_hProgram, GL_OBJECT_LINK_STATUS_ARB, &bSuccess);
     if (!bSuccess)
     {
-        LogError( "Failed to link shader %s", baseVFName.c_str() );
+        LogError( "Failed to link shader %s", vertFName.c_str() );
         LogGLErrors();
         LogGLInfoLog(m_hProgram);
         return false;

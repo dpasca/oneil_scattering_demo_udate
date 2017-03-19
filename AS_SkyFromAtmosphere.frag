@@ -6,9 +6,7 @@
 // Copyright (c) 2004 Sean O'Neil
 //
 
-uniform vec3 u_LightPos;
-uniform float g;
-uniform float g2;
+//#include "AS_Uniforms.h"
 
 varying vec3 v3Direction;
 
@@ -16,7 +14,12 @@ varying vec3 v3Direction;
 void main (void)
 {
 	float fCos = dot(u_LightPos, v3Direction) / length(v3Direction);
-	float fMiePhase = 1.5 * ((1.0 - g2) / (2.0 + g2)) * (1.0 + fCos*fCos) / pow(1.0 + g2 - 2.0*g*fCos, 1.5);
+
+	float fMiePhase =
+                1.5 * ((1.0 - u_g2) / (2.0 + u_g2)) *
+                    (1.0 + fCos*fCos) /
+                        pow(1.0 + u_g2 - 2.0*u_g*fCos, 1.5);
+
 	gl_FragColor = gl_Color + fMiePhase * gl_SecondaryColor;
 	gl_FragColor.a = gl_FragColor.b;
 }

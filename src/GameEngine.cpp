@@ -160,13 +160,22 @@ CGameEngine::CGameEngine()
 	m_fMieScaleDepth = 0.1f;
 	m_pbOpticalDepth.MakeOpticalDepthBuffer(m_fInnerRadius, m_fOuterRadius, m_fRayleighScaleDepth, m_fMieScaleDepth);
 
-	m_shSkyFromSpace.LoadFromFile(        "AS_SkyFromSpace"         );
-	m_shSkyFromAtmosphere.LoadFromFile(   "AS_SkyFromAtmosphere"    );
-	m_shGroundFromSpace.LoadFromFile(     "AS_GroundFromSpace"      );
-	m_shGroundFromAtmosphere.LoadFromFile("AS_GroundFromAtmosphere" );
-	m_shSpaceFromSpace.LoadFromFile(      "AS_SpaceFromSpace"       );
-	m_shSpaceFromAtmosphere.LoadFromFile( "AS_SpaceFromAtmosphere"  );
+    //
+    auto loadASShader = [this]( CShaderObject &so, const std::string &srcBaseName )
+    {
+        so.LoadFromFile(
+                "AS_Uniforms.glsl",
+                srcBaseName + ".vert",
+                srcBaseName + ".frag" );
+    };
+	loadASShader( m_shSkyFromSpace        , "AS_SkyFromSpace"        );
+	loadASShader( m_shSkyFromAtmosphere   , "AS_SkyFromAtmosphere"   );
+	loadASShader( m_shGroundFromSpace     , "AS_GroundFromSpace"     );
+	loadASShader( m_shGroundFromAtmosphere, "AS_GroundFromAtmosphere");
+	loadASShader( m_shSpaceFromSpace      , "AS_SpaceFromSpace"      );
+	loadASShader( m_shSpaceFromAtmosphere , "AS_SpaceFromAtmosphere" );
 
+    //
     {
 	CPixelBuffer pb;
 	pb.Init(256, 256, 1);
@@ -289,8 +298,8 @@ void CGameEngine::RenderFrame(int nMilliseconds)
 		pSpaceShader->SetUniformParameter1f("u_Scale", 1.0f / (m_fOuterRadius - m_fInnerRadius));
 		pSpaceShader->SetUniformParameter1f("u_ScaleDepth", m_fRayleighScaleDepth);
 		pSpaceShader->SetUniformParameter1f("u_ScaleOverScaleDepth", (1.0f / (m_fOuterRadius - m_fInnerRadius)) / m_fRayleighScaleDepth);
-		pSpaceShader->SetUniformParameter1f("g", m_g);
-		pSpaceShader->SetUniformParameter1f("g2", m_g*m_g);
+		pSpaceShader->SetUniformParameter1f("u_g", m_g);
+		pSpaceShader->SetUniformParameter1f("u_g2", m_g*m_g);
 		pSpaceShader->SetUniformParameter1i("s2Test", 0);
 	}
 
@@ -336,8 +345,8 @@ void CGameEngine::RenderFrame(int nMilliseconds)
 	pGroundShader->SetUniformParameter1f("u_Scale", 1.0f / (m_fOuterRadius - m_fInnerRadius));
 	pGroundShader->SetUniformParameter1f("u_ScaleDepth", m_fRayleighScaleDepth);
 	pGroundShader->SetUniformParameter1f("u_ScaleOverScaleDepth", (1.0f / (m_fOuterRadius - m_fInnerRadius)) / m_fRayleighScaleDepth);
-	pGroundShader->SetUniformParameter1f("g", m_g);
-	pGroundShader->SetUniformParameter1f("g2", m_g*m_g);
+	pGroundShader->SetUniformParameter1f("u_g", m_g);
+	pGroundShader->SetUniformParameter1f("u_g2", m_g*m_g);
 	pGroundShader->SetUniformParameter1i("s2Test", 0);
 
 	/*
@@ -349,8 +358,8 @@ void CGameEngine::RenderFrame(int nMilliseconds)
 		pGroundShader->SetUniformParameter3f("u_LightPos", vLightDir.x, vLightDir.y, vLightDir.z);
 		pGroundShader->SetUniformParameter1f("u_KrESun", m_Kr*m_ESun*0.1f);
 		pGroundShader->SetUniformParameter1f("u_KmESun", 10.0f*m_Km*m_ESun*0.1f);
-		pGroundShader->SetUniformParameter1f("g", -0.75f);
-		pGroundShader->SetUniformParameter1f("g2", -0.75f * -0.75f);
+		pGroundShader->SetUniformParameter1f("u_g", -0.75f);
+		pGroundShader->SetUniformParameter1f("u_g2", -0.75f * -0.75f);
 	}
 	*/
 
@@ -391,8 +400,8 @@ void CGameEngine::RenderFrame(int nMilliseconds)
 	pSkyShader->SetUniformParameter1f("u_Scale", 1.0f / (m_fOuterRadius - m_fInnerRadius));
 	pSkyShader->SetUniformParameter1f("u_ScaleDepth", m_fRayleighScaleDepth);
 	pSkyShader->SetUniformParameter1f("u_ScaleOverScaleDepth", (1.0f / (m_fOuterRadius - m_fInnerRadius)) / m_fRayleighScaleDepth);
-	pSkyShader->SetUniformParameter1f("g", m_g);
-	pSkyShader->SetUniformParameter1f("g2", m_g*m_g);
+	pSkyShader->SetUniformParameter1f("u_g", m_g);
+	pSkyShader->SetUniformParameter1f("u_g2", m_g*m_g);
 
 	/*
 	if(vCamera.z < 0 && pSkyShader == &m_shSkyFromAtmosphere)
@@ -403,8 +412,8 @@ void CGameEngine::RenderFrame(int nMilliseconds)
 		pSkyShader->SetUniformParameter3f("u_LightPos", vLightDir.x, vLightDir.y, vLightDir.z);
 		pSkyShader->SetUniformParameter1f("u_KrESun", m_Kr*m_ESun*0.1f);
 		pSkyShader->SetUniformParameter1f("u_KmESun", 10.0f*m_Km*m_ESun*0.1f);
-		pSkyShader->SetUniformParameter1f("g", -0.75f);
-		pSkyShader->SetUniformParameter1f("g2", -0.75f * -0.75f);
+		pSkyShader->SetUniformParameter1f("u_g", -0.75f);
+		pSkyShader->SetUniformParameter1f("u_g2", -0.75f * -0.75f);
 	}
 	*/
 	glFrontFace(GL_CW);

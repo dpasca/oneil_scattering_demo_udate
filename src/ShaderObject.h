@@ -41,8 +41,9 @@ public:
 	~CShaderObject();
 
 	bool LoadFromFile(
-            const std::string &baseVFName,
-                  std::string  baseFFName={} );
+            const std::string &headerFName,
+            const std::string &vertFName,
+            const std::string &fragFName );
 
 	void Enable();
 	void Disable();
@@ -54,7 +55,10 @@ public:
 	void SetUniformParameter3f(const char *pszParameter, float p1, float p2, float p3);
 
 private:
-    bool compileShader( const std::string &fname, GLhandleARB handle );
+    bool compileShader(
+        const std::string &headerFName,
+        const std::string &sourceFName,
+        GLhandleARB handle );
 };
 
 #endif // __ShaderObject_h__
