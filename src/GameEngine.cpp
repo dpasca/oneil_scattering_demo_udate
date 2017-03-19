@@ -163,14 +163,18 @@ CGameEngine::CGameEngine()
 	m_shSpaceFromSpace.Load("SpaceFromSpace");
 	m_shSpaceFromAtmosphere.Load("SpaceFromAtmosphere");
 
-
+    {
 	CPixelBuffer pb;
 	pb.Init(256, 256, 1);
 	pb.MakeGlow2D(40.0f, 0.1f);
 	m_tMoonGlow.Init(&pb);
+    }
 
+    {
+	CPixelBuffer pb;
 	pb.LoadJPEG("earthmap1k.jpg");
 	m_tEarth.Init(&pb);
+    }
 }
 
 CGameEngine::~CGameEngine()

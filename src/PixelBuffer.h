@@ -81,14 +81,14 @@ inline const int GetDataTypeSize(const int nDataType)
 class C3DBuffer
 {
 protected:
-	int m_nWidth;				// The width of the buffer (x axis)
-	int m_nHeight;				// The height of the buffer (y axis)
-	int m_nDepth;				// The depth of the buffer (z axis)
-	int m_nDataType;			// The data type stored in the buffer (i.e. GL_UNSIGNED_BYTE, GL_FLOAT)
-	int m_nChannels;			// The number of channels of data stored in the buffer
-	int m_nElementSize;			// The size of one element in the buffer
-	void *m_pAlloc;				// The pointer to the pixel buffer
-	void *m_pBuffer;			// A byte-aligned pointer (for faster memory access)
+    int m_nWidth = 0;           // The width of the buffer (x axis)
+    int m_nHeight = 0;          // The height of the buffer (y axis)
+    int m_nDepth = 0;           // The depth of the buffer (z axis)
+    int m_nDataType = 0;        // The data type stored in the buffer (i.e. GL_UNSIGNED_BYTE, GL_FLOAT)
+    int m_nChannels = 0;        // The number of channels of data stored in the buffer
+    int m_nElementSize = 0;     // The size of one element in the buffer
+    void *m_pAlloc = nullptr;   // The pointer to the pixel buffer
+    void *m_pBuffer = nullptr;  // A byte-aligned pointer (for faster memory access)
 
 public:
 	C3DBuffer()						{ m_pAlloc = m_pBuffer = NULL; }
@@ -198,6 +198,7 @@ public:
 
 	void Init(const int nWidth, const int nHeight, const int nDepth, const int nDataType, const int nChannels=1, void *pBuffer=NULL)
 	{
+        assert( m_nWidth == 0 && m_nHeight == 0 );
 		// If the buffer is already initialized to the specified settings, then nothing needs to be done
 		if(m_pAlloc && m_nWidth == nWidth && m_nHeight == nHeight && m_nDataType == nDataType && m_nChannels == nChannels)
 			return;
@@ -280,22 +281,38 @@ public:
 class CPixelBuffer : public C3DBuffer
 {
 protected:
-	int m_nFormat;				// The format of the pixel data (i.e. GL_LUMINANCE, GL_RGBA)
+    int m_nFormat = 0; // The format of the pixel data (i.e. GL_LUMINANCE, GL_RGBA)
 
 public:
-	CPixelBuffer() : C3DBuffer() {}
-	CPixelBuffer(int nWidth, int nHeight, int nDepth, int nChannels=3, int nFormat=GL_RGB, int nDataType=UnsignedByteType) : C3DBuffer(nWidth, nHeight, nDepth, nDataType, nChannels)
-	{
-		m_nFormat = nFormat;
-	}
+    CPixelBuffer() : C3DBuffer() {}
+    CPixelBuffer(
+            int nWidth,
+            int nHeight,
+            int nDepth,
+            int nChannels=3,
+            int nFormat=GL_RGB,
+            int nDataType=UnsignedByteType )
+        : C3DBuffer(nWidth, nHeight, nDepth, nDataType, nChannels)
+    {
+        m_nFormat = nFormat;
+    }
 
 	int GetFormat()				{ return m_nFormat; }
 
-	void Init(int nWidth, int nHeight, int nDepth, int nChannels=3, int nFormat=GL_RGB, int nDataType=GL_UNSIGNED_BYTE, void *pBuffer=NULL)
-	{
-		C3DBuffer::Init(nWidth, nHeight, nDepth, nDataType, nChannels, pBuffer);
-		m_nFormat = nFormat;
-	}
+    void Init(
+            int nWidth,
+            int nHeight,
+            int nDepth,
+            int nChannels=3,
+            int nFormat=GL_RGB,
+            int nDataType=GL_UNSIGNED_BYTE,
+            void *pBuffer=nullptr )
+    {
+        assert( m_nFormat == 0 );
+
+        C3DBuffer::Init(nWidth, nHeight, nDepth, nDataType, nChannels, pBuffer);
+        m_nFormat = nFormat;
+    }
 
 	// Miscellaneous initalization routines
 	bool LoadJPEG(const char *pszFile);
@@ -309,3 +326,4 @@ public:
 };
 
 #endif // __PixelBuffer_h__
+

@@ -36,16 +36,18 @@ CTexture CTexture::m_t1DGlow;
 
 void CTexture::InitStaticMembers(int nSeed, int nSize)
 {
-	CPixelBuffer pb;
-
 	// Initialize the shared cloud cell texture
-	pb.Init(16, 16, 1, 2, GL_LUMINANCE_ALPHA);
+    {
+	auto pb = CPixelBuffer(16, 16, 1, 2, GL_LUMINANCE_ALPHA);
 	pb.MakeCloudCell(2, 0);
 	m_tCloudCell.Init(&pb);
+    }
 
-	pb.Init(64, 1, 1, 2, GL_LUMINANCE_ALPHA);
+    {
+	auto pb = CPixelBuffer(64, 1, 1, 2, GL_LUMINANCE_ALPHA);
 	pb.MakeGlow1D();
 	m_t1DGlow.Init(&pb);
+    }
 }
 
 void CTexture::Init(CPixelBuffer *pBuffer, bool bClamp, bool bMipmap)
