@@ -40,7 +40,9 @@ public:
 	CShaderObject();
 	~CShaderObject();
 
-	bool LoadFromFile(const char *pszPath, const char *pszPath2=NULL);
+	bool LoadFromFile(
+            const std::string &baseVFName,
+                  std::string  baseFFName={} );
 
 	void Enable();
 	void Disable();
@@ -50,6 +52,9 @@ public:
 	void SetUniformParameter1i(const char *pszParameter, int n1);
 	void SetUniformParameter1f(const char *pszParameter, float p1);
 	void SetUniformParameter3f(const char *pszParameter, float p1, float p2, float p3);
+
+private:
+    bool compileShader( const std::string &fname, GLhandleARB handle );
 };
 
 #endif // __ShaderObject_h__

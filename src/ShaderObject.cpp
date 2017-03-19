@@ -5,6 +5,7 @@
 #define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
 #include <fstream>
+#include <streambuf>
 #include <GL\glew.h>
 #include <GL\wglew.h>
 #include <GL\gl.h>
@@ -27,62 +28,62 @@ CShaderObject::~CShaderObject()
     glDeleteObjectARB(m_hProgram);
 }
 
-bool CShaderObject::LoadFromFile(const char *pszPath, const char *pszPath2)
+
+//==================================================================
+static std::string makeStringFromFile( const std::string &fname )
 {
-    char szPath[_MAX_PATH], *psz;
-    int nBytes, bSuccess;
+    std::ifstream file( fname );
 
-    sprintf(szPath, "%s.vert", pszPath);
-    LogInfo("Compiling GLSL shader %s", szPath);
-    std::ifstream ifVertexShader(szPath, std::ios::binary);
-    ifVertexShader.seekg(0, std::ios::end);
-    nBytes = (int)ifVertexShader.tellg();
-    ifVertexShader.seekg(0, std::ios::beg);
-    psz = new char[nBytes+1];
-    ifVertexShader.read(psz, nBytes);
-    psz[nBytes] = 0;
-    ifVertexShader.close();
-    glShaderSourceARB(m_hVertexShader, 1, (const char **)&psz, &nBytes);
-    glCompileShaderARB(m_hVertexShader);
-    glGetObjectParameterivARB(m_hVertexShader, GL_OBJECT_COMPILE_STATUS_ARB, &bSuccess);
-    delete psz;
-    if(!bSuccess)
+    return { (std::istreambuf_iterator<char>(file)),
+              std::istreambuf_iterator<char>() };
+}
+
+//==================================================================
+bool CShaderObject::compileShader( const std::string &fname, GLhandleARB handle )
+{
+    LogInfo( "Compiling GLSL shader %s", fname.c_str() );
+
+    auto src = makeStringFromFile( fname );
+
+    const char *ppSrc[] = { src.c_str() };
+    int nBytes = (int)src.size();
+    int bSuccess = 0;
+    glShaderSourceARB( handle, 1, ppSrc, &nBytes );
+    glCompileShaderARB( handle );
+    glGetObjectParameterivARB( handle, GL_OBJECT_COMPILE_STATUS_ARB, &bSuccess );
+
+    if (!bSuccess)
     {
-        LogError("Failed to compile vertex shader %s", szPath);
+        LogError( "Failed to compile shader %s", fname.c_str() );
         LogGLErrors();
-        LogGLInfoLog(m_hVertexShader);
+        LogGLInfoLog( handle );
         return false;
     }
 
-    sprintf(szPath, "%s.frag", pszPath2 ? pszPath2 : pszPath);
-    LogInfo("Compiling GLSL shader %s", szPath);
-    std::ifstream ifFragmentShader(szPath, std::ios::binary);
-    ifFragmentShader.seekg(0, std::ios::end);
-    nBytes = (int)ifFragmentShader.tellg();
-    ifFragmentShader.seekg(0, std::ios::beg);
-    psz = new char[nBytes];
-    ifFragmentShader.read(psz, nBytes);
-    ifFragmentShader.close();
-    glShaderSourceARB(m_hFragmentShader, 1, (const char **)&psz, &nBytes);
-    glCompileShaderARB(m_hFragmentShader);
-    glGetObjectParameterivARB(m_hFragmentShader, GL_OBJECT_COMPILE_STATUS_ARB, &bSuccess);
-    delete psz;
-    if(!bSuccess)
-    {
-        LogError("Failed to compile fragment shader %s", szPath);
-        LogGLErrors();
-        LogGLInfoLog(m_hFragmentShader);
-        return false;
-    }
+    return true;
+}
 
+//==================================================================
+bool CShaderObject::LoadFromFile(
+            const std::string &baseVFName,
+                  std::string  baseFFName )
+{
+    if ( baseFFName.empty() )
+        baseFFName = baseVFName;
+
+    if ( !compileShader( baseVFName + ".vert", m_hVertexShader   ) ) return false;
+    if ( !compileShader( baseFFName + ".frag", m_hFragmentShader ) ) return false;
+
+    //
     glAttachObjectARB(m_hProgram, m_hVertexShader);
     glAttachObjectARB(m_hProgram, m_hFragmentShader);
     glLinkProgramARB(m_hProgram);
 
+    int bSuccess = 0;
     glGetObjectParameterivARB(m_hProgram, GL_OBJECT_LINK_STATUS_ARB, &bSuccess);
-    if(!bSuccess)
+    if (!bSuccess)
     {
-        LogError("Failed to link shader %s", szPath);
+        LogError( "Failed to link shader %s", baseVFName.c_str() );
         LogGLErrors();
         LogGLInfoLog(m_hProgram);
         return false;
