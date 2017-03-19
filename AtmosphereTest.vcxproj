@@ -156,6 +156,7 @@
     <ClCompile Include="src\Noise.cpp" />
     <ClCompile Include="src\PBuffer.cpp" />
     <ClCompile Include="src\PixelBuffer.cpp" />
+    <ClCompile Include="src\ShaderObject.cpp" />
     <ClCompile Include="src\Texture.cpp" />
   </ItemGroup>
   <ItemGroup>

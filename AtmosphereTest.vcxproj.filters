@@ -50,6 +50,9 @@
     <ClCompile Include="externals\nanojpeg.c">
       <Filter>externals</Filter>
     </ClCompile>
+    <ClCompile Include="src\ShaderObject.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\DateTime.h">

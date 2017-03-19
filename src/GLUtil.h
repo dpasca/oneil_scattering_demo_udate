@@ -4,6 +4,8 @@
 #ifndef __GLUtil_h__
 #define __GLUtil_h__
 
+#include <assert.h>
+
 class CGLUtil
 {
 // Attributes

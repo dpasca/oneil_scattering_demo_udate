@@ -160,12 +160,12 @@ CGameEngine::CGameEngine()
 	m_fMieScaleDepth = 0.1f;
 	m_pbOpticalDepth.MakeOpticalDepthBuffer(m_fInnerRadius, m_fOuterRadius, m_fRayleighScaleDepth, m_fMieScaleDepth);
 
-	m_shSkyFromSpace.Load(        "AS_SkyFromSpace"         );
-	m_shSkyFromAtmosphere.Load(   "AS_SkyFromAtmosphere"    );
-	m_shGroundFromSpace.Load(     "AS_GroundFromSpace"      );
-	m_shGroundFromAtmosphere.Load("AS_GroundFromAtmosphere" );
-	m_shSpaceFromSpace.Load(      "AS_SpaceFromSpace"       );
-	m_shSpaceFromAtmosphere.Load( "AS_SpaceFromAtmosphere"  );
+	m_shSkyFromSpace.LoadFromFile(        "AS_SkyFromSpace"         );
+	m_shSkyFromAtmosphere.LoadFromFile(   "AS_SkyFromAtmosphere"    );
+	m_shGroundFromSpace.LoadFromFile(     "AS_GroundFromSpace"      );
+	m_shGroundFromAtmosphere.LoadFromFile("AS_GroundFromAtmosphere" );
+	m_shSpaceFromSpace.LoadFromFile(      "AS_SpaceFromSpace"       );
+	m_shSpaceFromAtmosphere.LoadFromFile( "AS_SpaceFromAtmosphere"  );
 
     {
 	CPixelBuffer pb;
