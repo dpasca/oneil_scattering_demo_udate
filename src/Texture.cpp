@@ -51,7 +51,7 @@ void CTexture::InitStaticMembers(int nSeed, int nSize)
 void CTexture::Init(CPixelBuffer *pBuffer, bool bClamp, bool bMipmap)
 {
 	Cleanup();
-	m_nType = pBuffer->GetHeight() == 1 ? GL_TEXTURE_1D : pBuffer->GetHeight() == pBuffer->GetWidth() ? GL_TEXTURE_2D : GL_TEXTURE_RECTANGLE_EXT;
+	m_nType = pBuffer->GetHeight() == 1 ? GL_TEXTURE_1D : GL_TEXTURE_2D;
 
 	glGenTextures(1, &m_nID);
 	Bind();
@@ -79,7 +79,6 @@ void CTexture::Init(CPixelBuffer *pBuffer, bool bClamp, bool bMipmap)
         break;
 
     case GL_TEXTURE_2D:
-    case GL_TEXTURE_RECTANGLE_EXT:
         glTexImage2D(
                 m_nType,
                 0,
@@ -95,9 +94,7 @@ void CTexture::Init(CPixelBuffer *pBuffer, bool bClamp, bool bMipmap)
             glGenerateMipmap( GL_TEXTURE_2D );
         break;
 
-    default:
-        assert(0);
-        break;
+    default: assert(0); break;
 	}
 }
 
@@ -106,20 +103,38 @@ void CTexture::Update(CPixelBuffer *pBuffer, int nLevel)
 	Bind();
 	switch(m_nType)
 	{
-		case GL_TEXTURE_1D:
-			glTexSubImage1D(m_nType, nLevel, 0, pBuffer->GetWidth(), pBuffer->GetFormat(), pBuffer->GetDataType(), pBuffer->GetBuffer());
-			break;
-		case GL_TEXTURE_2D:
-		case GL_TEXTURE_RECTANGLE_EXT:
-			glTexSubImage2D(m_nType, nLevel, 0, 0, pBuffer->GetWidth(), pBuffer->GetHeight(), pBuffer->GetFormat(), pBuffer->GetDataType(), pBuffer->GetBuffer());
-			break;
+	case GL_TEXTURE_1D:
+		glTexSubImage1D(
+                m_nType,
+                nLevel,
+                0,
+                pBuffer->GetWidth(),
+                pBuffer->GetFormat(),
+                pBuffer->GetDataType(),
+                pBuffer->GetBuffer() );
+		break;
+
+	case GL_TEXTURE_2D:
+		glTexSubImage2D(
+                m_nType,
+                nLevel,
+                0,
+                0,
+                pBuffer->GetWidth(),
+                pBuffer->GetHeight(),
+                pBuffer->GetFormat(),
+                pBuffer->GetDataType(),
+                pBuffer->GetBuffer() );
+		break;
+
+    default: assert(0); break;
 	}
 }
 
 void CTexture::InitCopy(int x, int y, int nWidth, int nHeight, bool bClamp)
 {
 	Cleanup();
-	m_nType = nHeight == 1 ? GL_TEXTURE_1D : nHeight == nWidth ? GL_TEXTURE_2D : GL_TEXTURE_RECTANGLE_EXT;
+	m_nType = nHeight == 1 ? GL_TEXTURE_1D : GL_TEXTURE_2D;
 	glGenTextures(1, &m_nID);
 	Bind();
 	glTexParameteri(m_nType, GL_TEXTURE_WRAP_S, bClamp ? GL_CLAMP : GL_REPEAT);
@@ -129,13 +144,14 @@ void CTexture::InitCopy(int x, int y, int nWidth, int nHeight, bool bClamp)
 
 	switch(m_nType)
 	{
-		case GL_TEXTURE_1D:
-			glCopyTexImage1D(m_nType, 0, GL_RGBA, x, y, nWidth, 0);
-			break;
-		case GL_TEXTURE_2D:
-		case GL_TEXTURE_RECTANGLE_EXT:
-			glCopyTexImage2D(m_nType, 0, GL_RGBA, x, y, nWidth, nHeight, 0);
-			break;
+	case GL_TEXTURE_1D:
+		glCopyTexImage1D(m_nType, 0, GL_RGBA, x, y, nWidth, 0);
+		break;
+	case GL_TEXTURE_2D:
+		glCopyTexImage2D(m_nType, 0, GL_RGBA, x, y, nWidth, nHeight, 0);
+		break;
+
+    default: assert(0); break;
 	}
 }
 
@@ -144,12 +160,13 @@ void CTexture::UpdateCopy(int x, int y, int nWidth, int nHeight, int nOffx, int 
 	Bind();
 	switch(m_nType)
 	{
-		case GL_TEXTURE_1D:
-			glCopyTexSubImage1D(m_nType, 0, nOffx, x, y, nWidth);
-			break;
-		case GL_TEXTURE_2D:
-		case GL_TEXTURE_RECTANGLE_EXT:
-			glCopyTexSubImage2D(m_nType, 0, nOffx, nOffy, x, y, nWidth, nHeight);
-			break;
+	case GL_TEXTURE_1D:
+		glCopyTexSubImage1D(m_nType, 0, nOffx, x, y, nWidth);
+		break;
+	case GL_TEXTURE_2D:
+		glCopyTexSubImage2D(m_nType, 0, nOffx, nOffy, x, y, nWidth, nHeight);
+		break;
+
+    default: assert(0); break;
 	}
 }
