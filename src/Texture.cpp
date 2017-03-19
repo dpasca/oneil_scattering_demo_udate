@@ -54,7 +54,7 @@ void CTexture::Init(CPixelBuffer *pBuffer, bool bClamp, bool bMipmap)
 	m_nType = pBuffer->GetHeight() == 1 ? GL_TEXTURE_1D : GL_TEXTURE_2D;
 
 	glGenTextures(1, &m_nID);
-	Bind();
+	BindTexture();
 	//glTexParameteri(m_nType, GL_TEXTURE_WRAP_R, bClamp ? GL_CLAMP : GL_REPEAT);
 	glTexParameteri(m_nType, GL_TEXTURE_WRAP_S, bClamp ? GL_CLAMP : GL_REPEAT);
 	glTexParameteri(m_nType, GL_TEXTURE_WRAP_T, bClamp ? GL_CLAMP : GL_REPEAT);
@@ -100,7 +100,7 @@ void CTexture::Init(CPixelBuffer *pBuffer, bool bClamp, bool bMipmap)
 
 void CTexture::Update(CPixelBuffer *pBuffer, int nLevel)
 {
-	Bind();
+	BindTexture();
 	switch(m_nType)
 	{
 	case GL_TEXTURE_1D:
@@ -136,7 +136,7 @@ void CTexture::InitCopy(int x, int y, int nWidth, int nHeight, bool bClamp)
 	Cleanup();
 	m_nType = nHeight == 1 ? GL_TEXTURE_1D : GL_TEXTURE_2D;
 	glGenTextures(1, &m_nID);
-	Bind();
+	BindTexture();
 	glTexParameteri(m_nType, GL_TEXTURE_WRAP_S, bClamp ? GL_CLAMP : GL_REPEAT);
 	glTexParameteri(m_nType, GL_TEXTURE_WRAP_T, bClamp ? GL_CLAMP : GL_REPEAT);
 	glTexParameteri(m_nType, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -155,18 +155,3 @@ void CTexture::InitCopy(int x, int y, int nWidth, int nHeight, bool bClamp)
 	}
 }
 
-void CTexture::UpdateCopy(int x, int y, int nWidth, int nHeight, int nOffx, int nOffy, int nOffz)
-{
-	Bind();
-	switch(m_nType)
-	{
-	case GL_TEXTURE_1D:
-		glCopyTexSubImage1D(m_nType, 0, nOffx, x, y, nWidth);
-		break;
-	case GL_TEXTURE_2D:
-		glCopyTexSubImage2D(m_nType, 0, nOffx, nOffy, x, y, nWidth, nHeight);
-		break;
-
-    default: assert(0); break;
-	}
-}

@@ -288,7 +288,7 @@ void CGameEngine::RenderFrame(int nMilliseconds)
 		pSpaceShader->SetUniformParameter1i("s2Test", 0);
 	}
 
-	m_tMoonGlow.Enable();
+	m_tMoonGlow.EnableTexture();
 	glBegin(GL_QUADS);
 	glTexCoord2f(0, 0);
 	glVertex3f(-4.0f, 4.0f, -50.0f);
@@ -299,7 +299,7 @@ void CGameEngine::RenderFrame(int nMilliseconds)
 	glTexCoord2f(1, 0);
 	glVertex3f(4.0f, 4.0f, -50.0f);
 	glEnd();
-	m_tMoonGlow.Disable();
+	m_tMoonGlow.DisableTexture();
 
 	if(pSpaceShader)
 		pSpaceShader->Disable();
@@ -350,9 +350,9 @@ void CGameEngine::RenderFrame(int nMilliseconds)
 	m_tEarth.Disable();
 #else
 	GLUquadricObj *pSphere = gluNewQuadric();
-	m_tEarth.Enable();
+	m_tEarth.EnableTexture();
 	gluSphere(pSphere, m_fInnerRadius, 100, 50);
-	m_tEarth.Disable();
+	m_tEarth.DisableTexture();
 	gluDeleteQuadric(pSphere);
 #endif
 	pGroundShader->Disable();
