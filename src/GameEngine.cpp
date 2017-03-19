@@ -531,87 +531,88 @@ void CGameEngine::OnChar(WPARAM c)
 
 void CGameEngine::HandleInput(float fSeconds)
 {
-	if((GetKeyState('1') & 0x8000))
+    auto isKeyDown = []( auto vk )
+    {
+        return GetKeyState( vk ) & 0x8000;
+    };
+
+	if ( isKeyDown( '1' ) )
 	{
-		if((GetKeyState(VK_SHIFT) & 0x8000))
-			m_Kr = Max(0.0f, m_Kr - 0.0001f);
-		else
-			m_Kr += 0.0001f;
+        if ( isKeyDown(VK_SHIFT) ) m_Kr = Max(0.0f, m_Kr - 0.0001f); else
+			                       m_Kr += 0.0001f;
 		m_Kr4PI = m_Kr*4.0f*PI;
 	}
-	else if((GetKeyState('2') & 0x8000))
+	else if ( isKeyDown( '2' ) )
 	{
-		if((GetKeyState(VK_SHIFT) & 0x8000))
-			m_Km = Max(0.0f, m_Km - 0.0001f);
-		else
-			m_Km += 0.0001f;
+        if ( isKeyDown(VK_SHIFT) ) m_Km = Max(0.0f, m_Km - 0.0001f); else
+			                       m_Km += 0.0001f;
 		m_Km4PI = m_Km*4.0f*PI;
 	}
-	else if((GetKeyState('3') & 0x8000))
+	else if ( isKeyDown( '3' ) )
 	{
-		if((GetKeyState(VK_SHIFT) & 0x8000))
-			m_g = Max(-1.0f, m_g-0.001f);
-		else
-			m_g = Min(1.0f, m_g+0.001f);
+        if ( isKeyDown(VK_SHIFT) ) m_g = Max(-1.0f, m_g-0.001f); else
+			                       m_g = Min( 1.0f, m_g+0.001f);
 	}
-	else if((GetKeyState('4') & 0x8000))
+	else if ( isKeyDown( '4' ) )
 	{
-		if((GetKeyState(VK_SHIFT) & 0x8000))
-			m_ESun = Max(0.0f, m_ESun - 0.1f);
-		else
-			m_ESun += 0.1f;
+        if ( isKeyDown(VK_SHIFT) ) m_ESun = Max(0.0f, m_ESun - 0.1f); else
+			                       m_ESun += 0.1f;
 	}
-	else if((GetKeyState('5') & 0x8000))
+	else if ( isKeyDown( '5' ) )
 	{
-		if((GetKeyState(VK_SHIFT) & 0x8000))
-			m_fWavelength[0] = Max(0.001f, m_fWavelength[0] -= 0.001f);
-		else
-			m_fWavelength[0] += 0.001f;
-		m_fWavelength4[0] = powf(m_fWavelength[0], 4.0f);
+        auto &val = m_fWavelength[0];
+
+        if ( isKeyDown(VK_SHIFT) ) val = Max(0.001f, val -= 0.001f); else
+			                       val += 0.001f;
+
+		m_fWavelength4[0] = powf(val, 4.0f);
 	}
-	else if((GetKeyState('6') & 0x8000))
+	else if ( isKeyDown( '6' ) )
 	{
-		if((GetKeyState(VK_SHIFT) & 0x8000))
-			m_fWavelength[1] = Max(0.001f, m_fWavelength[1] -= 0.001f);
-		else
-			m_fWavelength[1] += 0.001f;
-		m_fWavelength4[1] = powf(m_fWavelength[1], 4.0f);
+        auto &val = m_fWavelength[1];
+
+        if ( isKeyDown(VK_SHIFT) ) val = Max(0.001f, val -= 0.001f); else
+			                       val += 0.001f;
+
+		m_fWavelength4[1] = powf(val, 4.0f);
 	}
-	else if((GetKeyState('7') & 0x8000))
+	else if ( isKeyDown( '7' ) )
 	{
-		if((GetKeyState(VK_SHIFT) & 0x8000))
-			m_fWavelength[2] = Max(0.001f, m_fWavelength[2] -= 0.001f);
-		else
-			m_fWavelength[2] += 0.001f;
-		m_fWavelength4[2] = powf(m_fWavelength[2], 4.0f);
+        auto &val = m_fWavelength[2];
+
+        if ( isKeyDown(VK_SHIFT) ) val = Max(0.001f, val -= 0.001f); else
+			                       val += 0.001f;
+
+		m_fWavelength4[2] = powf(val, 4.0f);
 	}
-	else if((GetKeyState('8') & 0x8000))
+	else if ( isKeyDown( '8' ) )
 	{
-		if((GetKeyState(VK_SHIFT) & 0x8000))
-			m_fExposure = Max(0.1f, m_fExposure-0.1f);
-		else
-			m_fExposure += 0.1f;
+        if ( isKeyDown(VK_SHIFT) ) m_fExposure = Max(0.1f, m_fExposure-0.1f); else
+			                       m_fExposure += 0.1f;
 	}
 
 
 	const float ROTATE_SPEED = 1.0f;
 
 	// Turn left/right means rotate around the up axis
-	if((GetKeyState(VK_NUMPAD6) & 0x8000) || (GetKeyState(VK_RIGHT) & 0x8000))
+	if ( isKeyDown(VK_NUMPAD6) || isKeyDown(VK_RIGHT) )
 		m_3DCamera.Rotate(m_3DCamera.GetUpAxis(), fSeconds * -ROTATE_SPEED);
-	if((GetKeyState(VK_NUMPAD4) & 0x8000) || (GetKeyState(VK_LEFT) & 0x8000))
+
+	if ( isKeyDown(VK_NUMPAD4) || isKeyDown(VK_LEFT) )
 		m_3DCamera.Rotate(m_3DCamera.GetUpAxis(), fSeconds * ROTATE_SPEED);
 
 	// Turn up/down means rotate around the right axis
-	if((GetKeyState(VK_NUMPAD8) & 0x8000) || (GetKeyState(VK_UP) & 0x8000))
+	if ( isKeyDown(VK_NUMPAD8) || isKeyDown(VK_UP) )
 		m_3DCamera.Rotate(m_3DCamera.GetRightAxis(), fSeconds * -ROTATE_SPEED);
-	if((GetKeyState(VK_NUMPAD2) & 0x8000) || (GetKeyState(VK_DOWN) & 0x8000))
+
+	if ( isKeyDown(VK_NUMPAD2) || isKeyDown(VK_DOWN) )
 		m_3DCamera.Rotate(m_3DCamera.GetRightAxis(), fSeconds * ROTATE_SPEED);
 
 	// Roll means rotate around the view axis
-	if(GetKeyState(VK_NUMPAD7) & 0x8000)
+	if ( isKeyDown(VK_NUMPAD7) )
 		m_3DCamera.Rotate(m_3DCamera.GetViewAxis(), fSeconds * -ROTATE_SPEED);
-	if(GetKeyState(VK_NUMPAD9) & 0x8000)
+
+	if ( isKeyDown(VK_NUMPAD9) )
 		m_3DCamera.Rotate(m_3DCamera.GetViewAxis(), fSeconds * ROTATE_SPEED);
 
 #define THRUST		1.0f	// Acceleration rate due to thrusters (units/s*s)
@@ -619,41 +620,32 @@ void CGameEngine::HandleInput(float fSeconds)
 
 	// Handle acceleration keys
 	CVector vAccel(0.0f);
-	if(GetKeyState(VK_SPACE) & 0x8000)
+	if( isKeyDown(VK_SPACE) )
 		m_3DCamera.SetVelocity(CVector(0.0f));	// Full stop
 	else
 	{
 		// Add camera's acceleration due to thrusters
 		float fThrust = THRUST;
-		if(GetKeyState(VK_CONTROL) & 0x8000)
-			fThrust *= 10.0f;
+		if( isKeyDown(VK_CONTROL) ) fThrust *= 10.0f;
 
 		// Thrust forward/reverse affects velocity along the view axis
-		if(GetKeyState('W') & 0x8000)
-			vAccel += m_3DCamera.GetViewAxis() * fThrust;
-		if(GetKeyState('S') & 0x8000)
-			vAccel += m_3DCamera.GetViewAxis() * -fThrust;
+		if ( isKeyDown('W') ) vAccel += m_3DCamera.GetViewAxis() *  fThrust;
+		if ( isKeyDown('S') ) vAccel += m_3DCamera.GetViewAxis() * -fThrust;
 
 		// Thrust left/right affects velocity along the right axis
-		if(GetKeyState('D') & 0x8000)
-			vAccel += m_3DCamera.GetRightAxis() * fThrust;
-		if(GetKeyState('A') & 0x8000)
-			vAccel += m_3DCamera.GetRightAxis() * -fThrust;
+		if ( isKeyDown('D') ) vAccel += m_3DCamera.GetRightAxis() *  fThrust;
+		if ( isKeyDown('A') ) vAccel += m_3DCamera.GetRightAxis() * -fThrust;
 
 		// Thrust up/down affects velocity along the up axis
 //#define WORLD_UPDOWN
 #ifdef WORLD_UPDOWN
 		CVector v = m_3DCamera.GetPosition();
 		v.Normalize();
-		if(GetKeyState('M') & 0x8000)
-			vAccel += v * fThrust;
-		if(GetKeyState('N') & 0x8000)
-			vAccel += v * -fThrust;
+		if ( isKeyDown('M') ) vAccel += v *  fThrust;
+		if ( isKeyDown('N') ) vAccel += v * -fThrust;
 #else
-		if(GetKeyState('M') & 0x8000)
-			vAccel += m_3DCamera.GetUpAxis() * fThrust;
-		if(GetKeyState('N') & 0x8000)
-			vAccel += m_3DCamera.GetUpAxis() * -fThrust;
+		if ( isKeyDown('M') ) vAccel += m_3DCamera.GetUpAxis() *  fThrust;
+		if ( isKeyDown('N') ) vAccel += m_3DCamera.GetUpAxis() * -fThrust;
 #endif
 
 		m_3DCamera.Accelerate(vAccel, fSeconds, RESISTANCE);
