@@ -195,6 +195,7 @@
     <ClInclude Include="src\Noise.h" />
     <ClInclude Include="src\PBuffer.h" />
     <ClInclude Include="src\PixelBuffer.h" />
+    <ClInclude Include="src\ShaderObject.h" />
     <ClInclude Include="src\Texture.h" />
     <ClInclude Include="src\wglext.h" />
     <ClInclude Include="src\WndClass.h" />

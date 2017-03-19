@@ -35,21 +35,22 @@ POSSIBILITY OF SUCH DAMAGE.
 #define MAX_ATTRIBS  32
 
 #include "GLUtil.h"
+#include "ShaderObject.h"
 
 class CPBuffer
 {
 protected:
-	int m_nWidth;
-	int m_nHeight;
-	int m_nFlags;
+	int m_nWidth  = 0;
+	int m_nHeight = 0;
+	int m_nFlags  = 0;
 
-	HDC m_hDC;
-	HGLRC m_hGLRC;
-	HPBUFFERARB m_hBuffer;
-	GLuint m_nTextureID;
+	HDC         m_hDC = nullptr;
+	HGLRC       m_hGLRC = nullptr;
+	HPBUFFERARB m_hBuffer = nullptr;
+	GLuint      m_nTextureID = 0;
 
-	bool m_bATI;
-	unsigned int m_nTarget;
+	bool        m_bATI = false;;
+	unsigned int m_nTarget = 0;
 	CShaderObject m_shExposure;
 
 public:

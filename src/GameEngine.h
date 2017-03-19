@@ -32,11 +32,10 @@ POSSIBILITY OF SUCH DAMAGE.
 #define __GameEngine_h__
 
 #include "GLUtil.h"
+#include "ShaderObject.h"
 #include "PBuffer.h"
 #include "GameApp.h"
 #include "Font.h"
-
-
 
 class CGameEngine
 {
