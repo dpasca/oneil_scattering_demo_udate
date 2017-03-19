@@ -17,53 +17,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="GroundFromAtmosphere.frag">
-      <Filter>GLSL Shader Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="GroundFromAtmosphere.vert">
-      <Filter>GLSL Shader Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="GroundFromSpace.frag">
-      <Filter>GLSL Shader Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="GroundFromSpace.vert">
-      <Filter>GLSL Shader Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="HDR.vert">
-      <Filter>GLSL Shader Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="HDRRect.frag">
-      <Filter>GLSL Shader Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="HDRSquare.frag">
-      <Filter>GLSL Shader Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="SkyFromAtmosphere.frag">
-      <Filter>GLSL Shader Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="SkyFromAtmosphere.vert">
-      <Filter>GLSL Shader Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="SkyFromSpace.frag">
-      <Filter>GLSL Shader Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="SkyFromSpace.vert">
-      <Filter>GLSL Shader Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="SpaceFromAtmosphere.frag">
-      <Filter>GLSL Shader Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="SpaceFromAtmosphere.vert">
-      <Filter>GLSL Shader Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="SpaceFromSpace.frag">
-      <Filter>GLSL Shader Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="SpaceFromSpace.vert">
-      <Filter>GLSL Shader Files</Filter>
-    </CustomBuild>
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="src\GameApp.cpp">
       <Filter>src</Filter>
     </ClCompile>
@@ -178,5 +131,52 @@
     <Image Include="res\icon1.ico">
       <Filter>Resource Files</Filter>
     </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="AS_GroundFromAtmosphere.frag">
+      <Filter>GLSL Shader Files</Filter>
+    </None>
+    <None Include="AS_GroundFromAtmosphere.vert">
+      <Filter>GLSL Shader Files</Filter>
+    </None>
+    <None Include="AS_GroundFromSpace.frag">
+      <Filter>GLSL Shader Files</Filter>
+    </None>
+    <None Include="AS_GroundFromSpace.vert">
+      <Filter>GLSL Shader Files</Filter>
+    </None>
+    <None Include="AS_SkyFromAtmosphere.frag">
+      <Filter>GLSL Shader Files</Filter>
+    </None>
+    <None Include="AS_SkyFromAtmosphere.vert">
+      <Filter>GLSL Shader Files</Filter>
+    </None>
+    <None Include="AS_SkyFromSpace.frag">
+      <Filter>GLSL Shader Files</Filter>
+    </None>
+    <None Include="AS_SkyFromSpace.vert">
+      <Filter>GLSL Shader Files</Filter>
+    </None>
+    <None Include="AS_SpaceFromAtmosphere.frag">
+      <Filter>GLSL Shader Files</Filter>
+    </None>
+    <None Include="AS_SpaceFromAtmosphere.vert">
+      <Filter>GLSL Shader Files</Filter>
+    </None>
+    <None Include="AS_SpaceFromSpace.frag">
+      <Filter>GLSL Shader Files</Filter>
+    </None>
+    <None Include="AS_SpaceFromSpace.vert">
+      <Filter>GLSL Shader Files</Filter>
+    </None>
+    <None Include="HDR.vert">
+      <Filter>GLSL Shader Files</Filter>
+    </None>
+    <None Include="HDRRect.frag">
+      <Filter>GLSL Shader Files</Filter>
+    </None>
+    <None Include="HDRSquare.frag">
+      <Filter>GLSL Shader Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

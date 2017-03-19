@@ -137,23 +137,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <CustomBuild Include="GroundFromAtmosphere.frag" />
-    <CustomBuild Include="GroundFromAtmosphere.vert" />
-    <CustomBuild Include="GroundFromSpace.frag" />
-    <CustomBuild Include="GroundFromSpace.vert" />
-    <CustomBuild Include="HDR.vert" />
-    <CustomBuild Include="HDRRect.frag" />
-    <CustomBuild Include="HDRSquare.frag" />
-    <CustomBuild Include="SkyFromAtmosphere.frag" />
-    <CustomBuild Include="SkyFromAtmosphere.vert" />
-    <CustomBuild Include="SkyFromSpace.frag" />
-    <CustomBuild Include="SkyFromSpace.vert" />
-    <CustomBuild Include="SpaceFromAtmosphere.frag" />
-    <CustomBuild Include="SpaceFromAtmosphere.vert" />
-    <CustomBuild Include="SpaceFromSpace.frag" />
-    <CustomBuild Include="SpaceFromSpace.vert" />
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="externals\glew\glew.c">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
@@ -205,6 +188,23 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\icon1.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="AS_GroundFromAtmosphere.frag" />
+    <None Include="AS_GroundFromAtmosphere.vert" />
+    <None Include="AS_GroundFromSpace.frag" />
+    <None Include="AS_GroundFromSpace.vert" />
+    <None Include="AS_SkyFromAtmosphere.frag" />
+    <None Include="AS_SkyFromAtmosphere.vert" />
+    <None Include="AS_SkyFromSpace.frag" />
+    <None Include="AS_SkyFromSpace.vert" />
+    <None Include="AS_SpaceFromAtmosphere.frag" />
+    <None Include="AS_SpaceFromAtmosphere.vert" />
+    <None Include="AS_SpaceFromSpace.frag" />
+    <None Include="AS_SpaceFromSpace.vert" />
+    <None Include="HDR.vert" />
+    <None Include="HDRRect.frag" />
+    <None Include="HDRSquare.frag" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
