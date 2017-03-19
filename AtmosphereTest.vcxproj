@@ -61,11 +61,12 @@
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;GLEW_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AssemblerListingLocation>.\Release\</AssemblerListingLocation>
       <PrecompiledHeaderOutputFile>.\Release\AtmosphereTest.pch</PrecompiledHeaderOutputFile>
-      <PrecompiledHeader>Use</PrecompiledHeader>
-      <PrecompiledHeaderFile>Master.h</PrecompiledHeaderFile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderFile>
+      </PrecompiledHeaderFile>
       <ObjectFileName>.\Release\</ObjectFileName>
       <ProgramDataBaseFileName>.\Release\</ProgramDataBaseFileName>
-      <AdditionalIncludeDirectories>externals/glew</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;res;externals;externals/glew</AdditionalIncludeDirectories>
     </ClCompile>
     <Midl>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -103,12 +104,13 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;GLEW_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AssemblerListingLocation>.\Debug\</AssemblerListingLocation>
       <PrecompiledHeaderOutputFile>.\Debug\AtmosphereTest.pch</PrecompiledHeaderOutputFile>
-      <PrecompiledHeader>Use</PrecompiledHeader>
-      <PrecompiledHeaderFile>Master.h</PrecompiledHeaderFile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderFile>
+      </PrecompiledHeaderFile>
       <ObjectFileName>.\Debug\</ObjectFileName>
       <ProgramDataBaseFileName>.\Debug\</ProgramDataBaseFileName>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
-      <AdditionalIncludeDirectories>externals/glew</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;res;externals;externals/glew</AdditionalIncludeDirectories>
     </ClCompile>
     <Midl>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -135,53 +137,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ResourceCompile Include="AtmosphereTest.rc" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="externals\glew\glew.c">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="GameApp.cpp" />
-    <ClCompile Include="GameEngine.cpp" />
-    <ClCompile Include="GLUtil.cpp" />
-    <ClCompile Include="Master.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Master.h</PrecompiledHeaderFile>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Master.h</PrecompiledHeaderFile>
-    </ClCompile>
-    <ClCompile Include="Matrix.cpp" />
-    <ClCompile Include="nanojpeg.c">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="Noise.cpp" />
-    <ClCompile Include="PBuffer.cpp" />
-    <ClCompile Include="PixelBuffer.cpp" />
-    <ClCompile Include="Texture.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="DateTime.h" />
-    <ClInclude Include="Font.h" />
-    <ClInclude Include="GameApp.h" />
-    <ClInclude Include="GameEngine.h" />
-    <ClInclude Include="GLUtil.h" />
-    <ClInclude Include="ListTemplates.h" />
-    <ClInclude Include="Log.h" />
-    <ClInclude Include="Master.h" />
-    <ClInclude Include="Matrix.h" />
-    <ClInclude Include="Noise.h" />
-    <ClInclude Include="PBuffer.h" />
-    <ClInclude Include="PixelBuffer.h" />
-    <ClInclude Include="resource.h" />
-    <ClInclude Include="Texture.h" />
-    <ClInclude Include="WndClass.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="icon1.ico" />
-  </ItemGroup>
-  <ItemGroup>
     <CustomBuild Include="GroundFromAtmosphere.frag" />
     <CustomBuild Include="GroundFromAtmosphere.vert" />
     <CustomBuild Include="GroundFromSpace.frag" />
@@ -197,6 +152,58 @@
     <CustomBuild Include="SpaceFromAtmosphere.vert" />
     <CustomBuild Include="SpaceFromSpace.frag" />
     <CustomBuild Include="SpaceFromSpace.vert" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="externals\glew\glew.c">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="externals\nanojpeg.c">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="src\GameApp.cpp" />
+    <ClCompile Include="src\GameEngine.cpp" />
+    <ClCompile Include="src\GLUtil.cpp" />
+    <ClCompile Include="src\Master.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="src\Matrix.cpp" />
+    <ClCompile Include="src\Noise.cpp" />
+    <ClCompile Include="src\PBuffer.cpp" />
+    <ClCompile Include="src\PixelBuffer.cpp" />
+    <ClCompile Include="src\Texture.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="res\resource.h" />
+    <ClInclude Include="src\DateTime.h" />
+    <ClInclude Include="src\Font.h" />
+    <ClInclude Include="src\GameApp.h" />
+    <ClInclude Include="src\GameEngine.h" />
+    <ClInclude Include="src\gl.h" />
+    <ClInclude Include="src\GLUtil.h" />
+    <ClInclude Include="src\jconfig.h" />
+    <ClInclude Include="src\jerror.h" />
+    <ClInclude Include="src\jmorecfg.h" />
+    <ClInclude Include="src\jpegint.h" />
+    <ClInclude Include="src\jpeglib.h" />
+    <ClInclude Include="src\ListTemplates.h" />
+    <ClInclude Include="src\Log.h" />
+    <ClInclude Include="src\Master.h" />
+    <ClInclude Include="src\Matrix.h" />
+    <ClInclude Include="src\Noise.h" />
+    <ClInclude Include="src\PBuffer.h" />
+    <ClInclude Include="src\PixelBuffer.h" />
+    <ClInclude Include="src\Texture.h" />
+    <ClInclude Include="src\wglext.h" />
+    <ClInclude Include="src\WndClass.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="res\AtmosphereTest.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="res\icon1.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

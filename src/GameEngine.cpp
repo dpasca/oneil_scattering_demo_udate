@@ -36,28 +36,44 @@ POSSIBILITY OF SUCH DAMAGE.
 // DAVIDE - this is dangerous... the camera may end up in a horrible place...
 //#define USE_SAVED_CAMERA_POS
 
-#define DONT_USE_GLU
+// DAVIDE - currently acting weird... why ?!
+//#define DONT_USE_GLU
 
 #ifdef DONT_USE_GLU
 //==================================================================
-static void drawSphere(double r, int lats, int longs)
+static void drawSphere(double r, int longs, int lats)
 {
+    //glUseProgramObjectARB( 0 );
+    //glDisable( GL_TEXTURE_1D );
+    //glDisable( GL_TEXTURE_2D );
+    //glDisable( GL_TEXTURE_RECTANGLE_EXT );
+	//glDisable( GL_DEPTH_TEST );
+
+	//glDisable( GL_CULL_FACE );
+	//glDisable( GL_LIGHTING );
+    //glColor4f( 1.0f, 1.0f, 1.0f, 1.0f );
+
     auto output_vertex = [=](int lat, int lon)
     {
         //static const double pi = 3.14159265358979323846;
-        auto la = (float)(2.0*M_PI) * (float)lat / (float)lats;
-        auto lo = (float)(2.0*M_PI) * (float)lon / (float)longs;
-        /* this is unoptimized */
-        float v[3] {
+        auto u = (float)lon / (float)longs;
+        auto v = (float)lat / (float)lats;
+
+        glTexCoord2f( u, v );
+
+        auto lo = (float)(2.0*M_PI) * u;
+        auto la = (float)(2.0*M_PI) * v;
+
+        float vec[3] {
             cos(lo)*sin(la),
             sin(lo)*sin(la),
             cos(la)
         };
 
-        glNormal3fv(v);
+        glNormal3fv(vec);
 
-        for (auto &x : v) x *= (float)r;
-        glVertex3fv(v);
+        for (auto &x : vec) x *= (float)r;
+        glVertex3fv(vec);
     };
 
     /* this is probably doing almost exactly the same thing as gluSphere */
@@ -170,6 +186,25 @@ CGameEngine::~CGameEngine()
 	GLUtil()->Cleanup();
 }
 
+//==================================================================
+static void setProjectionMatrix()
+{
+    auto fov = 45.0;
+
+    auto ratio_woh =
+        (double)GetGameApp()->GetWidth() /
+        (double)GetGameApp()->GetHeight();
+
+    auto nearr = 0.001;
+    auto farr  = 100.0;
+
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	gluPerspective( fov, ratio_woh, nearr, farr );
+	glMatrixMode(GL_MODELVIEW);
+}
+
+//==================================================================
 void CGameEngine::RenderFrame(int nMilliseconds)
 {
 	// Determine the FPS
@@ -188,14 +223,37 @@ void CGameEngine::RenderFrame(int nMilliseconds)
 	// Move the camera
 	HandleInput(nMilliseconds * 0.001f);
 
+    // se t the projection matrix at every frame
+    setProjectionMatrix();
+
+#if 0
 	m_pBuffer.MakeCurrent();
 	glViewport(0, 0, 1024, 1024);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+#else
+	GLUtil()->MakeCurrent();
+	glViewport(0, 0, GetGameApp()->GetWidth(), GetGameApp()->GetHeight());
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+#endif
 	glPushMatrix();
+
+#if 0
 	glLoadMatrixf(m_3DCamera.GetViewMatrix());
 
 	C3DObject obj;
 	glMultMatrixf(obj.GetModelMatrix(&m_3DCamera));
+#else
+    {
+    const auto mtxCS_WS = m_3DCamera.GetViewMatrix();
+
+	C3DObject obj;
+	const auto mtxWS_LS = obj.GetModelMatrix(&m_3DCamera);
+
+    const auto mtxCS_LS = mtxCS_WS * mtxWS_LS;
+
+	glLoadMatrixf( mtxCS_LS );
+    }
+#endif
 
 	CVector vCamera = m_3DCamera.GetPosition();
 	CVector vUnitCamera = vCamera / vCamera.Magnitude();
@@ -362,7 +420,7 @@ void CGameEngine::RenderFrame(int nMilliseconds)
 
 	GLUtil()->MakeCurrent();
 	glViewport(0, 0, GetGameApp()->GetWidth(), GetGameApp()->GetHeight());
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glDisable(GL_LIGHTING);
 	glPushMatrix();
@@ -372,6 +430,7 @@ void CGameEngine::RenderFrame(int nMilliseconds)
 	glLoadIdentity();
 	glOrtho(0, 1, 0, 1, -1, 1);
 
+#if 0 // TEMP
 	//tTest.Enable();
 	m_pBuffer.BindTexture(m_fExposure, m_bUseHDR);
 	glBegin(GL_QUADS);
@@ -382,6 +441,7 @@ void CGameEngine::RenderFrame(int nMilliseconds)
 	glEnd();
 	m_pBuffer.ReleaseTexture();
 	//tTest.Disable();
+#endif
 
 	glPopMatrix();
 	glMatrixMode(GL_MODELVIEW);
