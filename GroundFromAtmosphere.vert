@@ -6,22 +6,22 @@
 // Copyright (c) 2004 Sean O'Neil
 //
 
-uniform vec3 v3CameraPos;		// The camera's current position
-uniform vec3 v3LightPos;		// The direction vector to the light source
-uniform vec3 v3InvWavelength;	// 1 / pow(wavelength, 4) for the red, green, and blue channels
-uniform float fCameraHeight;	// The camera's current height
-uniform float fCameraHeight2;	// fCameraHeight^2
-uniform float fOuterRadius;		// The outer (atmosphere) radius
-uniform float fOuterRadius2;	// fOuterRadius^2
-uniform float fInnerRadius;		// The inner (planetary) radius
-uniform float fInnerRadius2;	// fInnerRadius^2
-uniform float fKrESun;			// Kr * ESun
-uniform float fKmESun;			// Km * ESun
-uniform float fKr4PI;			// Kr * 4 * PI
-uniform float fKm4PI;			// Km * 4 * PI
-uniform float fScale;			// 1 / (fOuterRadius - fInnerRadius)
-uniform float fScaleDepth;		// The scale depth (i.e. the altitude at which the atmosphere's average density is found)
-uniform float fScaleOverScaleDepth;	// fScale / fScaleDepth
+uniform vec3  u_CameraPos;      // The camera's current position
+uniform vec3  u_LightPos;       // The direction vector to the light source
+uniform vec3  u_InvWavelength;  // 1 / pow(wavelength, 4) for the red, green, and blue channels
+uniform float u_CameraHeight;   // The camera's current height
+uniform float u_CameraHeight2;  // u_CameraHeight^2
+uniform float u_OuterRadius;    // The outer (atmosphere) radius
+uniform float u_OuterRadius2;   // u_OuterRadius^2
+uniform float u_InnerRadius;    // The inner (planetary) radius
+uniform float u_InnerRadius2;   // u_InnerRadius^2
+uniform float u_KrESun;         // Kr * ESun
+uniform float u_KmESun;         // Km * ESun
+uniform float u_Kr4PI;          // Kr * 4 * PI
+uniform float u_Km4PI;          // Km * 4 * PI
+uniform float u_Scale;          // 1 / (u_OuterRadius - u_InnerRadius)
+uniform float u_ScaleDepth;     // The scale depth (i.e. the altitude at which the atmosphere's average density is found)
+uniform float u_ScaleOverScaleDepth; // u_Scale / u_ScaleDepth
 
 const int nSamples = 2;
 const float fSamples = 2.0;
@@ -30,22 +30,22 @@ const float fSamples = 2.0;
 float scale(float fCos)
 {
 	float x = 1.0 - fCos;
-	return fScaleDepth * exp(-0.00287 + x*(0.459 + x*(3.83 + x*(-6.80 + x*5.25))));
+	return u_ScaleDepth * exp(-0.00287 + x*(0.459 + x*(3.83 + x*(-6.80 + x*5.25))));
 }
 
 void main(void)
 {
 	// Get the ray from the camera to the vertex, and its length (which is the far point of the ray passing through the atmosphere)
 	vec3 v3Pos = gl_Vertex.xyz;
-	vec3 v3Ray = v3Pos - v3CameraPos;
+	vec3 v3Ray = v3Pos - u_CameraPos;
 	float fFar = length(v3Ray);
 	v3Ray /= fFar;
 
 	// Calculate the ray's starting position, then calculate its scattering offset
-	vec3 v3Start = v3CameraPos;
-	float fDepth = exp((fInnerRadius - fCameraHeight) / fScaleDepth);
+	vec3 v3Start = u_CameraPos;
+	float fDepth = exp((u_InnerRadius - u_CameraHeight) / u_ScaleDepth);
 	float fCameraAngle = dot(-v3Ray, v3Pos) / length(v3Pos);
-	float fLightAngle = dot(v3LightPos, v3Pos) / length(v3Pos);
+	float fLightAngle = dot(u_LightPos, v3Pos) / length(v3Pos);
 	float fCameraScale = scale(fCameraAngle);
 	float fLightScale = scale(fLightAngle);
 	float fCameraOffset = fDepth*fCameraScale;
@@ -53,7 +53,7 @@ void main(void)
 
 	// Initialize the scattering loop variables
 	float fSampleLength = fFar / fSamples;
-	float fScaledLength = fSampleLength * fScale;
+	float fScaledLength = fSampleLength * u_Scale;
 	vec3 v3SampleRay = v3Ray * fSampleLength;
 	vec3 v3SamplePoint = v3Start + v3SampleRay * 0.5;
 
@@ -63,14 +63,14 @@ void main(void)
 	for(int i=0; i<nSamples; i++)
 	{
 		float fHeight = length(v3SamplePoint);
-		float fDepth = exp(fScaleOverScaleDepth * (fInnerRadius - fHeight));
+		float fDepth = exp(u_ScaleOverScaleDepth * (u_InnerRadius - fHeight));
 		float fScatter = fDepth*fTemp - fCameraOffset;
-		v3Attenuate = exp(-fScatter * (v3InvWavelength * fKr4PI + fKm4PI));
+		v3Attenuate = exp(-fScatter * (u_InvWavelength * u_Kr4PI + u_Km4PI));
 		v3FrontColor += v3Attenuate * (fDepth * fScaledLength);
 		v3SamplePoint += v3SampleRay;
 	}
 
-	gl_FrontColor.rgb = v3FrontColor * (v3InvWavelength * fKrESun + fKmESun);
+	gl_FrontColor.rgb = v3FrontColor * (u_InvWavelength * u_KrESun + u_KmESun);
 
 	// Calculate the attenuation factor for the ground
 	gl_FrontSecondaryColor.rgb = v3Attenuate;
