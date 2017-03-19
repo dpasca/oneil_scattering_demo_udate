@@ -6,12 +6,21 @@
 // Copyright (c) 2004 Sean O'Neil
 //
 
-//uniform sampler2D s2Tex1;
-//uniform sampler2D s2Tex2;
+//#define ENABLE_TEXTURE
 
+#ifdef ENABLE_TEXTURE
+uniform sampler2D s2Tex1;
+uniform sampler2D s2Tex2;
+#endif
 
 void main (void)
 {
+#ifdef ENABLE_TEXTURE
+	gl_FragColor = gl_Color 
+                   texture2D(s2Tex1, gl_TexCoord[0].st) *
+                   texture2D(s2Tex2, gl_TexCoord[1].st) *
+                   gl_SecondaryColor;
+#else
 	gl_FragColor = gl_Color + 0.25 * gl_SecondaryColor;
-	//gl_FragColor = gl_Color + texture2D(s2Tex1, gl_TexCoord[0].st) * texture2D(s2Tex2, gl_TexCoord[1].st) * gl_SecondaryColor;
+#endif
 }
