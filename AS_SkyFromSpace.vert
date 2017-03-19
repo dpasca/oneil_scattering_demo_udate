@@ -52,12 +52,17 @@ void main(void)
 	vec3 v3FrontColor = vec3(0.0, 0.0, 0.0);
 	for(int i=0; i<nSamples; i++)
 	{
-		float fHeight = length(v3SamplePoint);
-		float fDepth = exp(u_ScaleOverScaleDepth * (u_InnerRadius - fHeight));
-		float fLightAngle = dot(u_LightPos, v3SamplePoint) / fHeight;
-		float fCameraAngle = dot(v3Ray, v3SamplePoint) / fHeight;
-		float fScatter = (fStartOffset + fDepth*(scale(fLightAngle) - scale(fCameraAngle)));
-		vec3 v3Attenuate = exp(-fScatter * (u_InvWavelength * u_Kr4PI + u_Km4PI));
+		float fHeight       = length(v3SamplePoint);
+		float fDepth        = exp(u_ScaleOverScaleDepth * (u_InnerRadius - fHeight));
+		float fLightAngle   = dot(u_LightPos, v3SamplePoint) / fHeight;
+		float fCameraAngle  = dot(v3Ray, v3SamplePoint) / fHeight;
+
+		float fScatter      = (fStartOffset +
+                                    fDepth * (scale(fLightAngle) -
+                                              scale(fCameraAngle)));
+
+		vec3 v3Attenuate    = exp(-fScatter * (u_InvWavelength * u_Kr4PI + u_Km4PI));
+
 		v3FrontColor += v3Attenuate * (fDepth * fScaledLength);
 		v3SamplePoint += v3SampleRay;
 	}
