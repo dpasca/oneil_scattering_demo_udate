@@ -24,7 +24,7 @@ void main(void)
 
 	// Calculate the farther intersection of the ray with the outer atmosphere (which is the far point of the ray passing through the atmosphere)
 	float B = 2.0 * dot(u_CameraPos, v3Ray);
-	float C = u_CameraHeight2 - u_OuterRadius2;
+	float C = (u_CameraHeight * u_CameraHeight) - (u_OuterRadius * u_OuterRadius);
 	float fDet = max(0.0, B*B - 4.0 * C);
 	fFar = 0.5 * (-B + sqrt(fDet));
 	float fNear = 0.5 * (-B - sqrt(fDet));
