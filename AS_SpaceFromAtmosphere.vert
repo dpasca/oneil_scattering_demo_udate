@@ -6,7 +6,7 @@
 // Copyright (c) 2004 Sean O'Neil
 //
 
-//#include "AS_Uniforms.glsl"
+//#include "AS_Common.glsl"
 
 float scale(float fCos)
 {

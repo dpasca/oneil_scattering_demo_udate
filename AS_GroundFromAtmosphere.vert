@@ -6,7 +6,7 @@
 // Copyright (c) 2004 Sean O'Neil
 //
 
-//#include "AS_Uniforms.glsl"
+//#include "AS_Common.glsl"
 
 const int nSamples = 2;
 const float fSamples = 2.0;

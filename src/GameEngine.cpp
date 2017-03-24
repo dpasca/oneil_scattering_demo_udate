@@ -164,7 +164,7 @@ CGameEngine::CGameEngine()
     auto loadASShader = [this]( CShaderObject &so, const std::string &srcBaseName )
     {
         so.LoadFromFile(
-                "AS_Uniforms.glsl",
+                "AS_Common.glsl",
                 srcBaseName + ".vert",
                 srcBaseName + ".frag" );
     };

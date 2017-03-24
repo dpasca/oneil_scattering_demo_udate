@@ -6,7 +6,7 @@
 // Copyright (c) 2004 Sean O'Neil
 //
 
-//#include "AS_Uniforms.h"
+//#include "AS_Common.h"
 
 const int   SAMPLES_N = 2;
 const float SAMPLES_F = 2.0;
