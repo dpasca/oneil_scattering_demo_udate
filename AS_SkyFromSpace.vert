@@ -11,7 +11,7 @@
 const int   SAMPLES_N = 2;
 const float SAMPLES_F = 2.0;
 
-varying vec3 v3Direction;
+varying vec3 v_PosToCam;
 
 
 float scale(float fCos)
@@ -73,6 +73,6 @@ void main(void)
 
 	gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;
 
-	v3Direction = u_CameraPos - pos;
+	v_PosToCam = u_CameraPos - pos;
 }
 

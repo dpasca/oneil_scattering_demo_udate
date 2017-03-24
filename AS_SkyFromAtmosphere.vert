@@ -11,7 +11,7 @@
 const int nSamples = 2;
 const float fSamples = 2.0;
 
-varying vec3 v3Direction;
+varying vec3 v_PosToCam;
 
 
 float scale(float fCos)
@@ -60,5 +60,5 @@ void main(void)
 	gl_FrontSecondaryColor.rgb = v3FrontColor * u_KmESun;
 	gl_FrontColor.rgb = v3FrontColor * (u_InvWavelength * u_KrESun);
 	gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;
-	v3Direction = u_CameraPos - v3Pos;
+	v_PosToCam = u_CameraPos - v3Pos;
 }

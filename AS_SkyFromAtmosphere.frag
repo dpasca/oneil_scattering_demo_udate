@@ -8,12 +8,12 @@
 
 //#include "AS_Uniforms.h"
 
-varying vec3 v3Direction;
+varying vec3 v_PosToCam;
 
 
 void main (void)
 {
-	float fCos = dot(u_LightPos, v3Direction) / length(v3Direction);
+	float fCos = dot(u_LightPos, v_PosToCam) / length(v_PosToCam);
 
 	float fMiePhase =
                 1.5 * ((1.0 - u_g2) / (2.0 + u_g2)) *
