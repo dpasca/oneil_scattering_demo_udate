@@ -283,7 +283,7 @@ void CGameEngine::RenderFrame(int nMilliseconds)
 	{
 		pSpaceShader->Enable();
 		pSpaceShader->SetUniformParameter3f("u_CameraPos", vCamera.x, vCamera.y, vCamera.z);
-		pSpaceShader->SetUniformParameter3f("u_LightPos", m_vLightDirection.x, m_vLightDirection.y, m_vLightDirection.z);
+		pSpaceShader->SetUniformParameter3f("u_LightDir", m_vLightDirection.x, m_vLightDirection.y, m_vLightDirection.z);
 		pSpaceShader->SetUniformParameter3f("u_InvWavelength", 1/m_fWavelength4[0], 1/m_fWavelength4[1], 1/m_fWavelength4[2]);
 		pSpaceShader->SetUniformParameter1f("u_CameraHeight", vCamera.Magnitude());
 		pSpaceShader->SetUniformParameter1f("u_CameraHeight2", vCamera.MagnitudeSquared());
@@ -330,7 +330,7 @@ void CGameEngine::RenderFrame(int nMilliseconds)
 
 	pGroundShader->Enable();
 	pGroundShader->SetUniformParameter3f("u_CameraPos", vCamera.x, vCamera.y, vCamera.z);
-	pGroundShader->SetUniformParameter3f("u_LightPos", m_vLightDirection.x, m_vLightDirection.y, m_vLightDirection.z);
+	pGroundShader->SetUniformParameter3f("u_LightDir", m_vLightDirection.x, m_vLightDirection.y, m_vLightDirection.z);
 	pGroundShader->SetUniformParameter3f("u_InvWavelength", 1/m_fWavelength4[0], 1/m_fWavelength4[1], 1/m_fWavelength4[2]);
 	pGroundShader->SetUniformParameter1f("u_CameraHeight", vCamera.Magnitude());
 	pGroundShader->SetUniformParameter1f("u_CameraHeight2", vCamera.MagnitudeSquared());
@@ -355,7 +355,7 @@ void CGameEngine::RenderFrame(int nMilliseconds)
 		// Try setting the moon as a light source
 		CVector vLightDir = CVector(0.0f, 0.0f, -50.0f) - vCamera;
 		vLightDir.Normalize();
-		pGroundShader->SetUniformParameter3f("u_LightPos", vLightDir.x, vLightDir.y, vLightDir.z);
+		pGroundShader->SetUniformParameter3f("u_LightDir", vLightDir.x, vLightDir.y, vLightDir.z);
 		pGroundShader->SetUniformParameter1f("u_KrESun", m_Kr*m_ESun*0.1f);
 		pGroundShader->SetUniformParameter1f("u_KmESun", 10.0f*m_Km*m_ESun*0.1f);
 		pGroundShader->SetUniformParameter1f("u_g", -0.75f);
@@ -385,7 +385,7 @@ void CGameEngine::RenderFrame(int nMilliseconds)
 
 	pSkyShader->Enable();
 	pSkyShader->SetUniformParameter3f("u_CameraPos", vCamera.x, vCamera.y, vCamera.z);
-	pSkyShader->SetUniformParameter3f("u_LightPos", m_vLightDirection.x, m_vLightDirection.y, m_vLightDirection.z);
+	pSkyShader->SetUniformParameter3f("u_LightDir", m_vLightDirection.x, m_vLightDirection.y, m_vLightDirection.z);
 	pSkyShader->SetUniformParameter3f("u_InvWavelength", 1/m_fWavelength4[0], 1/m_fWavelength4[1], 1/m_fWavelength4[2]);
 	pSkyShader->SetUniformParameter1f("u_CameraHeight", vCamera.Magnitude());
 	pSkyShader->SetUniformParameter1f("u_CameraHeight2", vCamera.MagnitudeSquared());
@@ -409,7 +409,7 @@ void CGameEngine::RenderFrame(int nMilliseconds)
 		// Try setting the moon as a light source
 		CVector vLightDir = CVector(0.0f, 0.0f, -50.0f) - vCamera;
 		vLightDir.Normalize();
-		pSkyShader->SetUniformParameter3f("u_LightPos", vLightDir.x, vLightDir.y, vLightDir.z);
+		pSkyShader->SetUniformParameter3f("u_LightDir", vLightDir.x, vLightDir.y, vLightDir.z);
 		pSkyShader->SetUniformParameter1f("u_KrESun", m_Kr*m_ESun*0.1f);
 		pSkyShader->SetUniformParameter1f("u_KmESun", 10.0f*m_Km*m_ESun*0.1f);
 		pSkyShader->SetUniformParameter1f("u_g", -0.75f);

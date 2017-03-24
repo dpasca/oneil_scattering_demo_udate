@@ -48,7 +48,7 @@ void main(void)
 	{
 		float fHeight = length(v3SamplePoint);
 		float fDepth = exp(u_ScaleOverScaleDepth * (u_InnerRadius - fHeight));
-		float fLightAngle = dot(u_LightPos, v3SamplePoint) / fHeight;
+		float fLightAngle = dot(u_LightDir, v3SamplePoint) / fHeight;
 		float fCameraAngle = dot(v3Ray, v3SamplePoint) / fHeight;
 		float fScatter = (fStartOffset + fDepth*(scale(fLightAngle) - scale(fCameraAngle)));
 		vec3 v3Attenuate = exp(-fScatter * (u_InvWavelength * u_Kr4PI + u_Km4PI));

@@ -30,7 +30,7 @@ void main(void)
 	vec3 v3Start = u_CameraPos;
 	float fDepth = exp((u_InnerRadius - u_CameraHeight) / u_ScaleDepth);
 	float fCameraAngle = dot(-v3Ray, v3Pos) / length(v3Pos);
-	float fLightAngle = dot(u_LightPos, v3Pos) / length(v3Pos);
+	float fLightAngle = dot(u_LightDir, v3Pos) / length(v3Pos);
 	float fCameraScale = scale(fCameraAngle);
 	float fLightScale = scale(fLightAngle);
 	float fCameraOffset = fDepth*fCameraScale;

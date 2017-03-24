@@ -54,7 +54,7 @@ void main(void)
 	{
 		float height      = length(samplePoint);
 		float depth       = exp(u_ScaleOverScaleDepth * (u_InnerRadius - height));
-		float lightAngle  = dot(u_LightPos, samplePoint) / height;
+		float lightAngle  = dot(u_LightDir, samplePoint) / height;
 		float cameraAngle = dot(ray, samplePoint) / height;
 
 		float scatter     = startOffset +

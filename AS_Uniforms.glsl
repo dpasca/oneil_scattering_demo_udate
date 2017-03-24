@@ -8,7 +8,7 @@
 // Modified by Davide Pasca (2017)
 
 uniform vec3  u_CameraPos;      // The camera's current position
-uniform vec3  u_LightPos;       // The direction vector to the light source
+uniform vec3  u_LightDir;       // The direction vector to the light source
 uniform vec3  u_InvWavelength;  // 1 / pow(wavelength, 4) for the red, green, and blue channels
 uniform float u_CameraHeight;   // The camera's current height
 uniform float u_CameraHeight2;  // u_CameraHeight^2
