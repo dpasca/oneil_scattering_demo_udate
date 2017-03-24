@@ -8,12 +8,6 @@
 
 //#include "AS_Common.glsl"
 
-float scale(float fCos)
-{
-	float x = 1.0 - fCos;
-	return u_ScaleDepth * exp(-0.00287 + x*(0.459 + x*(3.83 + x*(-6.80 + x*5.25))));
-}
-
 void main(void)
 {
 	// Get the ray from the camera to the vertex and its length
@@ -36,7 +30,7 @@ void main(void)
 	float fHeight = length(v3Start);
 	float fDepth = exp(u_ScaleOverScaleDepth * (u_InnerRadius - u_CameraHeight));
 	float fAngle = dot(v3Ray, v3Start) / fHeight;
-	float fScatter = fDepth*scale(fAngle);
+	float fScatter = fDepth * AS_Scale( fAngle );
 	gl_FrontSecondaryColor.rgb = exp(-fScatter * (u_InvWavelength * u_Kr4PI + u_Km4PI));
 
 	gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;

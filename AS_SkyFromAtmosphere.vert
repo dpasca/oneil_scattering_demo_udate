@@ -8,17 +8,7 @@
 
 //#include "AS_Common.glsl"
 
-const int nSamples = 2;
-const float fSamples = 2.0;
-
 varying vec3 v_PosToCam;
-
-
-float scale(float fCos)
-{
-	float x = 1.0 - fCos;
-	return u_ScaleDepth * exp(-0.00287 + x*(0.459 + x*(3.83 + x*(-6.80 + x*5.25))));
-}
 
 void main(void)
 {
@@ -33,24 +23,24 @@ void main(void)
 	float fHeight = length(v3Start);
 	float fDepth = exp(u_ScaleOverScaleDepth * (u_InnerRadius - u_CameraHeight));
 	float fStartAngle = dot(v3Ray, v3Start) / fHeight;
-	float fStartOffset = fDepth*scale(fStartAngle);
+	float fStartOffset = fDepth * AS_Scale( fStartAngle );
 
 	// Initialize the scattering loop variables
 	//gl_FrontColor = vec4(0.0, 0.0, 0.0, 0.0);
-	float fSampleLength = fFar / fSamples;
+	float fSampleLength = fFar / SAMPLES_F;
 	float fScaledLength = fSampleLength * u_Scale;
 	vec3 v3SampleRay = v3Ray * fSampleLength;
 	vec3 v3SamplePoint = v3Start + v3SampleRay * 0.5;
 
 	// Now loop through the sample rays
 	vec3 v3FrontColor = vec3(0.0, 0.0, 0.0);
-	for(int i=0; i<nSamples; i++)
+	for(int i=0; i < SAMPLES_N; ++i)
 	{
 		float fHeight = length(v3SamplePoint);
 		float fDepth = exp(u_ScaleOverScaleDepth * (u_InnerRadius - fHeight));
 		float fLightAngle = dot(u_LightDir, v3SamplePoint) / fHeight;
 		float fCameraAngle = dot(v3Ray, v3SamplePoint) / fHeight;
-		float fScatter = (fStartOffset + fDepth*(scale(fLightAngle) - scale(fCameraAngle)));
+		float fScatter = (fStartOffset + fDepth*(AS_Scale(fLightAngle) - AS_Scale(fCameraAngle)));
 		vec3 v3Attenuate = exp(-fScatter * (u_InvWavelength * u_Kr4PI + u_Km4PI));
 		v3FrontColor += v3Attenuate * (fDepth * fScaledLength);
 		v3SamplePoint += v3SampleRay;

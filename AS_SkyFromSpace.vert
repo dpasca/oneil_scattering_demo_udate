@@ -8,17 +8,7 @@
 
 //#include "AS_Common.h"
 
-const int   SAMPLES_N = 2;
-const float SAMPLES_F = 2.0;
-
 varying vec3 v_PosToCam;
-
-
-float scale(float fCos)
-{
-	float x = 1.0 - fCos;
-	return u_ScaleDepth * exp(-0.00287 + x*(0.459 + x*(3.83 + x*(-6.80 + x*5.25))));
-}
 
 void main(void)
 {
@@ -39,7 +29,7 @@ void main(void)
 	far -= near;
 	float startAngle = dot(ray, start) / u_OuterRadius;
 	float startDepth = exp(-1.0 / u_ScaleDepth);
-	float startOffset = startDepth * scale(startAngle);
+	float startOffset = startDepth * AS_Scale( startAngle );
 
 	// Initialize the scattering loop variables
 	//gl_FrontColor = vec4(0.0, 0.0, 0.0, 0.0);
@@ -58,8 +48,8 @@ void main(void)
 		float cameraAngle = dot(ray, samplePoint) / height;
 
 		float scatter     = startOffset +
-                                    depth * (scale(lightAngle) -
-                                             scale(cameraAngle));
+                                    depth * (AS_Scale( lightAngle ) -
+                                             AS_Scale( cameraAngle ));
 
 		vec3 attenuate    = exp(-scatter * (u_InvWavelength * u_Kr4PI + u_Km4PI));
 

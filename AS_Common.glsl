@@ -23,6 +23,19 @@ uniform float u_ScaleOverScaleDepth; // u_Scale / u_ScaleDepth
 
 uniform float u_g;
 
+const int   SAMPLES_N = 2;
+const float SAMPLES_F = 2.0;
+
+//==================================================================
+float AS_Scale( float cosA )
+{
+	float x = 1.0 - cosA;
+
+	return
+        u_ScaleDepth *
+            exp( -0.00287 + x*(0.459 + x*(3.83 + x*(-6.80 + x*5.25))) );
+}
+
 //==================================================================
 float AS_CalcMiePhase( float cosA, float g )
 {
