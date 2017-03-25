@@ -28,7 +28,7 @@ void main(void)
                                 u_OuterRadius * u_OuterRadius );
 
     vec3 attenuation = vec3(0.0 ,0.0, 0.0);
-    vec3 frontColor = AS_RaytraceScatterGround(
+    vec3 groundCol = AS_RaytraceScatterGround(
                             pos,
                             raySta,
                             rayDir,
@@ -37,9 +37,7 @@ void main(void)
                             near,
                             attenuation );
 
-	gl_FrontColor.rgb = frontColor * (u_InvWavelength * u_KrESun + u_KmESun);
-
-	// Calculate the attenuation factor for the ground
+	gl_FrontColor.rgb = groundCol;
 	gl_FrontSecondaryColor.rgb = attenuation;
 
 	gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;

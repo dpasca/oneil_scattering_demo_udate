@@ -188,7 +188,7 @@ vec3 AS_RaytraceScatterGround(
     }
 
 	// Now loop through the sample rays
-	vec3 out_col = vec3(0.0, 0.0, 0.0);
+	vec3 attenIntegr = vec3(0.0, 0.0, 0.0);
 	for(int i=0; i < SAMPLES_N; ++i)
 	{
 		float height = length(samplePoint);
@@ -202,11 +202,11 @@ vec3 AS_RaytraceScatterGround(
         // last attentuation goes to the output
         out_atten = atten;
 
-		out_col += atten * (depth * scaledLength);
+		attenIntegr += atten * (depth * scaledLength);
 
 		samplePoint += sampleRay;
 	}
 
-    return out_col;
+    return attenIntegr * (u_InvWavelength * u_KrESun + u_KmESun);
 }
 
