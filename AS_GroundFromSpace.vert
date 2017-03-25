@@ -13,20 +13,22 @@ void main(void)
 	// Get the ray from the camera to the vertex and its length
     //  (which is the far point of the ray passing through the atmosphere)
 	vec3 pos = gl_Vertex.xyz;
-	vec3 ray = pos - u_CameraPos;
-	float rayLength = length(ray);
-	ray /= rayLength;
+	vec3 rayDir = pos - u_CameraPos;
+	float rayLength = length(rayDir);
+	rayDir /= rayLength;
 
-	// Calculate the closest intersection of the ray with the outer atmosphere (which is the near point of the ray passing through the atmosphere)
-	float B = 2.0 * dot(u_CameraPos, ray);
-	float C = (u_CameraHeight * u_CameraHeight) - (u_OuterRadius * u_OuterRadius);
-	float det = max(0.0, B*B - 4.0 * C);
-	float near = 0.5 * (-B - sqrt(det));
+	// Calculate the closest intersection of the ray with the outer atmosphere
+    // (which is the near point of the ray passing through the atmosphere)
+    float near = AS_CalcRaySphereClosestInters(
+                                u_CameraPos, // ray start position
+                                rayDir,
+                                vec3(0.0, 0.0, 0.0), // sphere at origin
+                                u_OuterRadius * u_OuterRadius );
 
     vec3 attenuation = vec3(0.0 ,0.0, 0.0);
     vec3 frontColor = AS_RaytraceScatterGround(
                             pos,
-                            ray,
+                            rayDir,
                             u_OuterRadius,
                             near,
                             rayLength,

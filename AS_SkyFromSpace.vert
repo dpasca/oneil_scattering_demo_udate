@@ -14,28 +14,31 @@ void main(void)
 {
 	// Get the ray from the camera to the vertex and its length (which is the far point of the ray passing through the atmosphere)
 	vec3 pos = gl_Vertex.xyz;
-	vec3 ray = pos - u_CameraPos;
-	float far = length(ray);
-	ray /= far;
+    vec3 raySta = u_CameraPos;
+	vec3 rayDir = pos - raySta;
+	float rayLength = length(rayDir);
+	rayDir /= rayLength;
 
-	// Calculate the closest intersection of the ray with the outer atmosphere (which is the near point of the ray passing through the atmosphere)
-	float B = 2.0 * dot(u_CameraPos, ray);
-	float C = (u_CameraHeight * u_CameraHeight) - (u_OuterRadius * u_OuterRadius);
-	float det = max(0.0, B*B - 4.0 * C);
-	float near = 0.5 * (-B - sqrt(det));
+	// Calculate the closest intersection of the ray with the outer atmosphere
+    // (which is the near point of the ray passing through the atmosphere)
+    float near = AS_CalcRaySphereClosestInters(
+                                raySta,
+                                rayDir,
+                                vec3(0.0, 0.0, 0.0), // sphere at origin
+                                u_OuterRadius * u_OuterRadius );
 
 	// Calculate the ray's starting position, then calculate its scattering offset
-	vec3 start = u_CameraPos + ray * near;
-	far -= near;
-	float startAngle = dot(ray, start) / u_OuterRadius;
+	vec3 start = raySta + rayDir * near;
+    float segmentLength = rayLength - near;
+	float startAngle = dot(rayDir, start) / u_OuterRadius;
 	float startDepth = exp(-1.0 / u_ScaleDepth);
 	float startOffset = startDepth * AS_Scale( startAngle );
 
 	// Initialize the scattering loop variables
 	//gl_FrontColor = vec4(0.0, 0.0, 0.0, 0.0);
-	float sampleLength = far / SAMPLES_F;
+	float sampleLength = segmentLength / SAMPLES_F;
 	float scaledLength = sampleLength * u_Scale;
-	vec3 sampleRay = ray * sampleLength;
+	vec3 sampleRay = rayDir * sampleLength;
 	vec3 samplePoint = start + sampleRay * 0.5;
 
 	// Now loop through the sample rays
@@ -43,7 +46,7 @@ void main(void)
                             samplePoint,
                             startOffset,
                             scaledLength,
-                            ray,
+                            rayDir,
                             sampleRay );
 
 	// Finally, scale the Mie and Rayleigh colors and set up the varying variables for the pixel shader
@@ -52,6 +55,6 @@ void main(void)
 
 	gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;
 
-	v_PosToCam = u_CameraPos - pos;
+	v_PosToCam = raySta - pos;
 }
 

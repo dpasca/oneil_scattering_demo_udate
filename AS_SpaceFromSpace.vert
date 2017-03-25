@@ -12,24 +12,23 @@ void main(void)
 {
 	// Get the ray from the camera to the vertex and its length
 	vec3 pos = gl_Vertex.xyz;
-	vec3 ray = pos - u_CameraPos;
-	float far = length(ray);
-	ray /= far;
+    vec3 raySta = u_CameraPos;
+	vec3 rayDir = normalize( pos - raySta );
 
-	// Calculate the farther intersection of the ray with the outer atmosphere (which is the far point of the ray passing through the atmosphere)
-	float B = 2.0 * dot(u_CameraPos, ray);
-	float C = (u_CameraHeight * u_CameraHeight) - (u_OuterRadius * u_OuterRadius);
-	float det = max(0.0, B*B - 4.0 * C);
-	far = 0.5 * (-B + sqrt(det));
-	float near = 0.5 * (-B - sqrt(det));
+	// Calculate the farther intersection of the ray with the outer atmosphere
+    // (which is the far point of the ray passing through the atmosphere)
+    float near = AS_CalcRaySphereClosestInters(
+                        raySta,
+                        rayDir,
+                        vec3(0.0, 0.0, 0.0), // sphere at origin
+                        u_OuterRadius * u_OuterRadius );
 
-	vec3 start = u_CameraPos + ray*near;
-	far -= near;
+	vec3 start = raySta + rayDir*near;
 
 	// Calculate attenuation from the camera to the top of the atmosphere toward the vertex
 	float height = length(start);
 	float depth = exp(u_ScaleOverScaleDepth * (u_InnerRadius - u_CameraHeight));
-	float angle = dot(ray, start) / height;
+	float angle = dot(rayDir, start) / height;
 	float scatter = depth * AS_Scale( angle );
 	gl_FrontSecondaryColor.rgb = exp(-scatter * (u_InvWavelength * u_Kr4PI + u_Km4PI));
 
