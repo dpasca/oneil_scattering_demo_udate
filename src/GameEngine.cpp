@@ -95,14 +95,53 @@ static void drawSphere(double r, int longs, int lats)
 }
 #endif
 
+//==================================================================
+static void setASUniforms(
+                AS_State &state,
+                CShaderObject *pShader,
+                const CVector &camPos,
+                const CVector &lightDir )
+{
+	pShader->SetUniformParameter3f(
+                "u_CameraPos",
+                camPos.x,
+                camPos.y,
+                camPos.z );
+
+	pShader->SetUniformParameter3f(
+                "u_LightDir",
+                lightDir.x,
+                lightDir.y,
+                lightDir.z );
+
+	pShader->SetUniformParameter3f(
+                "u_InvWavelength",
+                1 / state.m_fWavelength4[0],
+                1 / state.m_fWavelength4[1],
+                1 / state.m_fWavelength4[2] );
+
+	pShader->SetUniformParameter1f("u_InnerRadius", state.m_fInnerRadius);
+	pShader->SetUniformParameter1f("u_OuterRadius", state.m_fOuterRadius);
+	pShader->SetUniformParameter1f("u_KrESun", state.m_Kr * state.m_ESun);
+	pShader->SetUniformParameter1f("u_KmESun", state.m_Km * state.m_ESun);
+    pShader->SetUniformParameter1f("u_Kr4PI", state.m_Kr * 4.0f * PI );
+    pShader->SetUniformParameter1f("u_Km4PI", state.m_Km * 4.0f * PI );
+	pShader->SetUniformParameter1f("u_Scale", 1.0f / (state.m_fOuterRadius - state.m_fInnerRadius));
+	pShader->SetUniformParameter1f("u_ScaleDepth", state.m_fRayleighScaleDepth);
+
+	pShader->SetUniformParameter1f("u_ScaleOverScaleDepth",
+            (1.0f / (state.m_fOuterRadius - state.m_fInnerRadius))
+                / state.m_fRayleighScaleDepth);
+
+	pShader->SetUniformParameter1f("u_g", state.m_g);
+}
+
+//==================================================================
 CGameEngine::CGameEngine()
 {
-	m_bUseHDR = true;
-
 	//GetApp()->MessageBox((const char *)glGetString(GL_EXTENSIONS));
 	GLUtil()->Init();
 	m_fFont.Init(GetGameApp()->GetHDC());
-	m_nPolygonMode = GL_FILL;
 
 	m_pBuffer.Init(1024, 1024, 0);
 	m_pBuffer.MakeCurrent();
@@ -137,28 +176,13 @@ CGameEngine::CGameEngine()
 	CTexture::InitStaticMembers(238653, 256);
 
 	m_nSamples = 3;		// Number of sample rays to use in integral equation
-	m_Kr = 0.0025f;		// Rayleigh scattering constant
-	m_Kr4PI = m_Kr*4.0f*PI;
-	m_Km = 0.0010f;		// Mie scattering constant
-	m_Km4PI = m_Km*4.0f*PI;
-	m_ESun = 20.0f;		// Sun brightness constant
-	m_g = -0.990f;		// The Mie phase asymmetry factor
 	m_fExposure = 2.0f;
 
-	m_fInnerRadius = 10.0f;
-	m_fOuterRadius = 10.25f;
-	m_fScale = 1 / (m_fOuterRadius - m_fInnerRadius);
-
-	m_fWavelength[0] = 0.650f;		// 650 nm for red
-	m_fWavelength[1] = 0.570f;		// 570 nm for green
-	m_fWavelength[2] = 0.475f;		// 475 nm for blue
-	m_fWavelength4[0] = powf(m_fWavelength[0], 4.0f);
-	m_fWavelength4[1] = powf(m_fWavelength[1], 4.0f);
-	m_fWavelength4[2] = powf(m_fWavelength[2], 4.0f);
-
-	m_fRayleighScaleDepth = 0.25f;
-	m_fMieScaleDepth = 0.1f;
-	m_pbOpticalDepth.MakeOpticalDepthBuffer(m_fInnerRadius, m_fOuterRadius, m_fRayleighScaleDepth, m_fMieScaleDepth);
+	m_pbOpticalDepth.MakeOpticalDepthBuffer(
+        m_ASState.m_fInnerRadius,
+        m_ASState.m_fOuterRadius,
+        m_ASState.m_fRayleighScaleDepth,
+        m_ASState.m_fMieScaleDepth);
 
     //
     auto loadASShader = [this]( CShaderObject &so, const std::string &srcBaseName )
@@ -273,7 +297,7 @@ void CGameEngine::RenderFrame(int nMilliseconds)
 	const auto camPos = (CVector)m_3DCamera.GetPosition();
 
 	CShaderObject *pSpaceShader = NULL;
-	if(camPos.Magnitude() < m_fOuterRadius)
+	if(camPos.Magnitude() < m_ASState.m_fOuterRadius)
 		pSpaceShader = &m_shSpaceFromAtmosphere;
 	else if(camPos.z > 0.0f)
 		pSpaceShader = &m_shSpaceFromSpace;
@@ -281,19 +305,9 @@ void CGameEngine::RenderFrame(int nMilliseconds)
 	if(pSpaceShader)
 	{
 		pSpaceShader->Enable();
-		pSpaceShader->SetUniformParameter3f("u_CameraPos", camPos.x, camPos.y, camPos.z);
-		pSpaceShader->SetUniformParameter3f("u_LightDir", m_vLightDirection.x, m_vLightDirection.y, m_vLightDirection.z);
-		pSpaceShader->SetUniformParameter3f("u_InvWavelength", 1/m_fWavelength4[0], 1/m_fWavelength4[1], 1/m_fWavelength4[2]);
-		pSpaceShader->SetUniformParameter1f("u_InnerRadius", m_fInnerRadius);
-		pSpaceShader->SetUniformParameter1f("u_OuterRadius", m_fOuterRadius);
-		pSpaceShader->SetUniformParameter1f("u_KrESun", m_Kr*m_ESun);
-		pSpaceShader->SetUniformParameter1f("u_KmESun", m_Km*m_ESun);
-		pSpaceShader->SetUniformParameter1f("u_Kr4PI", m_Kr4PI);
-		pSpaceShader->SetUniformParameter1f("u_Km4PI", m_Km4PI);
-		pSpaceShader->SetUniformParameter1f("u_Scale", 1.0f / (m_fOuterRadius - m_fInnerRadius));
-		pSpaceShader->SetUniformParameter1f("u_ScaleDepth", m_fRayleighScaleDepth);
-		pSpaceShader->SetUniformParameter1f("u_ScaleOverScaleDepth", (1.0f / (m_fOuterRadius - m_fInnerRadius)) / m_fRayleighScaleDepth);
-		pSpaceShader->SetUniformParameter1f("u_g", m_g);
+
+        setASUniforms( m_ASState, pSpaceShader, camPos, m_vLightDirection );
+
 		pSpaceShader->SetUniformParameter1i("s2Tex1", 0);
 	}
 
@@ -317,26 +331,15 @@ void CGameEngine::RenderFrame(int nMilliseconds)
 		pSpaceShader->Disable();
 
 	CShaderObject *pGroundShader;
-	if(camPos.Magnitude() >= m_fOuterRadius)
+	if(camPos.Magnitude() >= m_ASState.m_fOuterRadius)
 		pGroundShader = &m_shGroundFromSpace;
 	else
 		pGroundShader = &m_shGroundFromAtmosphere;
 
 	pGroundShader->Enable();
-	pGroundShader->SetUniformParameter3f("u_CameraPos", camPos.x, camPos.y, camPos.z);
-	pGroundShader->SetUniformParameter3f("u_LightDir", m_vLightDirection.x, m_vLightDirection.y, m_vLightDirection.z);
-	pGroundShader->SetUniformParameter3f("u_InvWavelength", 1/m_fWavelength4[0], 1/m_fWavelength4[1], 1/m_fWavelength4[2]);
-	pGroundShader->SetUniformParameter1f("u_InnerRadius", m_fInnerRadius);
-	pGroundShader->SetUniformParameter1f("u_OuterRadius", m_fOuterRadius);
-	pGroundShader->SetUniformParameter1f("u_OuterRadius2", m_fOuterRadius*m_fOuterRadius);
-	pGroundShader->SetUniformParameter1f("u_KrESun", m_Kr*m_ESun);
-	pGroundShader->SetUniformParameter1f("u_KmESun", m_Km*m_ESun);
-	pGroundShader->SetUniformParameter1f("u_Kr4PI", m_Kr4PI);
-	pGroundShader->SetUniformParameter1f("u_Km4PI", m_Km4PI);
-	pGroundShader->SetUniformParameter1f("u_Scale", 1.0f / (m_fOuterRadius - m_fInnerRadius));
-	pGroundShader->SetUniformParameter1f("u_ScaleDepth", m_fRayleighScaleDepth);
-	pGroundShader->SetUniformParameter1f("u_ScaleOverScaleDepth", (1.0f / (m_fOuterRadius - m_fInnerRadius)) / m_fRayleighScaleDepth);
-	pGroundShader->SetUniformParameter1f("u_g", m_g);
+
+    setASUniforms( m_ASState, pGroundShader, camPos, m_vLightDirection );
+
 	pGroundShader->SetUniformParameter1i("s2Tex1", 0);
 
 	/*
@@ -359,7 +362,7 @@ void CGameEngine::RenderFrame(int nMilliseconds)
 	drawSphere(m_fInnerRadius, 100, 50);
 #else
 	auto *pSphere = gluNewQuadric();
-	gluSphere(pSphere, m_fInnerRadius, 100, 50);
+	gluSphere(pSphere, m_ASState.m_fInnerRadius, 100, 50);
 	gluDeleteQuadric(pSphere);
 #endif
 	m_tEarth.DisableTexture();
@@ -367,25 +370,14 @@ void CGameEngine::RenderFrame(int nMilliseconds)
 	pGroundShader->Disable();
 
 	CShaderObject *pSkyShader;
-	if(camPos.Magnitude() >= m_fOuterRadius)
+	if(camPos.Magnitude() >= m_ASState.m_fOuterRadius)
 		pSkyShader = &m_shSkyFromSpace;
 	else
 		pSkyShader = &m_shSkyFromAtmosphere;
 
 	pSkyShader->Enable();
-	pSkyShader->SetUniformParameter3f("u_CameraPos", camPos.x, camPos.y, camPos.z);
-	pSkyShader->SetUniformParameter3f("u_LightDir", m_vLightDirection.x, m_vLightDirection.y, m_vLightDirection.z);
-	pSkyShader->SetUniformParameter3f("u_InvWavelength", 1/m_fWavelength4[0], 1/m_fWavelength4[1], 1/m_fWavelength4[2]);
-	pSkyShader->SetUniformParameter1f("u_InnerRadius", m_fInnerRadius);
-	pSkyShader->SetUniformParameter1f("u_OuterRadius", m_fOuterRadius);
-	pSkyShader->SetUniformParameter1f("u_KrESun", m_Kr*m_ESun);
-	pSkyShader->SetUniformParameter1f("u_KmESun", m_Km*m_ESun);
-	pSkyShader->SetUniformParameter1f("u_Kr4PI", m_Kr4PI);
-	pSkyShader->SetUniformParameter1f("u_Km4PI", m_Km4PI);
-	pSkyShader->SetUniformParameter1f("u_Scale", 1.0f / (m_fOuterRadius - m_fInnerRadius));
-	pSkyShader->SetUniformParameter1f("u_ScaleDepth", m_fRayleighScaleDepth);
-	pSkyShader->SetUniformParameter1f("u_ScaleOverScaleDepth", (1.0f / (m_fOuterRadius - m_fInnerRadius)) / m_fRayleighScaleDepth);
-	pSkyShader->SetUniformParameter1f("u_g", m_g);
+
+    setASUniforms( m_ASState, pSkyShader, camPos, m_vLightDirection );
 
 	/*
 	if(camPos.z < 0 && pSkyShader == &m_shSkyFromAtmosphere)
@@ -408,7 +400,7 @@ void CGameEngine::RenderFrame(int nMilliseconds)
 #else
     {
     auto *pSphere = gluNewQuadric();
-	gluSphere(pSphere, m_fOuterRadius, 100, 50);
+	gluSphere(pSphere, m_ASState.m_fOuterRadius, 100, 50);
 	gluDeleteQuadric(pSphere);
     }
 #endif
@@ -465,25 +457,25 @@ void CGameEngine::RenderFrame(int nMilliseconds)
 	sprintf(szBuffer, "Samples (+/-): %d", m_nSamples);
 	m_fFont.Print(szBuffer);
 	m_fFont.SetPosition(0, 30);
-	sprintf(szBuffer, "Kr (1/Sh+1): %-4.4f", m_Kr);
+	sprintf(szBuffer, "Kr (1/Sh+1): %-4.4f", m_ASState.m_Kr);
 	m_fFont.Print(szBuffer);
 	m_fFont.SetPosition(0, 45);
-	sprintf(szBuffer, "Km (2/Sh+2): %-4.4f", m_Km);
+	sprintf(szBuffer, "Km (2/Sh+2): %-4.4f", m_ASState.m_Km);
 	m_fFont.Print(szBuffer);
 	m_fFont.SetPosition(0, 60);
-	sprintf(szBuffer, "g (3/Sh+3): %-3.3f", m_g);
+	sprintf(szBuffer, "g (3/Sh+3): %-3.3f", m_ASState.m_g);
 	m_fFont.Print(szBuffer);
 	m_fFont.SetPosition(0, 75);
-	sprintf(szBuffer, "ESun (4/Sh+4): %-1.1f", m_ESun);
+	sprintf(szBuffer, "ESun (4/Sh+4): %-1.1f", m_ASState.m_ESun);
 	m_fFont.Print(szBuffer);
 	m_fFont.SetPosition(0, 90);
-	sprintf(szBuffer, "Red (5/Sh+5): %-3.3f", m_fWavelength[0]);
+	sprintf(szBuffer, "Red (5/Sh+5): %-3.3f", m_ASState.m_fWavelength[0]);
 	m_fFont.Print(szBuffer);
 	m_fFont.SetPosition(0, 105);
-	sprintf(szBuffer, "Green (6/Sh+6): %-3.3f", m_fWavelength[1]);
+	sprintf(szBuffer, "Green (6/Sh+6): %-3.3f", m_ASState.m_fWavelength[1]);
 	m_fFont.Print(szBuffer);
 	m_fFont.SetPosition(0, 120);
-	sprintf(szBuffer, "Blue (7/Sh+7): %-3.3f", m_fWavelength[2]);
+	sprintf(szBuffer, "Blue (7/Sh+7): %-3.3f", m_ASState.m_fWavelength[2]);
 	m_fFont.Print(szBuffer);
 	m_fFont.SetPosition(0, 135);
 	sprintf(szBuffer, "Exposure (8/Sh+8): %-2.2f", m_fExposure);
@@ -521,52 +513,44 @@ void CGameEngine::HandleInput(float fSeconds)
 
 	if ( isKeyDown( '1' ) )
 	{
-        if ( isKeyDown(VK_SHIFT) ) m_Kr = Max(0.0f, m_Kr - 0.0001f); else
-			                       m_Kr += 0.0001f;
-		m_Kr4PI = m_Kr*4.0f*PI;
+        if ( isKeyDown(VK_SHIFT) ) m_ASState.m_Kr = Max(0.0f, m_ASState.m_Kr - 0.0001f); else
+			                       m_ASState.m_Kr += 0.0001f;
 	}
 	else if ( isKeyDown( '2' ) )
 	{
-        if ( isKeyDown(VK_SHIFT) ) m_Km = Max(0.0f, m_Km - 0.0001f); else
-			                       m_Km += 0.0001f;
-		m_Km4PI = m_Km*4.0f*PI;
+        if ( isKeyDown(VK_SHIFT) ) m_ASState.m_Km = Max(0.0f, m_ASState.m_Km - 0.0001f); else
+			                       m_ASState.m_Km += 0.0001f;
 	}
 	else if ( isKeyDown( '3' ) )
 	{
-        if ( isKeyDown(VK_SHIFT) ) m_g = Max(-1.0f, m_g-0.001f); else
-			                       m_g = Min( 1.0f, m_g+0.001f);
+        if ( isKeyDown(VK_SHIFT) ) m_ASState.m_g = Max(-1.0f, m_ASState.m_g-0.001f); else
+			                       m_ASState.m_g = Min( 1.0f, m_ASState.m_g+0.001f);
 	}
 	else if ( isKeyDown( '4' ) )
 	{
-        if ( isKeyDown(VK_SHIFT) ) m_ESun = Max(0.0f, m_ESun - 0.1f); else
-			                       m_ESun += 0.1f;
+        if ( isKeyDown(VK_SHIFT) ) m_ASState.m_ESun = Max(0.0f, m_ASState.m_ESun - 0.1f); else
+			                       m_ASState.m_ESun += 0.1f;
 	}
 	else if ( isKeyDown( '5' ) )
 	{
-        auto &val = m_fWavelength[0];
+        auto &val = m_ASState.m_fWavelength[0];
 
         if ( isKeyDown(VK_SHIFT) ) val = Max(0.001f, val -= 0.001f); else
 			                       val += 0.001f;
-
-		m_fWavelength4[0] = powf(val, 4.0f);
 	}
 	else if ( isKeyDown( '6' ) )
 	{
-        auto &val = m_fWavelength[1];
+        auto &val = m_ASState.m_fWavelength[1];
 
         if ( isKeyDown(VK_SHIFT) ) val = Max(0.001f, val -= 0.001f); else
 			                       val += 0.001f;
-
-		m_fWavelength4[1] = powf(val, 4.0f);
 	}
 	else if ( isKeyDown( '7' ) )
 	{
-        auto &val = m_fWavelength[2];
+        auto &val = m_ASState.m_fWavelength[2];
 
         if ( isKeyDown(VK_SHIFT) ) val = Max(0.001f, val -= 0.001f); else
 			                       val += 0.001f;
-
-		m_fWavelength4[2] = powf(val, 4.0f);
 	}
 	else if ( isKeyDown( '8' ) )
 	{
@@ -634,9 +618,9 @@ void CGameEngine::HandleInput(float fSeconds)
 		m_3DCamera.Accelerate(vAccel, fSeconds, RESISTANCE);
 		CVector vPos = m_3DCamera.GetPosition();
 		float fMagnitude = vPos.Magnitude();
-		if(fMagnitude < m_fInnerRadius)
+		if(fMagnitude < m_ASState.m_fInnerRadius)
 		{
-			vPos *= (m_fInnerRadius * (1 + DELTA)) / fMagnitude;
+			vPos *= (m_ASState.m_fInnerRadius * (1 + DELTA)) / fMagnitude;
 			m_3DCamera.SetPosition(CDoubleVector(vPos.x, vPos.y, vPos.z));
 			m_3DCamera.SetVelocity(-m_3DCamera.GetVelocity());
 		}

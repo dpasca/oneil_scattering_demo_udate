@@ -124,6 +124,9 @@
     <ClInclude Include="src\ShaderObject.h">
       <Filter>src</Filter>
     </ClInclude>
+    <ClInclude Include="src\AS_State.h">
+      <Filter>src</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="res\AtmosphereTest.rc">

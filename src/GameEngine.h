@@ -39,7 +39,9 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "Matrix.h"
 #include "PixelBuffer.h"
 #include "Texture.h"
+#include "AS_State.h" 
 
+//==================================================================
 class CGameEngine
 {
 protected:
@@ -52,22 +54,16 @@ protected:
 	CVector m_vLightDirection;
 	
 	// Variables that can be tweaked with keypresses
-	bool m_bUseHDR;
-	int m_nSamples;
-	GLenum m_nPolygonMode;
-	float m_Kr, m_Kr4PI;
-	float m_Km, m_Km4PI;
-	float m_ESun;
-	float m_g;
-	float m_fExposure;
+	bool m_bUseHDR = true;
 
-	float m_fInnerRadius;
-	float m_fOuterRadius;
-	float m_fScale;
-	float m_fWavelength[3];
-	float m_fWavelength4[3];
-	float m_fRayleighScaleDepth;
-	float m_fMieScaleDepth;
+	int m_nSamples = 3; // DAVIDE - currently unused
+
+	GLenum m_nPolygonMode = GL_FILL;
+
+	float m_fExposure = 2.0f;
+
+    AS_State    m_ASState;
+
 	CPixelBuffer m_pbOpticalDepth;
 
 	CTexture m_tMoonGlow;
