@@ -39,7 +39,7 @@ void main(void)
 	vec3 samplePoint = start + sampleRay * 0.5;
 
 	// Now loop through the sample rays
-	vec3 frontColor = AS_RaytraceScatter(
+	vec3 frontColor = AS_RaytraceScatterSky(
                             samplePoint,
                             startOffset,
                             scaledLength,

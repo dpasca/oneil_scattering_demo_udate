@@ -48,7 +48,7 @@ float AS_CalcMiePhase( float cosA, float g )
 }
 
 //==================================================================
-vec3 AS_RaytraceScatter(
+vec3 AS_RaytraceScatterSky(
             vec3 samplePoint,
             float startOffset,
             float scaledLength,
@@ -56,20 +56,79 @@ vec3 AS_RaytraceScatter(
             vec3 sampleRay )
 {
 	vec3 out_col = vec3(0.0, 0.0, 0.0);
+
 	for(int i=0; i < SAMPLES_N; ++i)
 	{
-		float height      = length(samplePoint);
-		float depth       = exp(u_ScaleOverScaleDepth * (u_InnerRadius - height));
-		float lightAngle  = dot(u_LightDir, samplePoint) / height;
-		float cameraAngle = dot(ray, samplePoint) / height;
+		float height = length(samplePoint);
 
-		float scatter     = startOffset +
-                                    depth * (AS_Scale( lightAngle ) -
-                                             AS_Scale( cameraAngle ));
+		float depth = exp( u_ScaleOverScaleDepth * (u_InnerRadius - height) );
 
-		vec3 attenuate    = exp(-scatter * (u_InvWavelength * u_Kr4PI + u_Km4PI));
+		float lightAngle = dot( u_LightDir, samplePoint ) / height;
 
-		out_col += attenuate * (depth * scaledLength);
+		float cameraAngle = dot( ray, samplePoint ) / height;
+
+		float scatter = startOffset +
+                            depth * (AS_Scale( lightAngle ) -
+                                     AS_Scale( cameraAngle ));
+
+		vec3 atten = exp( -scatter * (u_InvWavelength * u_Kr4PI + u_Km4PI) );
+
+		out_col += atten * (depth * scaledLength);
+
+		samplePoint += sampleRay;
+	}
+
+    return out_col;
+}
+
+//==================================================================
+vec3 AS_RaytraceScatterGround(
+            vec3 pos,
+            vec3 ray,
+            float useOuterRadius,
+            float near,
+            float rayLength,
+            out float out_atten )
+{
+	// Calculate the ray's starting position,
+    //   then calculate its scattering offset
+
+    vec3 samplePointStart = u_CameraPos + (ray * near);
+    float segmentLength  = rayLength - near;
+
+	float depth = exp((u_InnerRadius - useOuterRadius) / u_ScaleDepth);
+
+    float posLen = length( pos );
+	float cameraAngle = dot(-ray, pos) / posLen;
+	float lightAngle = dot(u_LightDir, pos) / posLen;
+	float cameraScale = AS_Scale( cameraAngle );
+	float lightScale = AS_Scale( lightAngle );
+	float cameraOffset = depth * cameraScale;
+	float temp = (lightScale + cameraScale);
+
+	// Initialize the scattering loop variables
+	float sampleLength = segmentLength / SAMPLES_F;
+	float scaledLength = sampleLength * u_Scale;
+	vec3 sampleRay = ray * sampleLength;
+	vec3 samplePoint = samplePointStart + sampleRay * 0.5;
+
+	// Now loop through the sample rays
+	vec3 out_col = vec3(0.0, 0.0, 0.0);
+	for(int i=0; i < SAMPLES_N; ++i)
+	{
+		float height = length(samplePoint);
+
+		float depth = exp(u_ScaleOverScaleDepth * (u_InnerRadius - height));
+
+		float scatter = depth * temp - cameraOffset;
+
+		vec3 atten = exp( -scatter * (u_InvWavelength * u_Kr4PI + u_Km4PI) );
+
+        // last attentuation goes to the output
+        out_atten = atten;
+
+		out_col += atten * (depth * scaledLength);
+
 		samplePoint += sampleRay;
 	}
 
