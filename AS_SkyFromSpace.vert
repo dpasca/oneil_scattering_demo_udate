@@ -6,13 +6,14 @@
 // Copyright (c) 2004 Sean O'Neil
 //
 
-//#include "AS_Common.h"
+//#include "AS_Common.glsl"
 
 varying vec3 v_PosToCam;
 
 void main(void)
 {
-	// Get the ray from the camera to the vertex and its length (which is the far point of the ray passing through the atmosphere)
+	// Get the ray from the camera to the vertex, and its length
+    // (which is the far point of the ray passing through the atmosphere)
 	vec3 pos = gl_Vertex.xyz;
     vec3 raySta = u_CameraPos;
 	vec3 rayDir = pos - raySta;
@@ -35,7 +36,6 @@ void main(void)
 	float startOffset = startDepth * AS_Scale( startAngle );
 
 	// Initialize the scattering loop variables
-	//gl_FrontColor = vec4(0.0, 0.0, 0.0, 0.0);
 	float sampleLength = segmentLength / SAMPLES_F;
 	float scaledLength = sampleLength * u_Scale;
 	vec3 sampleRay = rayDir * sampleLength;
@@ -51,7 +51,7 @@ void main(void)
 
 	// Finally, scale the Mie and Rayleigh colors and set up the varying variables for the pixel shader
 	gl_FrontSecondaryColor.rgb = frontColor * u_KmESun;
-	gl_FrontColor.rgb          = frontColor * (u_InvWavelength * u_KrESun);
+	gl_FrontColor.rgb = frontColor * (u_InvWavelength * u_KrESun);
 
 	gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;
 
