@@ -21,11 +21,12 @@ void main(void)
 	rayDir /= rayLength;
 
 	// Calculate the ray's starting position, then calculate its scattering offset
-	vec3 start = raySta;
+    float near = 0.0;
+	vec3 start = raySta + rayDir * near;
 	float height = length(start);
-	float depth = exp(u_ScaleOverScaleDepth * (u_InnerRadius - u_CameraHeight));
 	float startAngle = dot(rayDir, start) / height;
-	float startOffset = depth * AS_Scale( startAngle );
+	float startDepth = exp(u_ScaleOverScaleDepth * (u_InnerRadius - u_CameraHeight));
+	float startOffset = startDepth * AS_Scale( startAngle );
 
 	// Initialize the scattering loop variables
 	float sampleLength = rayLength / SAMPLES_F;
@@ -49,5 +50,4 @@ void main(void)
 
 	v_PosToCam = raySta - pos;
 }
-
 
