@@ -88,7 +88,7 @@ vec3 AS_RaytraceScatterGround(
             float useOuterRadius,
             float near,
             float rayLength,
-            out float out_atten )
+            out vec3 out_atten )
 {
 	// Calculate the ray's starting position,
     //   then calculate its scattering offset
