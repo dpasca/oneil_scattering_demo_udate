@@ -11,27 +11,27 @@
 void main(void)
 {
 	// Get the ray from the camera to the vertex and its length
-	vec3 v3Pos = gl_Vertex.xyz;
-	vec3 v3Ray = v3Pos - u_CameraPos;
-	float fFar = length(v3Ray);
-	v3Ray /= fFar;
+	vec3 pos = gl_Vertex.xyz;
+	vec3 ray = pos - u_CameraPos;
+	float far = length(ray);
+	ray /= far;
 
 	// Calculate the farther intersection of the ray with the outer atmosphere (which is the far point of the ray passing through the atmosphere)
-	float B = 2.0 * dot(u_CameraPos, v3Ray);
+	float B = 2.0 * dot(u_CameraPos, ray);
 	float C = (u_CameraHeight * u_CameraHeight) - (u_OuterRadius * u_OuterRadius);
-	float fDet = max(0.0, B*B - 4.0 * C);
-	fFar = 0.5 * (-B + sqrt(fDet));
-	float fNear = 0.5 * (-B - sqrt(fDet));
+	float det = max(0.0, B*B - 4.0 * C);
+	far = 0.5 * (-B + sqrt(det));
+	float near = 0.5 * (-B - sqrt(det));
 
-	vec3 v3Start = u_CameraPos + v3Ray*fNear;
-	fFar -= fNear;
+	vec3 start = u_CameraPos + ray*near;
+	far -= near;
 
 	// Calculate attenuation from the camera to the top of the atmosphere toward the vertex
-	float fHeight = length(v3Start);
-	float fDepth = exp(u_ScaleOverScaleDepth * (u_InnerRadius - u_CameraHeight));
-	float fAngle = dot(v3Ray, v3Start) / fHeight;
-	float fScatter = fDepth * AS_Scale( fAngle );
-	gl_FrontSecondaryColor.rgb = exp(-fScatter * (u_InvWavelength * u_Kr4PI + u_Km4PI));
+	float height = length(start);
+	float depth = exp(u_ScaleOverScaleDepth * (u_InnerRadius - u_CameraHeight));
+	float angle = dot(ray, start) / height;
+	float scatter = depth * AS_Scale( angle );
+	gl_FrontSecondaryColor.rgb = exp(-scatter * (u_InvWavelength * u_Kr4PI + u_Km4PI));
 
 	gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;
 	gl_TexCoord[0].st = gl_MultiTexCoord0.st;

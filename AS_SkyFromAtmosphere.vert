@@ -13,42 +13,42 @@ varying vec3 v_PosToCam;
 void main(void)
 {
 	// Get the ray from the camera to the vertex, and its length (which is the far point of the ray passing through the atmosphere)
-	vec3 v3Pos = gl_Vertex.xyz;
-	vec3 v3Ray = v3Pos - u_CameraPos;
-	float fFar = length(v3Ray);
-	v3Ray /= fFar;
+	vec3 pos = gl_Vertex.xyz;
+	vec3 ray = pos - u_CameraPos;
+	float far = length(ray);
+	ray /= far;
 
 	// Calculate the ray's starting position, then calculate its scattering offset
-	vec3 v3Start = u_CameraPos;
-	float fHeight = length(v3Start);
-	float fDepth = exp(u_ScaleOverScaleDepth * (u_InnerRadius - u_CameraHeight));
-	float fStartAngle = dot(v3Ray, v3Start) / fHeight;
-	float fStartOffset = fDepth * AS_Scale( fStartAngle );
+	vec3 start = u_CameraPos;
+	float height = length(start);
+	float depth = exp(u_ScaleOverScaleDepth * (u_InnerRadius - u_CameraHeight));
+	float startAngle = dot(ray, start) / height;
+	float startOffset = depth * AS_Scale( startAngle );
 
 	// Initialize the scattering loop variables
 	//gl_FrontColor = vec4(0.0, 0.0, 0.0, 0.0);
-	float fSampleLength = fFar / SAMPLES_F;
-	float fScaledLength = fSampleLength * u_Scale;
-	vec3 v3SampleRay = v3Ray * fSampleLength;
-	vec3 v3SamplePoint = v3Start + v3SampleRay * 0.5;
+	float sampleLength = far / SAMPLES_F;
+	float scaledLength = sampleLength * u_Scale;
+	vec3 sampleRay = ray * sampleLength;
+	vec3 samplePoint = start + sampleRay * 0.5;
 
 	// Now loop through the sample rays
-	vec3 v3FrontColor = vec3(0.0, 0.0, 0.0);
+	vec3 frontColor = vec3(0.0, 0.0, 0.0);
 	for(int i=0; i < SAMPLES_N; ++i)
 	{
-		float fHeight = length(v3SamplePoint);
-		float fDepth = exp(u_ScaleOverScaleDepth * (u_InnerRadius - fHeight));
-		float fLightAngle = dot(u_LightDir, v3SamplePoint) / fHeight;
-		float fCameraAngle = dot(v3Ray, v3SamplePoint) / fHeight;
-		float fScatter = (fStartOffset + fDepth*(AS_Scale(fLightAngle) - AS_Scale(fCameraAngle)));
-		vec3 v3Attenuate = exp(-fScatter * (u_InvWavelength * u_Kr4PI + u_Km4PI));
-		v3FrontColor += v3Attenuate * (fDepth * fScaledLength);
-		v3SamplePoint += v3SampleRay;
+		float height = length(samplePoint);
+		float depth = exp(u_ScaleOverScaleDepth * (u_InnerRadius - height));
+		float lightAngle = dot(u_LightDir, samplePoint) / height;
+		float cameraAngle = dot(ray, samplePoint) / height;
+		float scatter = (startOffset + depth*(AS_Scale(lightAngle) - AS_Scale(cameraAngle)));
+		vec3 attenuate = exp(-scatter * (u_InvWavelength * u_Kr4PI + u_Km4PI));
+		frontColor += attenuate * (depth * scaledLength);
+		samplePoint += sampleRay;
 	}
 
 	// Finally, scale the Mie and Rayleigh colors and set up the varying variables for the pixel shader
-	gl_FrontSecondaryColor.rgb = v3FrontColor * u_KmESun;
-	gl_FrontColor.rgb = v3FrontColor * (u_InvWavelength * u_KrESun);
+	gl_FrontSecondaryColor.rgb = frontColor * u_KmESun;
+	gl_FrontColor.rgb = frontColor * (u_InvWavelength * u_KrESun);
 	gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;
-	v_PosToCam = u_CameraPos - v3Pos;
+	v_PosToCam = u_CameraPos - pos;
 }
