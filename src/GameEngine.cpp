@@ -97,43 +97,22 @@ static void drawSphere(double r, int longs, int lats)
 
 //==================================================================
 static void setASUniforms(
-                AS_State &state,
+                const AS_State &state,
                 CShaderObject *pShader,
                 const CVector &camPos,
                 const CVector &lightDir )
 {
-	pShader->SetUniformParameter3f(
-                "u_CameraPos",
-                camPos.x,
-                camPos.y,
-                camPos.z );
+    auto setUni1f = [pShader]( const char *pUniName, float val1f )
+    {
+        pShader->SetUniformParameter1f( pUniName, val1f );
+    };
 
-	pShader->SetUniformParameter3f(
-                "u_LightDir",
-                lightDir.x,
-                lightDir.y,
-                lightDir.z );
+    auto setUni3f = [pShader]( const char *pUniName, const float *pVal3f )
+    {
+        pShader->SetUniformParameter3f( pUniName, pVal3f[0], pVal3f[1], pVal3f[2] );
+    };
 
-	pShader->SetUniformParameter3f(
-                "u_InvWavelength",
-                1 / state.m_fWavelength4[0],
-                1 / state.m_fWavelength4[1],
-                1 / state.m_fWavelength4[2] );
-
-	pShader->SetUniformParameter1f("u_InnerRadius", state.m_fInnerRadius);
-	pShader->SetUniformParameter1f("u_OuterRadius", state.m_fOuterRadius);
-	pShader->SetUniformParameter1f("u_KrESun", state.m_Kr * state.m_ESun);
-	pShader->SetUniformParameter1f("u_KmESun", state.m_Km * state.m_ESun);
-    pShader->SetUniformParameter1f("u_Kr4PI", state.m_Kr * 4.0f * PI );
-    pShader->SetUniformParameter1f("u_Km4PI", state.m_Km * 4.0f * PI );
-	pShader->SetUniformParameter1f("u_Scale", 1.0f / (state.m_fOuterRadius - state.m_fInnerRadius));
-	pShader->SetUniformParameter1f("u_ScaleDepth", state.m_fRayleighScaleDepth);
-
-	pShader->SetUniformParameter1f("u_ScaleOverScaleDepth",
-            (1.0f / (state.m_fOuterRadius - state.m_fInnerRadius))
-                / state.m_fRayleighScaleDepth);
-
-	pShader->SetUniformParameter1f("u_g", state.m_g);
+    state.UpdateShaderUniforms( &camPos.x, &lightDir.x, setUni1f, setUni3f );
 }
 
 //==================================================================
@@ -305,9 +284,7 @@ void CGameEngine::RenderFrame(int nMilliseconds)
 	if(pSpaceShader)
 	{
 		pSpaceShader->Enable();
-
         setASUniforms( m_ASState, pSpaceShader, camPos, m_vLightDirection );
-
 		pSpaceShader->SetUniformParameter1i("s2Tex1", 0);
 	}
 
@@ -337,9 +314,7 @@ void CGameEngine::RenderFrame(int nMilliseconds)
 		pGroundShader = &m_shGroundFromAtmosphere;
 
 	pGroundShader->Enable();
-
     setASUniforms( m_ASState, pGroundShader, camPos, m_vLightDirection );
-
 	pGroundShader->SetUniformParameter1i("s2Tex1", 0);
 
 	/*
@@ -376,7 +351,6 @@ void CGameEngine::RenderFrame(int nMilliseconds)
 		pSkyShader = &m_shSkyFromAtmosphere;
 
 	pSkyShader->Enable();
-
     setASUniforms( m_ASState, pSkyShader, camPos, m_vLightDirection );
 
 	/*
