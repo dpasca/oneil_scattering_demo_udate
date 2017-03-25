@@ -334,7 +334,7 @@ void CGameEngine::RenderFrame(int nMilliseconds)
     auto bindScope = m_tEarth.BindTexture();
 	m_tEarth.EnableTexture();
 #ifdef DONT_USE_GLU
-	drawSphere(m_fInnerRadius, 100, 50);
+	drawSphere(m_ASState.m_InnerRadius, 100, 50);
 #else
 	auto *pSphere = gluNewQuadric();
 	gluSphere(pSphere, m_ASState.m_InnerRadius, 100, 50);
@@ -370,7 +370,7 @@ void CGameEngine::RenderFrame(int nMilliseconds)
 	glBlendFunc(GL_ONE, GL_ONE);
 
 #ifdef DONT_USE_GLU
-	drawSphere(m_fOuterRadius, 100, 50);
+	drawSphere(m_ASState.m_OuterRadius, 100, 50);
 #else
     {
     auto *pSphere = gluNewQuadric();
