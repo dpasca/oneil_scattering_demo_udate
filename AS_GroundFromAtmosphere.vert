@@ -13,17 +13,19 @@ void main(void)
 	// Get the ray from the camera to the vertex and its length
     //  (which is the far point of the ray passing through the atmosphere)
 	vec3 pos = gl_Vertex.xyz;
-	vec3 ray = pos - u_CameraPos;
-	float rayLength = length(ray);
-	ray /= rayLength;
+    vec3 raySta = u_CameraPos;
+	vec3 rayDir = pos - raySta;
+	float rayLength = length(rayDir);
+	rayDir /= rayLength;
 
     vec3 attenuation = vec3(0.0 ,0.0, 0.0);
     vec3 frontColor = AS_RaytraceScatterGround(
                             pos,
-                            ray,
+                            raySta,
+                            rayDir,
+                            rayLength,
                             u_CameraHeight,
                             0.0,
-                            rayLength,
                             attenuation );
 
 	gl_FrontColor.rgb = frontColor * (u_InvWavelength * u_KrESun + u_KmESun);

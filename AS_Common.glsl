@@ -104,16 +104,17 @@ vec3 AS_RaytraceScatterSky(
 //==================================================================
 vec3 AS_RaytraceScatterGround(
             vec3 pos,
+            vec3 raySta,
             vec3 rayDir,
+            float rayLength,
             float useOuterRadius,
             float near,
-            float rayLength,
             out vec3 out_atten )
 {
 	// Calculate the ray's starting position,
     //   then calculate its scattering offset
 
-    vec3 samplePointStart = u_CameraPos + (rayDir * near);
+    vec3 samplePointStart = raySta + (rayDir * near);
     float segmentLength  = rayLength - near;
 
 	float depth = exp((u_InnerRadius - useOuterRadius) / u_ScaleDepth);
