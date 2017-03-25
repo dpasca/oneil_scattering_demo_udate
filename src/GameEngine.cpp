@@ -270,22 +270,20 @@ void CGameEngine::RenderFrame(int nMilliseconds)
     }
 #endif
 
-	CVector vCamera = m_3DCamera.GetPosition();
-	CVector vUnitCamera = vCamera / vCamera.Magnitude();
+	const auto camPos = (CVector)m_3DCamera.GetPosition();
 
 	CShaderObject *pSpaceShader = NULL;
-	if(vCamera.Magnitude() < m_fOuterRadius)
+	if(camPos.Magnitude() < m_fOuterRadius)
 		pSpaceShader = &m_shSpaceFromAtmosphere;
-	else if(vCamera.z > 0.0f)
+	else if(camPos.z > 0.0f)
 		pSpaceShader = &m_shSpaceFromSpace;
 
 	if(pSpaceShader)
 	{
 		pSpaceShader->Enable();
-		pSpaceShader->SetUniformParameter3f("u_CameraPos", vCamera.x, vCamera.y, vCamera.z);
+		pSpaceShader->SetUniformParameter3f("u_CameraPos", camPos.x, camPos.y, camPos.z);
 		pSpaceShader->SetUniformParameter3f("u_LightDir", m_vLightDirection.x, m_vLightDirection.y, m_vLightDirection.z);
 		pSpaceShader->SetUniformParameter3f("u_InvWavelength", 1/m_fWavelength4[0], 1/m_fWavelength4[1], 1/m_fWavelength4[2]);
-		pSpaceShader->SetUniformParameter1f("u_CameraHeight", vCamera.Magnitude());
 		pSpaceShader->SetUniformParameter1f("u_InnerRadius", m_fInnerRadius);
 		pSpaceShader->SetUniformParameter1f("u_OuterRadius", m_fOuterRadius);
 		pSpaceShader->SetUniformParameter1f("u_KrESun", m_Kr*m_ESun);
@@ -319,16 +317,15 @@ void CGameEngine::RenderFrame(int nMilliseconds)
 		pSpaceShader->Disable();
 
 	CShaderObject *pGroundShader;
-	if(vCamera.Magnitude() >= m_fOuterRadius)
+	if(camPos.Magnitude() >= m_fOuterRadius)
 		pGroundShader = &m_shGroundFromSpace;
 	else
 		pGroundShader = &m_shGroundFromAtmosphere;
 
 	pGroundShader->Enable();
-	pGroundShader->SetUniformParameter3f("u_CameraPos", vCamera.x, vCamera.y, vCamera.z);
+	pGroundShader->SetUniformParameter3f("u_CameraPos", camPos.x, camPos.y, camPos.z);
 	pGroundShader->SetUniformParameter3f("u_LightDir", m_vLightDirection.x, m_vLightDirection.y, m_vLightDirection.z);
 	pGroundShader->SetUniformParameter3f("u_InvWavelength", 1/m_fWavelength4[0], 1/m_fWavelength4[1], 1/m_fWavelength4[2]);
-	pGroundShader->SetUniformParameter1f("u_CameraHeight", vCamera.Magnitude());
 	pGroundShader->SetUniformParameter1f("u_InnerRadius", m_fInnerRadius);
 	pGroundShader->SetUniformParameter1f("u_OuterRadius", m_fOuterRadius);
 	pGroundShader->SetUniformParameter1f("u_OuterRadius2", m_fOuterRadius*m_fOuterRadius);
@@ -343,10 +340,10 @@ void CGameEngine::RenderFrame(int nMilliseconds)
 	pGroundShader->SetUniformParameter1i("s2Tex1", 0);
 
 	/*
-	if(vCamera.z < 0 && pGroundShader == &m_shGroundFromAtmosphere)
+	if(camPos.z < 0 && pGroundShader == &m_shGroundFromAtmosphere)
 	{
 		// Try setting the moon as a light source
-		CVector vLightDir = CVector(0.0f, 0.0f, -50.0f) - vCamera;
+		CVector vLightDir = CVector(0.0f, 0.0f, -50.0f) - camPos;
 		vLightDir.Normalize();
 		pGroundShader->SetUniformParameter3f("u_LightDir", vLightDir.x, vLightDir.y, vLightDir.z);
 		pGroundShader->SetUniformParameter1f("u_KrESun", m_Kr*m_ESun*0.1f);
@@ -370,16 +367,15 @@ void CGameEngine::RenderFrame(int nMilliseconds)
 	pGroundShader->Disable();
 
 	CShaderObject *pSkyShader;
-	if(vCamera.Magnitude() >= m_fOuterRadius)
+	if(camPos.Magnitude() >= m_fOuterRadius)
 		pSkyShader = &m_shSkyFromSpace;
 	else
 		pSkyShader = &m_shSkyFromAtmosphere;
 
 	pSkyShader->Enable();
-	pSkyShader->SetUniformParameter3f("u_CameraPos", vCamera.x, vCamera.y, vCamera.z);
+	pSkyShader->SetUniformParameter3f("u_CameraPos", camPos.x, camPos.y, camPos.z);
 	pSkyShader->SetUniformParameter3f("u_LightDir", m_vLightDirection.x, m_vLightDirection.y, m_vLightDirection.z);
 	pSkyShader->SetUniformParameter3f("u_InvWavelength", 1/m_fWavelength4[0], 1/m_fWavelength4[1], 1/m_fWavelength4[2]);
-	pSkyShader->SetUniformParameter1f("u_CameraHeight", vCamera.Magnitude());
 	pSkyShader->SetUniformParameter1f("u_InnerRadius", m_fInnerRadius);
 	pSkyShader->SetUniformParameter1f("u_OuterRadius", m_fOuterRadius);
 	pSkyShader->SetUniformParameter1f("u_KrESun", m_Kr*m_ESun);
@@ -392,10 +388,10 @@ void CGameEngine::RenderFrame(int nMilliseconds)
 	pSkyShader->SetUniformParameter1f("u_g", m_g);
 
 	/*
-	if(vCamera.z < 0 && pSkyShader == &m_shSkyFromAtmosphere)
+	if(camPos.z < 0 && pSkyShader == &m_shSkyFromAtmosphere)
 	{
 		// Try setting the moon as a light source
-		CVector vLightDir = CVector(0.0f, 0.0f, -50.0f) - vCamera;
+		CVector vLightDir = CVector(0.0f, 0.0f, -50.0f) - camPos;
 		vLightDir.Normalize();
 		pSkyShader->SetUniformParameter3f("u_LightDir", vLightDir.x, vLightDir.y, vLightDir.z);
 		pSkyShader->SetUniformParameter1f("u_KrESun", m_Kr*m_ESun*0.1f);

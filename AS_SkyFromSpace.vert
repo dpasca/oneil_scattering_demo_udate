@@ -20,6 +20,8 @@ void main(void)
 	float rayLength = length(rayDir);
 	rayDir /= rayLength;
 
+    float useOuterRadius = u_OuterRadius;
+
 	// Calculate the closest intersection of the ray with the outer atmosphere
     // (which is the near point of the ray passing through the atmosphere)
     float near = AS_CalcRaySphereClosestInters(
@@ -28,11 +30,14 @@ void main(void)
                                 PLANET_ORIGIN,
                                 u_OuterRadius * u_OuterRadius );
 
+	float startDepth = exp( -1.0 / u_ScaleDepth );
+
 	// Calculate the ray's starting position, then calculate its scattering offset
+
 	vec3 start = raySta + rayDir * near;
+
     float segmentLength = rayLength - near;
-	float startAngle = dot(rayDir, start) / u_OuterRadius;
-	float startDepth = exp(-1.0 / u_ScaleDepth);
+	float startAngle = dot(rayDir, start) / useOuterRadius;
 	float startOffset = startDepth * AS_Scale( startAngle );
 
 	// Initialize the scattering loop variables

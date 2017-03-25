@@ -26,7 +26,8 @@ void main(void)
 	// Calculate attenuation from the camera to the top of the atmosphere toward the vertex
 	vec3 start = raySta;
 	float height = length(start);
-	float depth = exp(u_ScaleOverScaleDepth * (u_InnerRadius - u_CameraHeight));
+    float useOuterRadius = AS_CalcCamDistanceFromPlanetOrigin();
+	float depth = exp( u_ScaleOverScaleDepth * (u_InnerRadius - useOuterRadius) );
 	float angle = dot(rayDir, start) / height;
 	float scatter = depth * AS_Scale( angle );
 	gl_FrontSecondaryColor.rgb = exp(-scatter * (u_InvWavelength * u_Kr4PI + u_Km4PI));

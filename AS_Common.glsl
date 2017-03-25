@@ -10,7 +10,6 @@
 uniform vec3  u_CameraPos;      // The camera's current position
 uniform vec3  u_LightDir;       // The direction vector to the light source
 uniform vec3  u_InvWavelength;  // 1 / pow(wavelength, 4) for the red, green, and blue channels
-uniform float u_CameraHeight;   // The camera's current height
 uniform float u_OuterRadius;    // The outer (atmosphere) radius
 uniform float u_InnerRadius;    // The inner (planetary) radius
 uniform float u_KrESun;         // Kr * ESun
@@ -29,6 +28,12 @@ const float SAMPLES_F = 2.0;
 const vec3  PLANET_ORIGIN = vec3(0.0, 0.0, 0.0);
 
 //==================================================================
+float AS_CalcCamDistanceFromPlanetOrigin()
+{
+    return length( u_CameraPos - PLANET_ORIGIN );
+}
+
+//==================================================================
 float AS_Scale( float cosA )
 {
 	float x = 1.0 - cosA;
@@ -39,6 +44,7 @@ float AS_Scale( float cosA )
 }
 
 //==================================================================
+// http://http.developer.nvidia.com/GPUGems2/elementLinks/0256equ01.jpg
 float AS_CalcMiePhase( float cosA, float g )
 {
     float g2 = g * g;

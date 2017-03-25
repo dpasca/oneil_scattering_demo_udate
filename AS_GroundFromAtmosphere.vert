@@ -24,7 +24,7 @@ void main(void)
                             raySta,
                             rayDir,
                             rayLength,
-                            u_CameraHeight,
+                            AS_CalcCamDistanceFromPlanetOrigin(),
                             0.0,
                             attenuation );
 
