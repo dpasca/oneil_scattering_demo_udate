@@ -20,7 +20,7 @@ void main(void)
     float near = AS_CalcRaySphereClosestInters(
                         raySta,
                         rayDir,
-                        vec3(0.0, 0.0, 0.0), // sphere at origin
+                        PLANET_ORIGIN,
                         u_OuterRadius * u_OuterRadius );
 
 	// Calculate attenuation from the camera to the top of the atmosphere toward the vertex

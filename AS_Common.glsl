@@ -26,6 +26,8 @@ uniform float u_g;
 const int   SAMPLES_N = 2;
 const float SAMPLES_F = 2.0;
 
+const vec3  PLANET_ORIGIN = vec3(0.0, 0.0, 0.0);
+
 //==================================================================
 float AS_Scale( float cosA )
 {
