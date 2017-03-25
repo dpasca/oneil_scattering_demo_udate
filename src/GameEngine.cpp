@@ -164,19 +164,22 @@ CGameEngine::CGameEngine()
         m_ASState.m_MieScaleDepth);
 
     //
-    auto loadASShader = [this]( CShaderObject &so, const std::string &srcBaseName )
+    auto loadASShader = [this](
+            CShaderObject &so,
+            const std::string &srcVertName,
+            const std::string &srcFragName )
     {
         so.LoadFromFile(
                 "AS_Common.glsl",
-                srcBaseName + ".vert",
-                srcBaseName + ".frag" );
+                srcVertName + ".vert",
+                srcFragName + ".frag");
     };
-	loadASShader( m_shSkyFromSpace        , "AS_SkyFromSpace"        );
-	loadASShader( m_shSkyFromAtmosphere   , "AS_SkyFromAtmosphere"   );
-	loadASShader( m_shGroundFromSpace     , "AS_GroundFromSpace"     );
-	loadASShader( m_shGroundFromAtmosphere, "AS_GroundFromAtmosphere");
-	loadASShader( m_shSpaceFromSpace      , "AS_SpaceFromSpace"      );
-	loadASShader( m_shSpaceFromAtmosphere , "AS_SpaceFromAtmosphere" );
+	loadASShader( m_shSkyFromSpace        , "AS_SkyFromSpace"        , "AS_Sky"    );
+	loadASShader( m_shSkyFromAtmosphere   , "AS_SkyFromAtmosphere"   , "AS_Sky"    );
+	loadASShader( m_shGroundFromSpace     , "AS_GroundFromSpace"     , "AS_Ground" );
+	loadASShader( m_shGroundFromAtmosphere, "AS_GroundFromAtmosphere", "AS_Ground" );
+	loadASShader( m_shSpaceFromSpace      , "AS_SpaceFromSpace"      , "AS_Space"  );
+	loadASShader( m_shSpaceFromAtmosphere , "AS_SpaceFromAtmosphere" , "AS_Space"  );
 
     //
     {
