@@ -30,27 +30,14 @@ void main(void)
                 exp( u_ScaleOverScaleDepth *
                         (u_InnerRadius - useOuterRadius) );
 
-	// Calculate the ray's starting position, then calculate its scattering offset
-
-	vec3 start = raySta + rayDir * near;
-
-    float segmentLength = rayLength - near;
-	float startAngle = dot(rayDir, start) / useOuterRadius;
-	float startOffset = startDepth * AS_Scale( startAngle );
-
-	// Initialize the scattering loop variables
-	float sampleLength = segmentLength / SAMPLES_F;
-	float scaledLength = sampleLength * u_Scale;
-	vec3 sampleRay = rayDir * sampleLength;
-	vec3 samplePoint = start + sampleRay * 0.5;
-
 	// Now loop through the sample rays
 	vec3 frontColor = AS_RaytraceScatterSky(
-                            samplePoint,
-                            startOffset,
-                            scaledLength,
+                            raySta,
                             rayDir,
-                            sampleRay );
+                            rayLength,
+                            useOuterRadius,
+                            near,
+                            startDepth );
 
 	// Finally, scale the Mie and Rayleigh colors and set up the varying variables for the pixel shader
 	gl_FrontSecondaryColor.rgb = frontColor * u_KmESun;

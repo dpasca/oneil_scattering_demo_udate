@@ -77,12 +77,28 @@ float AS_CalcRaySphereClosestInters(
 
 //==================================================================
 vec3 AS_RaytraceScatterSky(
-            vec3 samplePoint,
-            float startOffset,
-            float scaledLength,
+            vec3 raySta,
             vec3 rayDir,
-            vec3 sampleRay )
+            float rayLength,
+            float useOuterRadius,
+            float near,
+            float startDepth )
 {
+	// Calculate the ray's starting position,
+    //   then calculate its scattering offset
+
+    vec3 samplePointStart = raySta + rayDir * near;
+    float segmentLength = rayLength - near;
+
+	float startAngle = dot(rayDir, samplePointStart) / useOuterRadius;
+	float startOffset = startDepth * AS_Scale( startAngle );
+
+	// Initialize the scattering loop variables
+	float sampleLength = segmentLength / SAMPLES_F;
+	float scaledLength = sampleLength * u_Scale;
+	vec3 sampleRay = rayDir * sampleLength;
+	vec3 samplePoint = samplePointStart + sampleRay * 0.5;
+
 	vec3 out_col = vec3(0.0, 0.0, 0.0);
 
 	for(int i=0; i < SAMPLES_N; ++i)
@@ -122,24 +138,29 @@ vec3 AS_RaytraceScatterGround(
 	// Calculate the ray's starting position,
     //   then calculate its scattering offset
 
-    vec3 samplePointStart = raySta + (rayDir * near);
+    vec3 samplePointStart = raySta + rayDir * near;
     float segmentLength  = rayLength - near;
-
-	float depth = exp((u_InnerRadius - useOuterRadius) / u_ScaleDepth);
-
-    float posLen = length( pos );
-	float cameraAngle = dot(-rayDir, pos) / posLen;
-	float lightAngle = dot(u_LightDir, pos) / posLen;
-	float cameraScale = AS_Scale( cameraAngle );
-	float lightScale = AS_Scale( lightAngle );
-	float cameraOffset = depth * cameraScale;
-	float temp = (lightScale + cameraScale);
 
 	// Initialize the scattering loop variables
 	float sampleLength = segmentLength / SAMPLES_F;
 	float scaledLength = sampleLength * u_Scale;
 	vec3 sampleRay = rayDir * sampleLength;
 	vec3 samplePoint = samplePointStart + sampleRay * 0.5;
+
+    float cameraOffset;
+    float temp;
+    {
+    float depth = exp( (u_InnerRadius - useOuterRadius) / u_ScaleDepth );
+
+    float posLen = length( pos );
+    float cameraAngle = dot(-rayDir, pos) / posLen;
+    float lightAngle = dot(u_LightDir, pos) / posLen;
+    float cameraScale = AS_Scale( cameraAngle );
+    float lightScale = AS_Scale( lightAngle );
+
+    cameraOffset = depth * cameraScale;
+    temp = lightScale + cameraScale;
+    }
 
 	// Now loop through the sample rays
 	vec3 out_col = vec3(0.0, 0.0, 0.0);
