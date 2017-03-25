@@ -39,23 +39,12 @@ void main(void)
 	vec3 samplePoint = start + sampleRay * 0.5;
 
 	// Now loop through the sample rays
-	vec3 frontColor = vec3(0.0, 0.0, 0.0);
-	for(int i=0; i < SAMPLES_N; ++i)
-	{
-		float height      = length(samplePoint);
-		float depth       = exp(u_ScaleOverScaleDepth * (u_InnerRadius - height));
-		float lightAngle  = dot(u_LightDir, samplePoint) / height;
-		float cameraAngle = dot(ray, samplePoint) / height;
-
-		float scatter     = startOffset +
-                                    depth * (AS_Scale( lightAngle ) -
-                                             AS_Scale( cameraAngle ));
-
-		vec3 attenuate    = exp(-scatter * (u_InvWavelength * u_Kr4PI + u_Km4PI));
-
-		frontColor += attenuate * (depth * scaledLength);
-		samplePoint += sampleRay;
-	}
+	vec3 frontColor = AS_RaytraceScatter(
+                            samplePoint,
+                            startOffset,
+                            scaledLength,
+                            ray,
+                            sampleRay );
 
 	// Finally, scale the Mie and Rayleigh colors and set up the varying variables for the pixel shader
 	gl_FrontSecondaryColor.rgb = frontColor * u_KmESun;

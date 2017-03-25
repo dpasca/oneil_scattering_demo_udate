@@ -47,3 +47,32 @@ float AS_CalcMiePhase( float cosA, float g )
                     pow(1.0 + g2 - 2.0 * g * cosA, 1.5);
 }
 
+//==================================================================
+vec3 AS_RaytraceScatter(
+            vec3 samplePoint,
+            float startOffset,
+            float scaledLength,
+            vec3 ray,
+            vec3 sampleRay )
+{
+	vec3 out_col = vec3(0.0, 0.0, 0.0);
+	for(int i=0; i < SAMPLES_N; ++i)
+	{
+		float height      = length(samplePoint);
+		float depth       = exp(u_ScaleOverScaleDepth * (u_InnerRadius - height));
+		float lightAngle  = dot(u_LightDir, samplePoint) / height;
+		float cameraAngle = dot(ray, samplePoint) / height;
+
+		float scatter     = startOffset +
+                                    depth * (AS_Scale( lightAngle ) -
+                                             AS_Scale( cameraAngle ));
+
+		vec3 attenuate    = exp(-scatter * (u_InvWavelength * u_Kr4PI + u_Km4PI));
+
+		out_col += attenuate * (depth * scaledLength);
+		samplePoint += sampleRay;
+	}
+
+    return out_col;
+}
+
