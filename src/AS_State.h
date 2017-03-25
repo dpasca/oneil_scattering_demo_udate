@@ -23,21 +23,21 @@ public:
 	float m_ESun    =  20.0f;   // Sun brightness constant
 	float m_g       = -0.990f;  // The Mie phase asymmetry factor
 
-	float m_fInnerRadius        = 10.0f;
-	float m_fOuterRadius        = 10.25f;
-	float m_fWavelength[3]      = {0,0,0};
-	float m_fRayleighScaleDepth = 0;
-	float m_fMieScaleDepth      = 0;
+	float m_InnerRadius        = 10.0f;
+	float m_OuterRadius        = 10.25f;
+	float m_Wavelength[3]      = {0,0,0};
+	float m_RayleighScaleDepth = 0;
+	float m_MieScaleDepth      = 0;
 
 public:
     AS_State()
     {
-        m_fWavelength[0] = 0.650f;		// 650 nm for red
-        m_fWavelength[1] = 0.570f;		// 570 nm for green
-        m_fWavelength[2] = 0.475f;		// 475 nm for blue
+        m_Wavelength[0] = 0.650f;		// 650 nm for red
+        m_Wavelength[1] = 0.570f;		// 570 nm for green
+        m_Wavelength[2] = 0.475f;		// 475 nm for blue
 
-        m_fRayleighScaleDepth = 0.25f;
-        m_fMieScaleDepth = 0.1f;
+        m_RayleighScaleDepth = 0.25f;
+        m_MieScaleDepth = 0.1f;
     }
 
     //
@@ -54,23 +54,23 @@ public:
 
         float ooWaveLen4[3] =
         {
-            1 / powf( m_fWavelength[0], 4.0f ),
-            1 / powf( m_fWavelength[1], 4.0f ),
-            1 / powf( m_fWavelength[2], 4.0f )
+            1 / powf( m_Wavelength[0], 4.0f ),
+            1 / powf( m_Wavelength[1], 4.0f ),
+            1 / powf( m_Wavelength[2], 4.0f )
         };
         setUniform3f( "u_InvWavelength", ooWaveLen4 );
 
-        setUniform1f( "u_InnerRadius", m_fInnerRadius );
-        setUniform1f( "u_OuterRadius", m_fOuterRadius );
+        setUniform1f( "u_InnerRadius", m_InnerRadius );
+        setUniform1f( "u_OuterRadius", m_OuterRadius );
         setUniform1f( "u_KrESun", m_Kr * m_ESun );
         setUniform1f( "u_KmESun", m_Km * m_ESun );
         setUniform1f( "u_Kr4PI", m_Kr * (float)(4.0 * pi) );
         setUniform1f( "u_Km4PI", m_Km * (float)(4.0 * pi) );
-        setUniform1f( "u_Scale", 1.0f / (m_fOuterRadius - m_fInnerRadius) );
-        setUniform1f( "u_ScaleDepth", m_fRayleighScaleDepth );
+        setUniform1f( "u_Scale", 1.0f / (m_OuterRadius - m_InnerRadius) );
+        setUniform1f( "u_ScaleDepth", m_RayleighScaleDepth );
 
         setUniform1f( "u_ScaleOverScaleDepth",
-                1.0f / ((m_fOuterRadius - m_fInnerRadius) * m_fRayleighScaleDepth) );
+                1.0f / ((m_OuterRadius - m_InnerRadius) * m_RayleighScaleDepth) );
 
         setUniform1f( "u_g", m_g );
     }

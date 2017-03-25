@@ -158,10 +158,10 @@ CGameEngine::CGameEngine()
 	m_fExposure = 2.0f;
 
 	m_pbOpticalDepth.MakeOpticalDepthBuffer(
-        m_ASState.m_fInnerRadius,
-        m_ASState.m_fOuterRadius,
-        m_ASState.m_fRayleighScaleDepth,
-        m_ASState.m_fMieScaleDepth);
+        m_ASState.m_InnerRadius,
+        m_ASState.m_OuterRadius,
+        m_ASState.m_RayleighScaleDepth,
+        m_ASState.m_MieScaleDepth);
 
     //
     auto loadASShader = [this]( CShaderObject &so, const std::string &srcBaseName )
@@ -276,7 +276,7 @@ void CGameEngine::RenderFrame(int nMilliseconds)
 	const auto camPos = (CVector)m_3DCamera.GetPosition();
 
 	CShaderObject *pSpaceShader = NULL;
-	if(camPos.Magnitude() < m_ASState.m_fOuterRadius)
+	if(camPos.Magnitude() < m_ASState.m_OuterRadius)
 		pSpaceShader = &m_shSpaceFromAtmosphere;
 	else if(camPos.z > 0.0f)
 		pSpaceShader = &m_shSpaceFromSpace;
@@ -308,7 +308,7 @@ void CGameEngine::RenderFrame(int nMilliseconds)
 		pSpaceShader->Disable();
 
 	CShaderObject *pGroundShader;
-	if(camPos.Magnitude() >= m_ASState.m_fOuterRadius)
+	if(camPos.Magnitude() >= m_ASState.m_OuterRadius)
 		pGroundShader = &m_shGroundFromSpace;
 	else
 		pGroundShader = &m_shGroundFromAtmosphere;
@@ -337,7 +337,7 @@ void CGameEngine::RenderFrame(int nMilliseconds)
 	drawSphere(m_fInnerRadius, 100, 50);
 #else
 	auto *pSphere = gluNewQuadric();
-	gluSphere(pSphere, m_ASState.m_fInnerRadius, 100, 50);
+	gluSphere(pSphere, m_ASState.m_InnerRadius, 100, 50);
 	gluDeleteQuadric(pSphere);
 #endif
 	m_tEarth.DisableTexture();
@@ -345,7 +345,7 @@ void CGameEngine::RenderFrame(int nMilliseconds)
 	pGroundShader->Disable();
 
 	CShaderObject *pSkyShader;
-	if(camPos.Magnitude() >= m_ASState.m_fOuterRadius)
+	if(camPos.Magnitude() >= m_ASState.m_OuterRadius)
 		pSkyShader = &m_shSkyFromSpace;
 	else
 		pSkyShader = &m_shSkyFromAtmosphere;
@@ -374,7 +374,7 @@ void CGameEngine::RenderFrame(int nMilliseconds)
 #else
     {
     auto *pSphere = gluNewQuadric();
-	gluSphere(pSphere, m_ASState.m_fOuterRadius, 100, 50);
+	gluSphere(pSphere, m_ASState.m_OuterRadius, 100, 50);
 	gluDeleteQuadric(pSphere);
     }
 #endif
@@ -443,13 +443,13 @@ void CGameEngine::RenderFrame(int nMilliseconds)
 	sprintf(szBuffer, "ESun (4/Sh+4): %-1.1f", m_ASState.m_ESun);
 	m_fFont.Print(szBuffer);
 	m_fFont.SetPosition(0, 90);
-	sprintf(szBuffer, "Red (5/Sh+5): %-3.3f", m_ASState.m_fWavelength[0]);
+	sprintf(szBuffer, "Red (5/Sh+5): %-3.3f", m_ASState.m_Wavelength[0]);
 	m_fFont.Print(szBuffer);
 	m_fFont.SetPosition(0, 105);
-	sprintf(szBuffer, "Green (6/Sh+6): %-3.3f", m_ASState.m_fWavelength[1]);
+	sprintf(szBuffer, "Green (6/Sh+6): %-3.3f", m_ASState.m_Wavelength[1]);
 	m_fFont.Print(szBuffer);
 	m_fFont.SetPosition(0, 120);
-	sprintf(szBuffer, "Blue (7/Sh+7): %-3.3f", m_ASState.m_fWavelength[2]);
+	sprintf(szBuffer, "Blue (7/Sh+7): %-3.3f", m_ASState.m_Wavelength[2]);
 	m_fFont.Print(szBuffer);
 	m_fFont.SetPosition(0, 135);
 	sprintf(szBuffer, "Exposure (8/Sh+8): %-2.2f", m_fExposure);
@@ -507,21 +507,21 @@ void CGameEngine::HandleInput(float fSeconds)
 	}
 	else if ( isKeyDown( '5' ) )
 	{
-        auto &val = m_ASState.m_fWavelength[0];
+        auto &val = m_ASState.m_Wavelength[0];
 
         if ( isKeyDown(VK_SHIFT) ) val = Max(0.001f, val -= 0.001f); else
 			                       val += 0.001f;
 	}
 	else if ( isKeyDown( '6' ) )
 	{
-        auto &val = m_ASState.m_fWavelength[1];
+        auto &val = m_ASState.m_Wavelength[1];
 
         if ( isKeyDown(VK_SHIFT) ) val = Max(0.001f, val -= 0.001f); else
 			                       val += 0.001f;
 	}
 	else if ( isKeyDown( '7' ) )
 	{
-        auto &val = m_ASState.m_fWavelength[2];
+        auto &val = m_ASState.m_Wavelength[2];
 
         if ( isKeyDown(VK_SHIFT) ) val = Max(0.001f, val -= 0.001f); else
 			                       val += 0.001f;
@@ -592,9 +592,9 @@ void CGameEngine::HandleInput(float fSeconds)
 		m_3DCamera.Accelerate(vAccel, fSeconds, RESISTANCE);
 		CVector vPos = m_3DCamera.GetPosition();
 		float fMagnitude = vPos.Magnitude();
-		if(fMagnitude < m_ASState.m_fInnerRadius)
+		if(fMagnitude < m_ASState.m_InnerRadius)
 		{
-			vPos *= (m_ASState.m_fInnerRadius * (1 + DELTA)) / fMagnitude;
+			vPos *= (m_ASState.m_InnerRadius * (1 + DELTA)) / fMagnitude;
 			m_3DCamera.SetPosition(CDoubleVector(vPos.x, vPos.y, vPos.z));
 			m_3DCamera.SetVelocity(-m_3DCamera.GetVelocity());
 		}
