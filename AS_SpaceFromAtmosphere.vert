@@ -12,8 +12,10 @@ void main(void)
 {
 	// Get the ray from the camera to the vertex and its length
 	vec3 pos = gl_Vertex.xyz;
-    vec3 raySta = u_CameraPos;
-	vec3 rayDir = normalize( pos - raySta );
+
+    vec3 raySta;
+	vec3 rayDir;
+    AS_CalcRayFromCamera( pos, raySta, rayDir );
 
 	// Calculate the farther intersection of the ray with the outer atmosphere
     // (which is the far point of the ray passing through the atmosphere)
@@ -23,8 +25,9 @@ void main(void)
                         PLANET_ORIGIN,
                         u_OuterRadius * u_OuterRadius );
 
-	// Calculate attenuation from the camera to the top of the atmosphere toward the vertex
 	vec3 start = raySta;
+
+	// Calculate attenuation from the camera to the top of the atmosphere toward the vertex
 	float height = length(start);
     float useOuterRadius = AS_CalcCamDistanceFromPlanetOrigin();
 	float depth = exp( u_ScaleOverScaleDepth * (u_InnerRadius - useOuterRadius) );

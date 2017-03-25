@@ -34,6 +34,31 @@ float AS_CalcCamDistanceFromPlanetOrigin()
 }
 
 //==================================================================
+void AS_CalcRayFromCamera(
+            vec3 pos,
+            out vec3 out_raySta,
+            out vec3 out_rayDir )
+{
+    out_raySta = u_CameraPos;
+	out_rayDir = normalize( pos - out_raySta );
+}
+
+//==================================================================
+void AS_CalcRayFromCameraLen(
+            vec3 pos,
+            out vec3  out_raySta,
+            out vec3  out_rayDir,
+            out float out_rayLen )
+{
+    out_raySta = u_CameraPos;
+
+	vec3 raySta_to_pos = pos - out_raySta;
+
+	out_rayLen = length( raySta_to_pos );
+	out_rayDir = raySta_to_pos / out_rayLen;
+}
+
+//==================================================================
 float AS_Scale( float cosA )
 {
 	float x = 1.0 - cosA;
@@ -79,7 +104,7 @@ float AS_CalcRaySphereClosestInters(
 vec3 AS_RaytraceScatterSky(
             vec3 raySta,
             vec3 rayDir,
-            float rayLength,
+            float rayLen,
             float useOuterRadius,
             float near,
             float startDepth )
@@ -88,7 +113,7 @@ vec3 AS_RaytraceScatterSky(
     //   then calculate its scattering offset
 
     vec3 samplePointStart = raySta + rayDir * near;
-    float segmentLength = rayLength - near;
+    float segmentLength = rayLen - near;
 
 	float startAngle = dot(rayDir, samplePointStart) / useOuterRadius;
 	float startOffset = startDepth * AS_Scale( startAngle );
@@ -130,7 +155,7 @@ vec3 AS_RaytraceScatterGround(
             vec3 pos,
             vec3 raySta,
             vec3 rayDir,
-            float rayLength,
+            float rayLen,
             float useOuterRadius,
             float near,
             out vec3 out_atten )
@@ -139,7 +164,7 @@ vec3 AS_RaytraceScatterGround(
     //   then calculate its scattering offset
 
     vec3 samplePointStart = raySta + rayDir * near;
-    float segmentLength  = rayLength - near;
+    float segmentLength  = rayLen - near;
 
 	// Initialize the scattering loop variables
 	float sampleLength = segmentLength / SAMPLES_F;

@@ -13,10 +13,11 @@ void main(void)
 	// Get the ray from the camera to the vertex and its length
     //  (which is the far point of the ray passing through the atmosphere)
 	vec3 pos = gl_Vertex.xyz;
-    vec3 raySta = u_CameraPos;
-	vec3 rayDir = pos - raySta;
-	float rayLength = length(rayDir);
-	rayDir /= rayLength;
+
+    vec3  raySta;
+	vec3  rayDir;
+	float rayLen;
+    AS_CalcRayFromCameraLen( pos, raySta, rayDir, rayLen );
 
 	// Calculate the closest intersection of the ray with the outer atmosphere
     // (which is the near point of the ray passing through the atmosphere)
@@ -31,7 +32,7 @@ void main(void)
                             pos,
                             raySta,
                             rayDir,
-                            rayLength,
+                            rayLen,
                             u_OuterRadius,
                             near,
                             attenuation );
