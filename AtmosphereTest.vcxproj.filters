@@ -124,7 +124,7 @@
     <ClInclude Include="src\ShaderObject.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="src\AS_State.h">
+    <ClInclude Include="src\ONAS_State.h">
       <Filter>src</Filter>
     </ClInclude>
   </ItemGroup>
@@ -139,40 +139,40 @@
     </Image>
   </ItemGroup>
   <ItemGroup>
-    <None Include="AS_GroundFromAtmosphere.frag">
+    <None Include="ONAS_GroundFromAtmosphere.frag">
       <Filter>GLSL Shader Files</Filter>
     </None>
-    <None Include="AS_GroundFromAtmosphere.vert">
+    <None Include="ONAS_GroundFromAtmosphere.vert">
       <Filter>GLSL Shader Files</Filter>
     </None>
-    <None Include="AS_GroundFromSpace.frag">
+    <None Include="ONAS_GroundFromSpace.frag">
       <Filter>GLSL Shader Files</Filter>
     </None>
-    <None Include="AS_GroundFromSpace.vert">
+    <None Include="ONAS_GroundFromSpace.vert">
       <Filter>GLSL Shader Files</Filter>
     </None>
-    <None Include="AS_SkyFromAtmosphere.frag">
+    <None Include="ONAS_SkyFromAtmosphere.frag">
       <Filter>GLSL Shader Files</Filter>
     </None>
-    <None Include="AS_SkyFromAtmosphere.vert">
+    <None Include="ONAS_SkyFromAtmosphere.vert">
       <Filter>GLSL Shader Files</Filter>
     </None>
-    <None Include="AS_SkyFromSpace.frag">
+    <None Include="ONAS_SkyFromSpace.frag">
       <Filter>GLSL Shader Files</Filter>
     </None>
-    <None Include="AS_SkyFromSpace.vert">
+    <None Include="ONAS_SkyFromSpace.vert">
       <Filter>GLSL Shader Files</Filter>
     </None>
-    <None Include="AS_SpaceFromAtmosphere.frag">
+    <None Include="ONAS_SpaceFromAtmosphere.frag">
       <Filter>GLSL Shader Files</Filter>
     </None>
-    <None Include="AS_SpaceFromAtmosphere.vert">
+    <None Include="ONAS_SpaceFromAtmosphere.vert">
       <Filter>GLSL Shader Files</Filter>
     </None>
-    <None Include="AS_SpaceFromSpace.frag">
+    <None Include="ONAS_SpaceFromSpace.frag">
       <Filter>GLSL Shader Files</Filter>
     </None>
-    <None Include="AS_SpaceFromSpace.vert">
+    <None Include="ONAS_SpaceFromSpace.vert">
       <Filter>GLSL Shader Files</Filter>
     </None>
     <None Include="HDR.vert">

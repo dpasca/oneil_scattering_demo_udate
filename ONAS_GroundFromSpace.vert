@@ -6,7 +6,7 @@
 // Copyright (c) 2004 Sean O'Neil
 //
 
-//#include "AS_Common.glsl"
+//#include "ONAS_Common.glsl"
 
 void main(void)
 {
@@ -16,7 +16,7 @@ void main(void)
 
     vec3 groundCol;
     vec3 attenuation;
-    AS_CalcColorsForGroundOutside( groundCol, attenuation, pos );
+    ONAS_CalcColorsForGroundOutside( groundCol, attenuation, pos );
 
 	gl_FrontColor.rgb = groundCol;
 	gl_FrontSecondaryColor.rgb = attenuation;

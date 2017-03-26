@@ -39,7 +39,7 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "Matrix.h"
 #include "PixelBuffer.h"
 #include "Texture.h"
-#include "AS_State.h" 
+#include "ONAS_State.h" 
 
 //==================================================================
 class CGameEngine
@@ -62,7 +62,7 @@ protected:
 
 	float m_fExposure = 2.0f;
 
-    AS_State    m_ASState;
+    ONAS_State    m_ASState;
 
 	CPixelBuffer m_pbOpticalDepth;
 

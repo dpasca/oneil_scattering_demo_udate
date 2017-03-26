@@ -121,7 +121,7 @@ static void drawSphere(
 
 //==================================================================
 static void setASUniforms(
-                const AS_State &state,
+                const ONAS_State &state,
                 CShaderObject *pShader,
                 const CVector &camPos,
                 const CVector &planetPos,
@@ -198,16 +198,16 @@ CGameEngine::CGameEngine()
             const std::string &srcFragName )
     {
         so.LoadFromFile(
-                "AS_Common.glsl",
+                "ONAS_Common.glsl",
                 srcVertName + ".vert",
                 srcFragName + ".frag");
     };
-	loadASShader( m_shSkyFromSpace        , "AS_SkyFromSpace"        , "AS_Sky"    );
-	loadASShader( m_shSkyFromAtmosphere   , "AS_SkyFromAtmosphere"   , "AS_Sky"    );
-	loadASShader( m_shGroundFromSpace     , "AS_GroundFromSpace"     , "AS_Ground" );
-	loadASShader( m_shGroundFromAtmosphere, "AS_GroundFromAtmosphere", "AS_Ground" );
-	loadASShader( m_shSpaceFromSpace      , "AS_SpaceFromSpace"      , "AS_Space"  );
-	loadASShader( m_shSpaceFromAtmosphere , "AS_SpaceFromAtmosphere" , "AS_Space"  );
+	loadASShader( m_shSkyFromSpace        , "ONAS_SkyFromSpace"        , "ONAS_Sky"    );
+	loadASShader( m_shSkyFromAtmosphere   , "ONAS_SkyFromAtmosphere"   , "ONAS_Sky"    );
+	loadASShader( m_shGroundFromSpace     , "ONAS_GroundFromSpace"     , "ONAS_Ground" );
+	loadASShader( m_shGroundFromAtmosphere, "ONAS_GroundFromAtmosphere", "ONAS_Ground" );
+	loadASShader( m_shSpaceFromSpace      , "ONAS_SpaceFromSpace"      , "ONAS_Space"  );
+	loadASShader( m_shSpaceFromAtmosphere , "ONAS_SpaceFromAtmosphere" , "ONAS_Space"  );
 
     //
     {

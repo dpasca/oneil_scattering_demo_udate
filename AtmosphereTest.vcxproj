@@ -161,7 +161,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="res\resource.h" />
-    <ClInclude Include="src\AS_State.h" />
+    <ClInclude Include="src\ONAS_State.h" />
     <ClInclude Include="src\DateTime.h" />
     <ClInclude Include="src\Font.h" />
     <ClInclude Include="src\GameApp.h" />
@@ -192,18 +192,18 @@
     <Image Include="res\icon1.ico" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="AS_GroundFromAtmosphere.frag" />
-    <None Include="AS_GroundFromAtmosphere.vert" />
-    <None Include="AS_GroundFromSpace.frag" />
-    <None Include="AS_GroundFromSpace.vert" />
-    <None Include="AS_SkyFromAtmosphere.frag" />
-    <None Include="AS_SkyFromAtmosphere.vert" />
-    <None Include="AS_SkyFromSpace.frag" />
-    <None Include="AS_SkyFromSpace.vert" />
-    <None Include="AS_SpaceFromAtmosphere.frag" />
-    <None Include="AS_SpaceFromAtmosphere.vert" />
-    <None Include="AS_SpaceFromSpace.frag" />
-    <None Include="AS_SpaceFromSpace.vert" />
+    <None Include="ONAS_GroundFromAtmosphere.frag" />
+    <None Include="ONAS_GroundFromAtmosphere.vert" />
+    <None Include="ONAS_GroundFromSpace.frag" />
+    <None Include="ONAS_GroundFromSpace.vert" />
+    <None Include="ONAS_SkyFromAtmosphere.frag" />
+    <None Include="ONAS_SkyFromAtmosphere.vert" />
+    <None Include="ONAS_SkyFromSpace.frag" />
+    <None Include="ONAS_SkyFromSpace.vert" />
+    <None Include="ONAS_SpaceFromAtmosphere.frag" />
+    <None Include="ONAS_SpaceFromAtmosphere.vert" />
+    <None Include="ONAS_SpaceFromSpace.frag" />
+    <None Include="ONAS_SpaceFromSpace.vert" />
     <None Include="HDR.vert" />
     <None Include="HDRRect.frag" />
     <None Include="HDRSquare.frag" />

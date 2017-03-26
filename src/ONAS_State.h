@@ -1,18 +1,18 @@
 //==================================================================
-/// AS_State.h
+/// ONAS_State.h
 ///
 /// Created by Davide Pasca - 2017/3/26
 ///
 /// Based on the GPU Gems 2 demo by Sean O'Neil
 //==================================================================
 
-#ifndef AS_STATE_H
-#define AS_STATE_H
+#ifndef ONAS_STATE_H
+#define ONAS_STATE_H
 
 #include <functional>
 
 //==================================================================
-class AS_State
+class ONAS_State
 {
 public:
     using SetUniform1F_FnT = std::function<void (const char *, float)>;
@@ -30,7 +30,7 @@ public:
 	float m_MieScaleDepth      = 0;
 
 public:
-    AS_State()
+    ONAS_State()
     {
         m_Wavelength[0] = 0.650f;		// 650 nm for red
         m_Wavelength[1] = 0.570f;		// 570 nm for green

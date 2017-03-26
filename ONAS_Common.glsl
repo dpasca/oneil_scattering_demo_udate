@@ -1,5 +1,5 @@
 //==================================================================
-/// AS_Common.h
+/// ONAS_Common.h
 ///
 /// Created by Davide Pasca - 2017/3/26
 ///
@@ -26,13 +26,13 @@ const int   SAMPLES_N = 2;
 const float SAMPLES_F = 2.0;
 
 //==================================================================
-float AS_CalcCamDistanceFromPlanetOrigin()
+float ONAS_CalcCamDistanceFromPlanetOrigin()
 {
     return length( u_CameraPos );
 }
 
 //==================================================================
-void AS_CalcRayFromCamera(
+void ONAS_CalcRayFromCamera(
             vec3 pos,
             out vec3 out_raySta,
             out vec3 out_rayDir )
@@ -42,7 +42,7 @@ void AS_CalcRayFromCamera(
 }
 
 //==================================================================
-void AS_CalcRayFromCameraLen(
+void ONAS_CalcRayFromCameraLen(
             vec3 pos,
             out vec3  out_raySta,
             out vec3  out_rayDir,
@@ -57,7 +57,7 @@ void AS_CalcRayFromCameraLen(
 }
 
 //==================================================================
-float AS_Scale( float cosA )
+float ONAS_Scale( float cosA )
 {
 	float x = 1.0 - cosA;
 
@@ -68,7 +68,7 @@ float AS_Scale( float cosA )
 
 //==================================================================
 // http://http.developer.nvidia.com/GPUGems2/elementLinks/0256equ01.jpg
-float AS_CalcMiePhase( float cosA, float g )
+float ONAS_CalcMiePhase( float cosA, float g )
 {
     float g2 = g * g;
 
@@ -84,7 +84,7 @@ float AS_CalcMiePhase( float cosA, float g )
 //==================================================================
 // NOTE: assumes that rayDir is normalized
 // NOTE: using radius squared
-float AS_CalcRaySphereClosestInters(
+float ONAS_CalcRaySphereClosestInters(
                 vec3 raySta,
                 vec3 rayDir,
                 vec3 sphereC,
@@ -102,7 +102,7 @@ float AS_CalcRaySphereClosestInters(
 }
 
 //==================================================================
-vec3 AS_RaytraceScatterSky(
+vec3 ONAS_RaytraceScatterSky(
             vec3 raySta,
             vec3 rayDir,
             float rayLen,
@@ -117,7 +117,7 @@ vec3 AS_RaytraceScatterSky(
     float segmentLength = rayLen - near;
 
 	float startAngle = dot(rayDir, samplePointStart) / useOuterRadius;
-	float startOffset = startDepth * AS_Scale( startAngle );
+	float startOffset = startDepth * ONAS_Scale( startAngle );
 
 	// Initialize the scattering loop variables
 	float sampleLength = segmentLength / SAMPLES_F;
@@ -138,8 +138,8 @@ vec3 AS_RaytraceScatterSky(
 		float cameraAngle = dot( rayDir, samplePoint ) / height;
 
 		float scatter = startOffset +
-                            depth * (AS_Scale( lightAngle ) -
-                                     AS_Scale( cameraAngle ));
+                            depth * (ONAS_Scale( lightAngle ) -
+                                     ONAS_Scale( cameraAngle ));
 
 		vec3 atten = exp( -scatter * (u_InvWavelength * u_Kr4PI + u_Km4PI) );
 
@@ -152,7 +152,7 @@ vec3 AS_RaytraceScatterSky(
 }
 
 //==================================================================
-void AS_RaytraceScatterGround(
+void ONAS_RaytraceScatterGround(
             out vec3 out_groundCol,
             out vec3 out_atten,
             vec3 pos,
@@ -182,8 +182,8 @@ void AS_RaytraceScatterGround(
     float posLen = length( pos );
     float cameraAngle = dot(-rayDir, pos) / posLen;
     float lightAngle = dot(u_LightDir, pos) / posLen;
-    float cameraScale = AS_Scale( cameraAngle );
-    float lightScale = AS_Scale( lightAngle );
+    float cameraScale = ONAS_Scale( cameraAngle );
+    float lightScale = ONAS_Scale( lightAngle );
 
     cameraOffset = depth * cameraScale;
     temp = lightScale + cameraScale;
@@ -213,7 +213,7 @@ void AS_RaytraceScatterGround(
 }
 
 //==================================================================
-void AS_CalcMieAndRayleighForSky(
+void ONAS_CalcMieAndRayleighForSky(
             out vec3 out_mieCol,
             out vec3 out_rayleighCol,
             vec3 raySta,
@@ -223,7 +223,7 @@ void AS_CalcMieAndRayleighForSky(
             float near,
             float startDepth )
 {
-    vec3 baseCol = AS_RaytraceScatterSky(
+    vec3 baseCol = ONAS_RaytraceScatterSky(
                         raySta,
                         rayDir,
                         rayLen,
@@ -237,7 +237,7 @@ void AS_CalcMieAndRayleighForSky(
 
 //==================================================================
 // calculate the colors from inside the atmosphere
-void AS_CalcMieAndRayleighForSkyInside(
+void ONAS_CalcMieAndRayleighForSkyInside(
             out vec3 out_mieCol,
             out vec3 out_rayleighCol,
             out vec3 out_posToCam,
@@ -248,9 +248,9 @@ void AS_CalcMieAndRayleighForSkyInside(
     vec3  raySta;
 	vec3  rayDir;
 	float rayLen;
-    AS_CalcRayFromCameraLen( pos, raySta, rayDir, rayLen );
+    ONAS_CalcRayFromCameraLen( pos, raySta, rayDir, rayLen );
 
-    float useOuterRadius = AS_CalcCamDistanceFromPlanetOrigin();
+    float useOuterRadius = ONAS_CalcCamDistanceFromPlanetOrigin();
 
     float near = 0.0;
 
@@ -258,7 +258,7 @@ void AS_CalcMieAndRayleighForSkyInside(
                 exp( u_ScaleOverScaleDepth *
                         (u_InnerRadius - useOuterRadius) );
 
-    AS_CalcMieAndRayleighForSky(
+    ONAS_CalcMieAndRayleighForSky(
                             out_mieCol,
                             out_rayleighCol,
                             raySta,
@@ -274,7 +274,7 @@ void AS_CalcMieAndRayleighForSkyInside(
 
 //==================================================================
 // calculate the colors from outside the atmosphere
-void AS_CalcMieAndRayleighForSkyOutside(
+void ONAS_CalcMieAndRayleighForSkyOutside(
             out vec3 out_mieCol,
             out vec3 out_rayleighCol,
             out vec3 out_posToCam,
@@ -285,13 +285,13 @@ void AS_CalcMieAndRayleighForSkyOutside(
     vec3  raySta;
 	vec3  rayDir;
 	float rayLen;
-    AS_CalcRayFromCameraLen( pos, raySta, rayDir, rayLen );
+    ONAS_CalcRayFromCameraLen( pos, raySta, rayDir, rayLen );
 
     float useOuterRadius = u_OuterRadius;
 
 	// Calculate the closest intersection of the ray with the outer atmosphere
     // (which is the near point of the ray passing through the atmosphere)
-    float near = AS_CalcRaySphereClosestInters(
+    float near = ONAS_CalcRaySphereClosestInters(
                                 raySta,
                                 rayDir,
                                 vec3(0.0, 0.0, 0.0),
@@ -299,7 +299,7 @@ void AS_CalcMieAndRayleighForSkyOutside(
 
 	float startDepth = exp( -1.0 / u_ScaleDepth );
 
-    AS_CalcMieAndRayleighForSky(
+    ONAS_CalcMieAndRayleighForSky(
                             out_mieCol,
                             out_rayleighCol,
                             raySta,
@@ -315,7 +315,7 @@ void AS_CalcMieAndRayleighForSkyOutside(
 
 //==================================================================
 // calculate the colors from inside the atmosphere
-void AS_CalcColorsForGroundInside(
+void ONAS_CalcColorsForGroundInside(
             out vec3 out_groundCol,
             out vec3 out_attenuation,
             vec3 pos )
@@ -323,22 +323,22 @@ void AS_CalcColorsForGroundInside(
     vec3  raySta;
 	vec3  rayDir;
 	float rayLen;
-    AS_CalcRayFromCameraLen( pos, raySta, rayDir, rayLen );
+    ONAS_CalcRayFromCameraLen( pos, raySta, rayDir, rayLen );
 
-    AS_RaytraceScatterGround(
+    ONAS_RaytraceScatterGround(
             out_groundCol,
             out_attenuation,
             pos,
             raySta,
             rayDir,
             rayLen,
-            AS_CalcCamDistanceFromPlanetOrigin(),
+            ONAS_CalcCamDistanceFromPlanetOrigin(),
             0.0 );
 }
 
 //==================================================================
 // calculate the colors from outside the atmosphere
-void AS_CalcColorsForGroundOutside(
+void ONAS_CalcColorsForGroundOutside(
             out vec3 out_groundCol,
             out vec3 out_attenuation,
             vec3 pos )
@@ -346,17 +346,17 @@ void AS_CalcColorsForGroundOutside(
     vec3  raySta;
 	vec3  rayDir;
 	float rayLen;
-    AS_CalcRayFromCameraLen( pos, raySta, rayDir, rayLen );
+    ONAS_CalcRayFromCameraLen( pos, raySta, rayDir, rayLen );
 
 	// Calculate the closest intersection of the ray with the outer atmosphere
     // (which is the near point of the ray passing through the atmosphere)
-    float near = AS_CalcRaySphereClosestInters(
+    float near = ONAS_CalcRaySphereClosestInters(
                                 raySta,
                                 rayDir,
                                 vec3(0.0, 0.0, 0.0),
                                 u_OuterRadius * u_OuterRadius );
 
-    AS_RaytraceScatterGround(
+    ONAS_RaytraceScatterGround(
             out_groundCol,
             out_attenuation,
             pos,
