@@ -233,3 +233,81 @@ void AS_CalcMieAndRayleighForSky(
     out_rayleighCol = baseCol * (u_KrESun * u_InvWavelength);
 }
 
+//==================================================================
+// calculate the colors from inside the atmosphere
+void AS_CalcMieAndRayleighForSkyInside(
+            out vec3 out_mieCol,
+            out vec3 out_rayleighCol,
+            out vec3 out_posToCam,
+            vec3 pos )
+{
+	// Get the ray from the camera to the vertex, and its length
+    // (which is the far point of the ray passing through the atmosphere)
+    vec3  raySta;
+	vec3  rayDir;
+	float rayLen;
+    AS_CalcRayFromCameraLen( pos, raySta, rayDir, rayLen );
+
+    float useOuterRadius = AS_CalcCamDistanceFromPlanetOrigin();
+
+    float near = 0.0;
+
+	float startDepth =
+                exp( u_ScaleOverScaleDepth *
+                        (u_InnerRadius - useOuterRadius) );
+
+    AS_CalcMieAndRayleighForSky(
+                            out_mieCol,
+                            out_rayleighCol,
+                            raySta,
+                            rayDir,
+                            rayLen,
+                            useOuterRadius,
+                            near,
+                            startDepth );
+
+    // necessary as a varying for the fragment shader
+    out_posToCam = raySta - pos;
+}
+
+//==================================================================
+// calculate the colors from outside the atmosphere
+void AS_CalcMieAndRayleighForSkyOutside(
+            out vec3 out_mieCol,
+            out vec3 out_rayleighCol,
+            out vec3 out_posToCam,
+            vec3 pos )
+{
+	// Get the ray from the camera to the vertex, and its length
+    // (which is the far point of the ray passing through the atmosphere)
+    vec3  raySta;
+	vec3  rayDir;
+	float rayLen;
+    AS_CalcRayFromCameraLen( pos, raySta, rayDir, rayLen );
+
+    float useOuterRadius = u_OuterRadius;
+
+	// Calculate the closest intersection of the ray with the outer atmosphere
+    // (which is the near point of the ray passing through the atmosphere)
+    float near = AS_CalcRaySphereClosestInters(
+                                raySta,
+                                rayDir,
+                                u_PlanetPos,
+                                useOuterRadius * useOuterRadius );
+
+	float startDepth = exp( -1.0 / u_ScaleDepth );
+
+    AS_CalcMieAndRayleighForSky(
+                            out_mieCol,
+                            out_rayleighCol,
+                            raySta,
+                            rayDir,
+                            rayLen,
+                            useOuterRadius,
+                            near,
+                            startDepth );
+
+    // necessary as a varying for the fragment shader
+    out_posToCam = raySta - pos;
+}
+
