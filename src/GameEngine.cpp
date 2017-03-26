@@ -43,6 +43,15 @@ POSSIBILITY OF SUCH DAMAGE.
 // DAVIDE - currently acting weird... why ?!
 //#define DONT_USE_GLU
 
+static const float PLANET_RADIUS = 10.0f;
+
+// Acceleration rate due to thrusters (units/s*s)
+static const float CAM_MOVE_THRUST     = PLANET_RADIUS / 10;
+
+// Damping effect on velocity
+static const float CAM_MOVE_RESISTANCE = 0.1f;
+
+
 //==================================================================
 static void drawSphere(
                 double r,
@@ -146,8 +155,11 @@ CGameEngine::CGameEngine()
 
 	//glEnable(GL_MULTISAMPLE_ARB);
 
+    //
+    m_ASState.SetPlanetRadius( PLANET_RADIUS );
+
     // setup starting position
-	CVector vPos(0, 0, 25);
+	CVector vPos( 0, 0, PLANET_RADIUS * 2.5f );
 #ifdef USE_SAVED_CAMERA_POS
 	if ( const auto *psz = GetApp()->GetProfileString("Camera", "Position", NULL) )
 		sscanf(psz, "%f, %f, %f", &vPos.x, &vPos.y, &vPos.z);
@@ -212,15 +224,28 @@ CGameEngine::CGameEngine()
     }
 }
 
+//==================================================================
 CGameEngine::~CGameEngine()
 {
 	// Write the camera position and orientation to the registry
 	char szBuffer[256];
-	sprintf(szBuffer, "%f, %f, %f", m_3DCamera.GetPosition().x, m_3DCamera.GetPosition().y, m_3DCamera.GetPosition().z);
+
+	sprintf(szBuffer, "%f, %f, %f",
+            m_3DCamera.GetPosition().x,
+            m_3DCamera.GetPosition().y,
+            m_3DCamera.GetPosition().z);
+
 	GetApp()->WriteProfileString("Camera", "Position", szBuffer);
-	sprintf(szBuffer, "%f, %f, %f, %f", m_3DCamera.x, m_3DCamera.y, m_3DCamera.z, m_3DCamera.w);
+
+	sprintf(szBuffer, "%f, %f, %f, %f",
+            m_3DCamera.x,
+            m_3DCamera.y,
+            m_3DCamera.z,
+            m_3DCamera.w);
+
 	GetApp()->WriteProfileString("Camera", "Orientation", szBuffer);
 
+    //
 	m_pBuffer.Cleanup();
 }
 
@@ -233,8 +258,8 @@ static void setProjectionMatrix()
         (double)GetGameApp()->GetWidth() /
         (double)GetGameApp()->GetHeight();
 
-    auto nearr = 0.001;
-    auto farr  = 100.0;
+    auto nearr = (double)PLANET_RADIUS * 0.0001;
+    auto farr  = (double)PLANET_RADIUS * 10.0;
 
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
@@ -488,56 +513,54 @@ void CGameEngine::OnChar(WPARAM c)
 
 void CGameEngine::HandleInput(float fSeconds)
 {
-    auto isKeyDown = []( auto vk )
-    {
-        return GetKeyState( vk ) & 0x8000;
-    };
+    auto isKeyDown = []( auto vk ) { return GetKeyState( vk ) & 0x8000; };
+    auto isShiftDown = []()        { return GetKeyState( VK_SHIFT ) & 0x8000; };
 
 	if ( isKeyDown( '1' ) )
 	{
-        if ( isKeyDown(VK_SHIFT) ) m_ASState.m_Kr = Max(0.0f, m_ASState.m_Kr - 0.0001f); else
-			                       m_ASState.m_Kr += 0.0001f;
+        if ( isShiftDown() ) m_ASState.m_Kr = Max(0.0f, m_ASState.m_Kr - 0.0001f); else
+			                 m_ASState.m_Kr += 0.0001f;
 	}
 	else if ( isKeyDown( '2' ) )
 	{
-        if ( isKeyDown(VK_SHIFT) ) m_ASState.m_Km = Max(0.0f, m_ASState.m_Km - 0.0001f); else
-			                       m_ASState.m_Km += 0.0001f;
+        if ( isShiftDown() ) m_ASState.m_Km = Max(0.0f, m_ASState.m_Km - 0.0001f); else
+			                 m_ASState.m_Km += 0.0001f;
 	}
 	else if ( isKeyDown( '3' ) )
 	{
-        if ( isKeyDown(VK_SHIFT) ) m_ASState.m_g = Max(-1.0f, m_ASState.m_g-0.001f); else
-			                       m_ASState.m_g = Min( 1.0f, m_ASState.m_g+0.001f);
+        if ( isShiftDown() ) m_ASState.m_g = Max(-1.0f, m_ASState.m_g-0.001f); else
+			                 m_ASState.m_g = Min( 1.0f, m_ASState.m_g+0.001f);
 	}
 	else if ( isKeyDown( '4' ) )
 	{
-        if ( isKeyDown(VK_SHIFT) ) m_ASState.m_ESun = Max(0.0f, m_ASState.m_ESun - 0.1f); else
-			                       m_ASState.m_ESun += 0.1f;
+        if ( isShiftDown() ) m_ASState.m_ESun = Max(0.0f, m_ASState.m_ESun - 0.1f); else
+			                 m_ASState.m_ESun += 0.1f;
 	}
 	else if ( isKeyDown( '5' ) )
 	{
         auto &val = m_ASState.m_Wavelength[0];
 
-        if ( isKeyDown(VK_SHIFT) ) val = Max(0.001f, val -= 0.001f); else
-			                       val += 0.001f;
+        if ( isShiftDown() ) val = Max(0.001f, val -= 0.001f); else
+			                 val += 0.001f;
 	}
 	else if ( isKeyDown( '6' ) )
 	{
         auto &val = m_ASState.m_Wavelength[1];
 
-        if ( isKeyDown(VK_SHIFT) ) val = Max(0.001f, val -= 0.001f); else
-			                       val += 0.001f;
+        if ( isShiftDown() ) val = Max(0.001f, val -= 0.001f); else
+			                 val += 0.001f;
 	}
 	else if ( isKeyDown( '7' ) )
 	{
         auto &val = m_ASState.m_Wavelength[2];
 
-        if ( isKeyDown(VK_SHIFT) ) val = Max(0.001f, val -= 0.001f); else
-			                       val += 0.001f;
+        if ( isShiftDown() ) val = Max(0.001f, val -= 0.001f); else
+			                 val += 0.001f;
 	}
 	else if ( isKeyDown( '8' ) )
 	{
-        if ( isKeyDown(VK_SHIFT) ) m_fExposure = Max(0.1f, m_fExposure-0.1f); else
-			                       m_fExposure += 0.1f;
+        if ( isShiftDown() ) m_fExposure = Max(0.1f, m_fExposure-0.1f); else
+			                 m_fExposure += 0.1f;
 	}
 
 
@@ -564,9 +587,6 @@ void CGameEngine::HandleInput(float fSeconds)
 	if ( isKeyDown(VK_NUMPAD9) )
 		m_3DCamera.Rotate(m_3DCamera.GetViewAxis(), fSeconds * ROTATE_SPEED);
 
-#define THRUST		1.0f	// Acceleration rate due to thrusters (units/s*s)
-#define RESISTANCE	0.1f	// Damping effect on velocity
-
 	// Handle acceleration keys
 	CVector vAccel(0.0f);
 	if( isKeyDown(VK_SPACE) )
@@ -574,7 +594,7 @@ void CGameEngine::HandleInput(float fSeconds)
 	else
 	{
 		// Add camera's acceleration due to thrusters
-		float fThrust = THRUST;
+		float fThrust = CAM_MOVE_THRUST;
 		if( isKeyDown(VK_CONTROL) ) fThrust *= 10.0f;
 
 		// Thrust forward/reverse affects velocity along the view axis
@@ -597,7 +617,7 @@ void CGameEngine::HandleInput(float fSeconds)
 		if ( isKeyDown('N') ) vAccel += m_3DCamera.GetUpAxis() * -fThrust;
 #endif
 
-		m_3DCamera.Accelerate(vAccel, fSeconds, RESISTANCE);
+		m_3DCamera.Accelerate(vAccel, fSeconds, CAM_MOVE_RESISTANCE);
 		CVector vPos = m_3DCamera.GetPosition();
 		float fMagnitude = vPos.Magnitude();
 		if(fMagnitude < m_ASState.m_InnerRadius)

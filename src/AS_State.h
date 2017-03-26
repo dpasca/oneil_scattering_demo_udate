@@ -40,6 +40,12 @@ public:
         m_MieScaleDepth = 0.1f;
     }
 
+    void SetPlanetRadius( float innerR )
+    {
+        m_InnerRadius = innerR;
+        m_OuterRadius = innerR * 1.025f;
+    }
+
     //
     void UpdateShaderUniforms(
             const float camPos[3],
