@@ -210,3 +210,26 @@ vec3 AS_RaytraceScatterGround(
     return attenIntegr * (u_InvWavelength * u_KrESun + u_KmESun);
 }
 
+//==================================================================
+void AS_CalcMieAndRayleighForSky(
+            out vec3 out_mieCol,
+            out vec3 out_rayleighCol,
+            vec3 raySta,
+            vec3 rayDir,
+            float rayLen,
+            float useOuterRadius,
+            float near,
+            float startDepth )
+{
+    vec3 baseCol = AS_RaytraceScatterSky(
+                        raySta,
+                        rayDir,
+                        rayLen,
+                        useOuterRadius,
+                        near,
+                        startDepth );
+
+    out_mieCol      = baseCol *  u_KmESun;
+    out_rayleighCol = baseCol * (u_KrESun * u_InvWavelength);
+}
+

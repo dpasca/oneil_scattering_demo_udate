@@ -33,8 +33,11 @@ void main(void)
 
 	float startDepth = exp( -1.0 / u_ScaleDepth );
 
-	// Now loop through the sample rays
-	vec3 frontColor = AS_RaytraceScatterSky(
+    vec3 mieCol;
+    vec3 rayleighCol;
+    AS_CalcMieAndRayleighForSky(
+                            mieCol,
+                            rayleighCol,
                             raySta,
                             rayDir,
                             rayLen,
@@ -42,9 +45,8 @@ void main(void)
                             near,
                             startDepth );
 
-	// Finally, scale the Mie and Rayleigh colors and set up the varying variables for the pixel shader
-	gl_FrontSecondaryColor.rgb = frontColor * u_KmESun;
-	gl_FrontColor.rgb = frontColor * (u_InvWavelength * u_KrESun);
+    gl_FrontSecondaryColor.rgb = mieCol;
+    gl_FrontColor.rgb = rayleighCol;
 
 	gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;
 
