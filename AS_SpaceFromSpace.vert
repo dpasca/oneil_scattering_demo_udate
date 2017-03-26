@@ -22,7 +22,7 @@ void main(void)
     float near = AS_CalcRaySphereClosestInters(
                         raySta,
                         rayDir,
-                        u_PlanetPos,
+                        vec3(0.0, 0.0, 0.0),
                         u_OuterRadius * u_OuterRadius );
 
 	vec3 start = raySta + rayDir * near;

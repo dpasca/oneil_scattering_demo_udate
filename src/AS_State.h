@@ -57,7 +57,6 @@ public:
         static const double pi = 3.14159265358979323846;
 
         setUniform3f( "u_CameraPos", camPos );
-        setUniform3f( "u_PlanetPos", planetPos );
         setUniform3f( "u_LightDir", lightDir );
 
         float ooWaveLen4[3] =

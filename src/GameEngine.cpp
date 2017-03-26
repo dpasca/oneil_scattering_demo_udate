@@ -43,7 +43,7 @@ POSSIBILITY OF SUCH DAMAGE.
 // DAVIDE - currently acting weird... why ?!
 //#define DONT_USE_GLU
 
-static const float PLANET_RADIUS = 10.0f;
+static const float PLANET_RADIUS = 1.0f;
 
 // Acceleration rate due to thrusters (units/s*s)
 static const float CAM_MOVE_THRUST     = PLANET_RADIUS / 10;
@@ -351,6 +351,7 @@ void CGameEngine::RenderFrame(int nMilliseconds)
 	m_tMoonGlow.DisableTexture();
     }
 
+    // -- space
 	if(pSpaceShader)
 		pSpaceShader->Disable();
 
@@ -360,22 +361,10 @@ void CGameEngine::RenderFrame(int nMilliseconds)
 	else
 		pGroundShader = &m_shGroundFromAtmosphere;
 
+    // -- ground
 	pGroundShader->Enable();
     setASUniforms( m_ASState, pGroundShader, camPos, planetPos, m_vLightDirection );
 	pGroundShader->SetUniformParameter1i("s2Tex1", 0);
-
-	/*
-	if(camPos.z < 0 && pGroundShader == &m_shGroundFromAtmosphere)
-	{
-		// Try setting the moon as a light source
-		CVector vLightDir = CVector(0.0f, 0.0f, -50.0f) - camPos;
-		vLightDir.Normalize();
-		pGroundShader->SetUniformParameter3f("u_LightDir", vLightDir.x, vLightDir.y, vLightDir.z);
-		pGroundShader->SetUniformParameter1f("u_KrESun", m_Kr*m_ESun*0.1f);
-		pGroundShader->SetUniformParameter1f("u_KmESun", 10.0f*m_Km*m_ESun*0.1f);
-		pGroundShader->SetUniformParameter1f("u_g", -0.75f);
-	}
-	*/
 
     {
     auto bindScope = m_tEarth.BindTexture();
@@ -385,6 +374,7 @@ void CGameEngine::RenderFrame(int nMilliseconds)
     }
 	pGroundShader->Disable();
 
+    // -- sky
 	CShaderObject *pSkyShader;
 	if(camPos.Magnitude() >= m_ASState.m_OuterRadius)
 		pSkyShader = &m_shSkyFromSpace;
@@ -394,18 +384,6 @@ void CGameEngine::RenderFrame(int nMilliseconds)
 	pSkyShader->Enable();
     setASUniforms( m_ASState, pSkyShader, camPos, planetPos, m_vLightDirection );
 
-	/*
-	if(camPos.z < 0 && pSkyShader == &m_shSkyFromAtmosphere)
-	{
-		// Try setting the moon as a light source
-		CVector vLightDir = CVector(0.0f, 0.0f, -50.0f) - camPos;
-		vLightDir.Normalize();
-		pSkyShader->SetUniformParameter3f("u_LightDir", vLightDir.x, vLightDir.y, vLightDir.z);
-		pSkyShader->SetUniformParameter1f("u_KrESun", m_Kr*m_ESun*0.1f);
-		pSkyShader->SetUniformParameter1f("u_KmESun", 10.0f*m_Km*m_ESun*0.1f);
-		pSkyShader->SetUniformParameter1f("u_g", -0.75f);
-	}
-	*/
 	glFrontFace(GL_CW);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_ONE, GL_ONE);
@@ -416,6 +394,7 @@ void CGameEngine::RenderFrame(int nMilliseconds)
 	glFrontFace(GL_CCW);
 	pSkyShader->Disable();
 
+    //
 	glPopMatrix();
 	glFlush();
 

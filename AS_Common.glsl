@@ -7,7 +7,6 @@
 //==================================================================
 
 uniform vec3  u_CameraPos;      // The camera's current position
-uniform vec3  u_PlanetPos;      // Position of the center of the planet
 uniform vec3  u_LightDir;       // The direction vector to the light source
 
 uniform vec3  u_InvWavelength;  // 1 / pow(wavelength, 4) for the red, green, and blue channels
@@ -29,7 +28,7 @@ const float SAMPLES_F = 2.0;
 //==================================================================
 float AS_CalcCamDistanceFromPlanetOrigin()
 {
-    return length( u_CameraPos - u_PlanetPos );
+    return length( u_CameraPos );
 }
 
 //==================================================================
@@ -38,7 +37,7 @@ void AS_CalcRayFromCamera(
             out vec3 out_raySta,
             out vec3 out_rayDir )
 {
-    out_raySta = u_CameraPos - u_PlanetPos;
+    out_raySta = u_CameraPos;
 	out_rayDir = normalize( pos - out_raySta );
 }
 
@@ -49,7 +48,7 @@ void AS_CalcRayFromCameraLen(
             out vec3  out_rayDir,
             out float out_rayLen )
 {
-    out_raySta = u_CameraPos - u_PlanetPos;
+    out_raySta = u_CameraPos;
 
 	vec3 raySta_to_pos = pos - out_raySta;
 
@@ -295,7 +294,7 @@ void AS_CalcMieAndRayleighForSkyOutside(
     float near = AS_CalcRaySphereClosestInters(
                                 raySta,
                                 rayDir,
-                                u_PlanetPos,
+                                vec3(0.0, 0.0, 0.0),
                                 useOuterRadius * useOuterRadius );
 
 	float startDepth = exp( -1.0 / u_ScaleDepth );
@@ -354,7 +353,7 @@ void AS_CalcColorsForGroundOutside(
     float near = AS_CalcRaySphereClosestInters(
                                 raySta,
                                 rayDir,
-                                u_PlanetPos,
+                                vec3(0.0, 0.0, 0.0),
                                 u_OuterRadius * u_OuterRadius );
 
     AS_RaytraceScatterGround(
