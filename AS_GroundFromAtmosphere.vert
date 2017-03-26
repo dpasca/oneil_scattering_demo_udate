@@ -14,20 +14,9 @@ void main(void)
     //  (which is the far point of the ray passing through the atmosphere)
 	vec3 pos = gl_Vertex.xyz;
 
-    vec3  raySta;
-	vec3  rayDir;
-	float rayLen;
-    AS_CalcRayFromCameraLen( pos, raySta, rayDir, rayLen );
-
-    vec3 attenuation = vec3(0.0 ,0.0, 0.0);
-    vec3 groundCol = AS_RaytraceScatterGround(
-                            pos,
-                            raySta,
-                            rayDir,
-                            rayLen,
-                            AS_CalcCamDistanceFromPlanetOrigin(),
-                            0.0,
-                            attenuation );
+    vec3 groundCol;
+    vec3 attenuation;
+    AS_CalcColorsForGroundInside( groundCol, attenuation, pos );
 
 	gl_FrontColor.rgb = groundCol;
 	gl_FrontSecondaryColor.rgb = attenuation;

@@ -1,11 +1,10 @@
-//
-// Atmospheric scattering vertex shader
-//
-// Author: Sean O'Neil
-//
-// Copyright (c) 2004 Sean O'Neil
-//
-// Modified by Davide Pasca (2017)
+//==================================================================
+/// AS_Common.h
+///
+/// Created by Davide Pasca - 2017/3/26
+///
+/// Based on the GPU Gems 2 demo by Sean O'Neil (2004)
+//==================================================================
 
 uniform vec3  u_CameraPos;      // The camera's current position
 uniform vec3  u_PlanetPos;      // Position of the center of the planet
@@ -39,7 +38,7 @@ void AS_CalcRayFromCamera(
             out vec3 out_raySta,
             out vec3 out_rayDir )
 {
-    out_raySta = u_CameraPos;
+    out_raySta = u_CameraPos - u_PlanetPos;
 	out_rayDir = normalize( pos - out_raySta );
 }
 
@@ -50,7 +49,7 @@ void AS_CalcRayFromCameraLen(
             out vec3  out_rayDir,
             out float out_rayLen )
 {
-    out_raySta = u_CameraPos;
+    out_raySta = u_CameraPos - u_PlanetPos;
 
 	vec3 raySta_to_pos = pos - out_raySta;
 
@@ -151,14 +150,15 @@ vec3 AS_RaytraceScatterSky(
 }
 
 //==================================================================
-vec3 AS_RaytraceScatterGround(
+void AS_RaytraceScatterGround(
+            out vec3 out_groundCol,
+            out vec3 out_atten,
             vec3 pos,
             vec3 raySta,
             vec3 rayDir,
             float rayLen,
             float useOuterRadius,
-            float near,
-            out vec3 out_atten )
+            float near )
 {
 	// Calculate the ray's starting position,
     //   then calculate its scattering offset
@@ -207,7 +207,7 @@ vec3 AS_RaytraceScatterGround(
 		samplePoint += sampleRay;
 	}
 
-    return attenIntegr * (u_InvWavelength * u_KrESun + u_KmESun);
+    out_groundCol = attenIntegr * (u_InvWavelength * u_KrESun + u_KmESun);
 }
 
 //==================================================================
@@ -309,5 +309,59 @@ void AS_CalcMieAndRayleighForSkyOutside(
 
     // necessary as a varying for the fragment shader
     out_posToCam = raySta - pos;
+}
+
+//==================================================================
+// calculate the colors from inside the atmosphere
+void AS_CalcColorsForGroundInside(
+            out vec3 out_groundCol,
+            out vec3 out_attenuation,
+            vec3 pos )
+{
+    vec3  raySta;
+	vec3  rayDir;
+	float rayLen;
+    AS_CalcRayFromCameraLen( pos, raySta, rayDir, rayLen );
+
+    AS_RaytraceScatterGround(
+            out_groundCol,
+            out_attenuation,
+            pos,
+            raySta,
+            rayDir,
+            rayLen,
+            AS_CalcCamDistanceFromPlanetOrigin(),
+            0.0 );
+}
+
+//==================================================================
+// calculate the colors from outside the atmosphere
+void AS_CalcColorsForGroundOutside(
+            out vec3 out_groundCol,
+            out vec3 out_attenuation,
+            vec3 pos )
+{
+    vec3  raySta;
+	vec3  rayDir;
+	float rayLen;
+    AS_CalcRayFromCameraLen( pos, raySta, rayDir, rayLen );
+
+	// Calculate the closest intersection of the ray with the outer atmosphere
+    // (which is the near point of the ray passing through the atmosphere)
+    float near = AS_CalcRaySphereClosestInters(
+                                raySta,
+                                rayDir,
+                                u_PlanetPos,
+                                u_OuterRadius * u_OuterRadius );
+
+    AS_RaytraceScatterGround(
+            out_groundCol,
+            out_attenuation,
+            pos,
+            raySta,
+            rayDir,
+            rayLen,
+            u_OuterRadius,
+            near );
 }
 
