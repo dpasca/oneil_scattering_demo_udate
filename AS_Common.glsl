@@ -73,10 +73,13 @@ float AS_CalcMiePhase( float cosA, float g )
 {
     float g2 = g * g;
 
-    return 1.5 *
-            ((1.0 - g2) / (2.0 + g2)) *
-                (1.0 + cosA * cosA) /
-                    pow(1.0 + g2 - 2.0 * g * cosA, 1.5);
+    float a = 1.0 - g2;
+    float b = 2.0 + g2;
+
+    float c = 1.0 + cosA * cosA;
+    float d = pow( 1.0 + g2 - 2.0 * g * cosA, 1.5 );
+
+    return (3.0 / 2.0) * a / b * c / d;
 }
 
 //==================================================================
