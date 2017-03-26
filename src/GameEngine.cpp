@@ -43,10 +43,14 @@ POSSIBILITY OF SUCH DAMAGE.
 // DAVIDE - currently acting weird... why ?!
 //#define DONT_USE_GLU
 
-#ifdef DONT_USE_GLU
 //==================================================================
-static void drawSphere(double r, int longs, int lats)
+static void drawSphere(
+                double r,
+                int longs,
+                int lats,
+                const float posOff[3] )
 {
+#ifdef DONT_USE_GLU
     //glUseProgramObjectARB( 0 );
     //glDisable( GL_TEXTURE_1D );
     //glDisable( GL_TEXTURE_2D );
@@ -76,7 +80,9 @@ static void drawSphere(double r, int longs, int lats)
 
         glNormal3fv(vec);
 
-        for (auto &x : vec) x *= (float)r;
+        vec[0] = posOff[0] + vec[0] * (float)r;
+        vec[1] = posOff[1] + vec[1] * (float)r;
+        vec[2] = posOff[2] + vec[2] * (float)r;
         glVertex3fv(vec);
     };
 
@@ -92,14 +98,22 @@ static void drawSphere(double r, int longs, int lats)
         }
         glEnd();
     }
-}
+#else
+	glPushMatrix();
+    glTranslatef( posOff[0], posOff[1], posOff[2] );
+	auto *pSphere = gluNewQuadric();
+	gluSphere( pSphere, r, longs, lats );
+	gluDeleteQuadric( pSphere );
+	glPopMatrix();
 #endif
+}
 
 //==================================================================
 static void setASUniforms(
                 const AS_State &state,
                 CShaderObject *pShader,
                 const CVector &camPos,
+                const CVector &planetPos,
                 const CVector &lightDir )
 {
     auto setUni1f = [pShader]( const char *pUniName, float val1f )
@@ -112,7 +126,7 @@ static void setASUniforms(
         pShader->SetUniformParameter3f( pUniName, pVal3f[0], pVal3f[1], pVal3f[2] );
     };
 
-    state.UpdateShaderUniforms( &camPos.x, &lightDir.x, setUni1f, setUni3f );
+    state.UpdateShaderUniforms( &camPos.x, &planetPos.x, &lightDir.x, setUni1f, setUni3f );
 }
 
 //==================================================================
@@ -242,6 +256,9 @@ void CGameEngine::RenderFrame(int nMilliseconds)
 	}
 	nFrames++;
 
+    //
+    CVector planetPos = {0, 0, 0};
+
 	// Move the camera
 	HandleInput(nMilliseconds * 0.001f);
 
@@ -287,7 +304,7 @@ void CGameEngine::RenderFrame(int nMilliseconds)
 	if(pSpaceShader)
 	{
 		pSpaceShader->Enable();
-        setASUniforms( m_ASState, pSpaceShader, camPos, m_vLightDirection );
+        setASUniforms( m_ASState, pSpaceShader, camPos, planetPos, m_vLightDirection );
 		pSpaceShader->SetUniformParameter1i("s2Tex1", 0);
 	}
 
@@ -317,7 +334,7 @@ void CGameEngine::RenderFrame(int nMilliseconds)
 		pGroundShader = &m_shGroundFromAtmosphere;
 
 	pGroundShader->Enable();
-    setASUniforms( m_ASState, pGroundShader, camPos, m_vLightDirection );
+    setASUniforms( m_ASState, pGroundShader, camPos, planetPos, m_vLightDirection );
 	pGroundShader->SetUniformParameter1i("s2Tex1", 0);
 
 	/*
@@ -336,13 +353,7 @@ void CGameEngine::RenderFrame(int nMilliseconds)
     {
     auto bindScope = m_tEarth.BindTexture();
 	m_tEarth.EnableTexture();
-#ifdef DONT_USE_GLU
-	drawSphere(m_ASState.m_InnerRadius, 100, 50);
-#else
-	auto *pSphere = gluNewQuadric();
-	gluSphere(pSphere, m_ASState.m_InnerRadius, 100, 50);
-	gluDeleteQuadric(pSphere);
-#endif
+	drawSphere(m_ASState.m_InnerRadius, 100, 50, &planetPos.x);
 	m_tEarth.DisableTexture();
     }
 	pGroundShader->Disable();
@@ -354,7 +365,7 @@ void CGameEngine::RenderFrame(int nMilliseconds)
 		pSkyShader = &m_shSkyFromAtmosphere;
 
 	pSkyShader->Enable();
-    setASUniforms( m_ASState, pSkyShader, camPos, m_vLightDirection );
+    setASUniforms( m_ASState, pSkyShader, camPos, planetPos, m_vLightDirection );
 
 	/*
 	if(camPos.z < 0 && pSkyShader == &m_shSkyFromAtmosphere)
@@ -369,20 +380,12 @@ void CGameEngine::RenderFrame(int nMilliseconds)
 	}
 	*/
 	glFrontFace(GL_CW);
-	//glEnable(GL_BLEND);
+	glEnable(GL_BLEND);
 	glBlendFunc(GL_ONE, GL_ONE);
 
-#ifdef DONT_USE_GLU
-	drawSphere(m_ASState.m_OuterRadius, 100, 50);
-#else
-    {
-    auto *pSphere = gluNewQuadric();
-	gluSphere(pSphere, m_ASState.m_OuterRadius, 100, 50);
-	gluDeleteQuadric(pSphere);
-    }
-#endif
+	drawSphere(m_ASState.m_OuterRadius, 100, 50, &planetPos.x);
 
-	//glDisable(GL_BLEND);
+	glDisable(GL_BLEND);
 	glFrontFace(GL_CCW);
 	pSkyShader->Disable();
 

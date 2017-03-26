@@ -43,6 +43,7 @@ public:
     //
     void UpdateShaderUniforms(
             const float camPos[3],
+            const float planetPos[3],
             const float lightDir[3],
             const SetUniform1F_FnT &setUniform1f,
             const SetUniform3F_FnT &setUniform3f ) const
@@ -50,6 +51,7 @@ public:
         static const double pi = 3.14159265358979323846;
 
         setUniform3f( "u_CameraPos", camPos );
+        setUniform3f( "u_PlanetPos", planetPos );
         setUniform3f( "u_LightDir", lightDir );
 
         float ooWaveLen4[3] =
