@@ -50,6 +50,9 @@ static void drawSphere(
                 int lats,
                 const float posOff[3] )
 {
+	glPushMatrix();
+    glTranslatef( posOff[0], posOff[1], posOff[2] );
+
 #ifdef DONT_USE_GLU
     //glUseProgramObjectARB( 0 );
     //glDisable( GL_TEXTURE_1D );
@@ -80,9 +83,9 @@ static void drawSphere(
 
         glNormal3fv(vec);
 
-        vec[0] = posOff[0] + vec[0] * (float)r;
-        vec[1] = posOff[1] + vec[1] * (float)r;
-        vec[2] = posOff[2] + vec[2] * (float)r;
+        vec[0] *= (float)r;
+        vec[1] *= (float)r;
+        vec[2] *= (float)r;
         glVertex3fv(vec);
     };
 
@@ -99,13 +102,12 @@ static void drawSphere(
         glEnd();
     }
 #else
-	glPushMatrix();
-    glTranslatef( posOff[0], posOff[1], posOff[2] );
 	auto *pSphere = gluNewQuadric();
 	gluSphere( pSphere, r, longs, lats );
 	gluDeleteQuadric( pSphere );
-	glPopMatrix();
 #endif
+
+	glPopMatrix();
 }
 
 //==================================================================
