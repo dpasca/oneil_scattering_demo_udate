@@ -57,22 +57,15 @@ static void drawSphere(
                 double r,
                 int longs,
                 int lats,
-                const float posOff[3] )
+                const float *pPosOff=nullptr )
 {
-	glPushMatrix();
-    glTranslatef( posOff[0], posOff[1], posOff[2] );
+    if ( pPosOff )
+    {
+        glPushMatrix();
+        glTranslatef( pPosOff[0], pPosOff[1], pPosOff[2] );
+    }
 
 #ifdef DONT_USE_GLU
-    //glUseProgramObjectARB( 0 );
-    //glDisable( GL_TEXTURE_1D );
-    //glDisable( GL_TEXTURE_2D );
-    //glDisable( GL_TEXTURE_RECTANGLE_EXT );
-	//glDisable( GL_DEPTH_TEST );
-
-	//glDisable( GL_CULL_FACE );
-	//glDisable( GL_LIGHTING );
-    //glColor4f( 1.0f, 1.0f, 1.0f, 1.0f );
-
     auto output_vertex = [=](int lat, int lon)
     {
         //static const double pi = 3.14159265358979323846;
@@ -116,7 +109,10 @@ static void drawSphere(
 	gluDeleteQuadric( pSphere );
 #endif
 
-	glPopMatrix();
+    if ( pPosOff )
+    {
+        glPopMatrix();
+    }
 }
 
 //==================================================================
@@ -124,7 +120,6 @@ static void setASUniforms(
                 const ONAS_State &state,
                 CShaderObject *pShader,
                 const CVector &camPos,
-                const CVector &planetPos,
                 const CVector &lightDir )
 {
     auto setUni1f = [pShader]( const char *pUniName, float val1f )
@@ -137,7 +132,7 @@ static void setASUniforms(
         pShader->SetUniformParameter3f( pUniName, pVal3f[0], pVal3f[1], pVal3f[2] );
     };
 
-    state.UpdateShaderUniforms( &camPos.x, &planetPos.x, &lightDir.x, setUni1f, setUni3f );
+    state.UpdateShaderUniforms( &camPos.x, &lightDir.x, setUni1f, setUni3f );
 }
 
 //==================================================================
@@ -283,9 +278,6 @@ void CGameEngine::RenderFrame(int nMilliseconds)
 	}
 	nFrames++;
 
-    //
-    CVector planetPos = {0, 0, 0};
-
 	// Move the camera
 	HandleInput(nMilliseconds * 0.001f);
 
@@ -331,7 +323,7 @@ void CGameEngine::RenderFrame(int nMilliseconds)
 	if(pSpaceShader)
 	{
 		pSpaceShader->Enable();
-        setASUniforms( m_ASState, pSpaceShader, camPos, planetPos, m_vLightDirection );
+        setASUniforms( m_ASState, pSpaceShader, camPos, m_vLightDirection );
 		pSpaceShader->SetUniformParameter1i("s2Tex1", 0);
 	}
 
@@ -363,13 +355,13 @@ void CGameEngine::RenderFrame(int nMilliseconds)
 
     // -- ground
 	pGroundShader->Enable();
-    setASUniforms( m_ASState, pGroundShader, camPos, planetPos, m_vLightDirection );
+    setASUniforms( m_ASState, pGroundShader, camPos, m_vLightDirection );
 	pGroundShader->SetUniformParameter1i("s2Tex1", 0);
 
     {
     auto bindScope = m_tEarth.BindTexture();
 	m_tEarth.EnableTexture();
-	drawSphere(m_ASState.m_InnerRadius, 100, 50, &planetPos.x);
+	drawSphere(m_ASState.m_InnerRadius, 100, 50);
 	m_tEarth.DisableTexture();
     }
 	pGroundShader->Disable();
@@ -382,13 +374,13 @@ void CGameEngine::RenderFrame(int nMilliseconds)
 		pSkyShader = &m_shSkyFromAtmosphere;
 
 	pSkyShader->Enable();
-    setASUniforms( m_ASState, pSkyShader, camPos, planetPos, m_vLightDirection );
+    setASUniforms( m_ASState, pSkyShader, camPos, m_vLightDirection );
 
 	glFrontFace(GL_CW);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_ONE, GL_ONE);
 
-	drawSphere(m_ASState.m_OuterRadius, 100, 50, &planetPos.x);
+	drawSphere(m_ASState.m_OuterRadius, 100, 50);
 
 	glDisable(GL_BLEND);
 	glFrontFace(GL_CCW);

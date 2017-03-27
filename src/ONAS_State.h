@@ -49,7 +49,6 @@ public:
     //
     void UpdateShaderUniforms(
             const float camPos[3],
-            const float planetPos[3],
             const float lightDir[3],
             const SetUniform1F_FnT &setUniform1f,
             const SetUniform3F_FnT &setUniform3f ) const
