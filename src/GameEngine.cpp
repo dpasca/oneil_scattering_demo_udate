@@ -40,6 +40,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #define NO_POSTFX
 
+//#define ENABLE_SPACE
+
 // DAVIDE - currently acting weird... why ?!
 //#define DONT_USE_GLU
 
@@ -314,6 +316,8 @@ void CGameEngine::RenderFrame(int nMilliseconds)
 
     const auto camPos = (CVector)m_3DCamera.GetPosition();
 
+#ifdef ENABLE_SPACE
+    // -- space
     CShaderObject *pSpaceShader = NULL;
     if(camPos.Magnitude() < m_ASState.m_OuterRadius)
         pSpaceShader = &m_shSpaceFromAtmosphere;
@@ -343,17 +347,17 @@ void CGameEngine::RenderFrame(int nMilliseconds)
     m_tMoonGlow.DisableTexture();
     }
 
-    // -- space
     if(pSpaceShader)
         pSpaceShader->Disable();
+#endif
 
+    // -- ground
     CShaderObject *pGroundShader;
     if(camPos.Magnitude() >= m_ASState.m_OuterRadius)
         pGroundShader = &m_shGroundFromSpace;
     else
         pGroundShader = &m_shGroundFromAtmosphere;
 
-    // -- ground
     pGroundShader->Enable();
     setASUniforms( m_ASState, pGroundShader, camPos, m_vLightDirection );
     pGroundShader->SetUniformParameter1i("s2Tex1", 0);
