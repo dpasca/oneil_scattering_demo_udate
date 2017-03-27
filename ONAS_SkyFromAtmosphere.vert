@@ -8,21 +8,15 @@
 
 //#include "ONAS_Common.glsl"
 
-varying vec3 v_PosToCam;
+varying vec3 v_mieCol;
+varying vec3 v_rayleighCol;
+varying vec3 v_posToCam;
 
 void main(void)
 {
     vec3 pos = gl_Vertex.xyz;
 
-    vec3 mieCol;
-    vec3 rayleighCol;
-    vec3 posToCam;
-    ONAS_CalcMieAndRayleighForSkyInside( mieCol, rayleighCol, posToCam, pos );
-
-    gl_FrontSecondaryColor.rgb = mieCol;
-    gl_FrontColor.rgb = rayleighCol;
-
-    v_PosToCam = posToCam;
+    ONAS_CalcMieAndRayleighForSkyInside( v_mieCol, v_rayleighCol, v_posToCam, pos );
 
     gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;
 }

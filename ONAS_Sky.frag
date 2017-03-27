@@ -8,15 +8,17 @@
 
 //#include "ONAS_Common.h"
 
-varying vec3 v_PosToCam;
+varying vec3 v_mieCol;
+varying vec3 v_rayleighCol;
+varying vec3 v_posToCam;
 
 void main()
 {
-    float cosA = dot(u_LightDir, v_PosToCam) / length(v_PosToCam);
+    float cosA = dot(u_LightDir, v_posToCam) / length(v_posToCam);
 
     float miePhase = ONAS_CalcMiePhase( cosA, u_g );
 
-    gl_FragColor = gl_Color + miePhase * gl_SecondaryColor;
+    gl_FragColor.rgb = v_rayleighCol + miePhase * v_mieCol;
     gl_FragColor.a = gl_FragColor.b;
 }
 
