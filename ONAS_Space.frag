@@ -11,6 +11,6 @@ uniform sampler2D s2Test;
 
 void main (void)
 {
-	gl_FragColor = gl_SecondaryColor * texture2D(s2Test, gl_TexCoord[0].st);
-	//gl_FragColor = gl_SecondaryColor;
+    gl_FragColor = gl_SecondaryColor * texture2D(s2Test, gl_TexCoord[0].st);
+    //gl_FragColor = gl_SecondaryColor;
 }

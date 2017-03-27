@@ -45,47 +45,48 @@ POSSIBILITY OF SUCH DAMAGE.
 class CGameEngine
 {
 protected:
-	float m_fFPS;
-	int m_nTime;
-	CFont m_fFont;
+    float m_fFPS;
+    int m_nTime;
+    CFont m_fFont;
 
-	C3DObject m_3DCamera;
-	CVector m_vLight;
-	CVector m_vLightDirection;
-	
-	// Variables that can be tweaked with keypresses
-	bool m_bUseHDR = true;
+    C3DObject m_3DCamera;
+    CVector m_vLight;
+    CVector m_vLightDirection;
+    
+    // Variables that can be tweaked with keypresses
+    bool m_bUseHDR = true;
 
-	int m_nSamples = 3; // DAVIDE - currently unused
+    int m_nSamples = 3; // DAVIDE - currently unused
 
-	GLenum m_nPolygonMode = GL_FILL;
+    GLenum m_nPolygonMode = GL_FILL;
 
-	float m_fExposure = 2.0f;
+    float m_fExposure = 2.0f;
 
     ONAS_State    m_ASState;
 
-	CPixelBuffer m_pbOpticalDepth;
+    CPixelBuffer m_pbOpticalDepth;
 
-	CTexture m_tMoonGlow;
-	CTexture m_tEarth;
+    CTexture m_tMoonGlow;
+    CTexture m_tEarth;
 
-	CShaderObject m_shSkyFromSpace;
-	CShaderObject m_shSkyFromAtmosphere;
-	CShaderObject m_shGroundFromSpace;
-	CShaderObject m_shGroundFromAtmosphere;
-	CShaderObject m_shSpaceFromSpace;
-	CShaderObject m_shSpaceFromAtmosphere;
+    CShaderObject m_shSkyFromSpace;
+    CShaderObject m_shSkyFromAtmosphere;
+    CShaderObject m_shGroundFromSpace;
+    CShaderObject m_shGroundFromAtmosphere;
+    CShaderObject m_shSpaceFromSpace;
+    CShaderObject m_shSpaceFromAtmosphere;
 
-	CPBuffer m_pBuffer;
+    CPBuffer m_pBuffer;
 
 public:
-	CGameEngine();
-	~CGameEngine();
-	void RenderFrame(int nMilliseconds);
-	void Pause()	{}
-	void Restore()	{}
-	void HandleInput(float fSeconds);
-	void OnChar(WPARAM c);
+    CGameEngine();
+    ~CGameEngine();
+    void RenderFrame(int nMilliseconds);
+    void Pause()    {}
+    void Restore()  {}
+    void HandleInput(float fSeconds);
+    void OnChar(WPARAM c);
 };
 
 #endif // __GameEngine_h__
+

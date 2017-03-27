@@ -17,7 +17,7 @@ void main()
     float miePhase = ONAS_CalcMiePhase( cosA, u_g );
 
     gl_FragColor = gl_Color + miePhase * gl_SecondaryColor;
-	gl_FragColor.a = gl_FragColor.b;
+    gl_FragColor.a = gl_FragColor.b;
 }
 
 

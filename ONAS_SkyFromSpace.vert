@@ -12,7 +12,7 @@ varying vec3 v_PosToCam;
 
 void main(void)
 {
-	vec3 pos = gl_Vertex.xyz;
+    vec3 pos = gl_Vertex.xyz;
 
     vec3 mieCol;
     vec3 rayleighCol;
@@ -24,6 +24,6 @@ void main(void)
 
     v_PosToCam = posToCam;
 
-	gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;
+    gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;
 }
 

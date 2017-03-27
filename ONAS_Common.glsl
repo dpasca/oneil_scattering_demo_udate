@@ -38,7 +38,7 @@ void ONAS_CalcRayFromCamera(
             out vec3 out_rayDir )
 {
     out_raySta = u_CameraPos;
-	out_rayDir = normalize( pos - out_raySta );
+    out_rayDir = normalize( pos - out_raySta );
 }
 
 //==================================================================
@@ -50,18 +50,18 @@ void ONAS_CalcRayFromCameraLen(
 {
     out_raySta = u_CameraPos;
 
-	vec3 raySta_to_pos = pos - out_raySta;
+    vec3 raySta_to_pos = pos - out_raySta;
 
-	out_rayLen = length( raySta_to_pos );
-	out_rayDir = raySta_to_pos / out_rayLen;
+    out_rayLen = length( raySta_to_pos );
+    out_rayDir = raySta_to_pos / out_rayLen;
 }
 
 //==================================================================
 float ONAS_Scale( float cosA )
 {
-	float x = 1.0 - cosA;
+    float x = 1.0 - cosA;
 
-	return
+    return
         u_ScaleDepth *
             exp( -0.00287 + x*(0.459 + x*(3.83 + x*(-6.80 + x*5.25))) );
 }
@@ -90,15 +90,15 @@ float ONAS_CalcRaySphereClosestInters(
                 vec3 sphereC,
                 float sphereRSqr )
 {
-	float B = 2.0 * dot( raySta, rayDir ) - dot( rayDir, sphereC );
+    float B = 2.0 * dot( raySta, rayDir ) - dot( rayDir, sphereC );
 
     vec3 raySta_to_sphereC = sphereC - raySta;
 
-	float C = dot( raySta_to_sphereC, raySta_to_sphereC ) - sphereRSqr;
+    float C = dot( raySta_to_sphereC, raySta_to_sphereC ) - sphereRSqr;
 
-	float det = max( 0.0, B*B - 4.0 * C );
+    float det = max( 0.0, B*B - 4.0 * C );
 
-	return 0.5 * ( -B - sqrt( det ) );
+    return 0.5 * ( -B - sqrt( det ) );
 }
 
 //==================================================================
@@ -110,43 +110,43 @@ vec3 ONAS_RaytraceScatterSky(
             float near,
             float startDepth )
 {
-	// Calculate the ray's starting position,
+    // Calculate the ray's starting position,
     //   then calculate its scattering offset
 
     vec3 samplePointStart = raySta + rayDir * near;
     float segmentLength = rayLen - near;
 
-	float startAngle = dot(rayDir, samplePointStart) / useOuterRadius;
-	float startOffset = startDepth * ONAS_Scale( startAngle );
+    float startAngle = dot(rayDir, samplePointStart) / useOuterRadius;
+    float startOffset = startDepth * ONAS_Scale( startAngle );
 
-	// Initialize the scattering loop variables
-	float sampleLength = segmentLength / SAMPLES_F;
-	float scaledLength = sampleLength * u_Scale;
-	vec3 sampleRay = rayDir * sampleLength;
-	vec3 samplePoint = samplePointStart + sampleRay * 0.5;
+    // Initialize the scattering loop variables
+    float sampleLength = segmentLength / SAMPLES_F;
+    float scaledLength = sampleLength * u_Scale;
+    vec3 sampleRay = rayDir * sampleLength;
+    vec3 samplePoint = samplePointStart + sampleRay * 0.5;
 
-	vec3 out_col = vec3(0.0, 0.0, 0.0);
+    vec3 out_col = vec3(0.0, 0.0, 0.0);
 
-	for(int i=0; i < SAMPLES_N; ++i)
-	{
-		float height = length(samplePoint);
+    for(int i=0; i < SAMPLES_N; ++i)
+    {
+        float height = length(samplePoint);
 
-		float depth = exp( u_ScaleOverScaleDepth * (u_InnerRadius - height) );
+        float depth = exp( u_ScaleOverScaleDepth * (u_InnerRadius - height) );
 
-		float lightAngle = dot( u_LightDir, samplePoint ) / height;
+        float lightAngle = dot( u_LightDir, samplePoint ) / height;
 
-		float cameraAngle = dot( rayDir, samplePoint ) / height;
+        float cameraAngle = dot( rayDir, samplePoint ) / height;
 
-		float scatter = startOffset +
+        float scatter = startOffset +
                             depth * (ONAS_Scale( lightAngle ) -
                                      ONAS_Scale( cameraAngle ));
 
-		vec3 atten = exp( -scatter * (u_InvWavelength * u_Kr4PI + u_Km4PI) );
+        vec3 atten = exp( -scatter * (u_InvWavelength * u_Kr4PI + u_Km4PI) );
 
-		out_col += atten * (depth * scaledLength);
+        out_col += atten * (depth * scaledLength);
 
-		samplePoint += sampleRay;
-	}
+        samplePoint += sampleRay;
+    }
 
     return out_col;
 }
@@ -162,17 +162,17 @@ void ONAS_RaytraceScatterGround(
             float useOuterRadius,
             float near )
 {
-	// Calculate the ray's starting position,
+    // Calculate the ray's starting position,
     //   then calculate its scattering offset
 
     vec3 samplePointStart = raySta + rayDir * near;
     float segmentLength  = rayLen - near;
 
-	// Initialize the scattering loop variables
-	float sampleLength = segmentLength / SAMPLES_F;
-	float scaledLength = sampleLength * u_Scale;
-	vec3 sampleRay = rayDir * sampleLength;
-	vec3 samplePoint = samplePointStart + sampleRay * 0.5;
+    // Initialize the scattering loop variables
+    float sampleLength = segmentLength / SAMPLES_F;
+    float scaledLength = sampleLength * u_Scale;
+    vec3 sampleRay = rayDir * sampleLength;
+    vec3 samplePoint = samplePointStart + sampleRay * 0.5;
 
     float cameraOffset;
     float temp;
@@ -189,25 +189,25 @@ void ONAS_RaytraceScatterGround(
     temp = lightScale + cameraScale;
     }
 
-	// Now loop through the sample rays
-	vec3 attenIntegr = vec3(0.0, 0.0, 0.0);
-	for(int i=0; i < SAMPLES_N; ++i)
-	{
-		float height = length(samplePoint);
+    // Now loop through the sample rays
+    vec3 attenIntegr = vec3(0.0, 0.0, 0.0);
+    for(int i=0; i < SAMPLES_N; ++i)
+    {
+        float height = length(samplePoint);
 
-		float depth = exp(u_ScaleOverScaleDepth * (u_InnerRadius - height));
+        float depth = exp(u_ScaleOverScaleDepth * (u_InnerRadius - height));
 
-		float scatter = depth * temp - cameraOffset;
+        float scatter = depth * temp - cameraOffset;
 
-		vec3 atten = exp( -scatter * (u_InvWavelength * u_Kr4PI + u_Km4PI) );
+        vec3 atten = exp( -scatter * (u_InvWavelength * u_Kr4PI + u_Km4PI) );
 
         // last attentuation goes to the output
         out_atten = atten;
 
-		attenIntegr += atten * (depth * scaledLength);
+        attenIntegr += atten * (depth * scaledLength);
 
-		samplePoint += sampleRay;
-	}
+        samplePoint += sampleRay;
+    }
 
     out_groundCol = attenIntegr * (u_InvWavelength * u_KrESun + u_KmESun);
 }
@@ -243,18 +243,18 @@ void ONAS_CalcMieAndRayleighForSkyInside(
             out vec3 out_posToCam,
             vec3 pos )
 {
-	// Get the ray from the camera to the vertex, and its length
+    // Get the ray from the camera to the vertex, and its length
     // (which is the far point of the ray passing through the atmosphere)
     vec3  raySta;
-	vec3  rayDir;
-	float rayLen;
+    vec3  rayDir;
+    float rayLen;
     ONAS_CalcRayFromCameraLen( pos, raySta, rayDir, rayLen );
 
     float useOuterRadius = ONAS_CalcCamDistanceFromPlanetOrigin();
 
     float near = 0.0;
 
-	float startDepth =
+    float startDepth =
                 exp( u_ScaleOverScaleDepth *
                         (u_InnerRadius - useOuterRadius) );
 
@@ -280,16 +280,16 @@ void ONAS_CalcMieAndRayleighForSkyOutside(
             out vec3 out_posToCam,
             vec3 pos )
 {
-	// Get the ray from the camera to the vertex, and its length
+    // Get the ray from the camera to the vertex, and its length
     // (which is the far point of the ray passing through the atmosphere)
     vec3  raySta;
-	vec3  rayDir;
-	float rayLen;
+    vec3  rayDir;
+    float rayLen;
     ONAS_CalcRayFromCameraLen( pos, raySta, rayDir, rayLen );
 
     float useOuterRadius = u_OuterRadius;
 
-	// Calculate the closest intersection of the ray with the outer atmosphere
+    // Calculate the closest intersection of the ray with the outer atmosphere
     // (which is the near point of the ray passing through the atmosphere)
     float near = ONAS_CalcRaySphereClosestInters(
                                 raySta,
@@ -297,7 +297,7 @@ void ONAS_CalcMieAndRayleighForSkyOutside(
                                 vec3(0.0, 0.0, 0.0),
                                 useOuterRadius * useOuterRadius );
 
-	float startDepth = exp( -1.0 / u_ScaleDepth );
+    float startDepth = exp( -1.0 / u_ScaleDepth );
 
     ONAS_CalcMieAndRayleighForSky(
                             out_mieCol,
@@ -321,8 +321,8 @@ void ONAS_CalcColorsForGroundInside(
             vec3 pos )
 {
     vec3  raySta;
-	vec3  rayDir;
-	float rayLen;
+    vec3  rayDir;
+    float rayLen;
     ONAS_CalcRayFromCameraLen( pos, raySta, rayDir, rayLen );
 
     ONAS_RaytraceScatterGround(
@@ -344,11 +344,11 @@ void ONAS_CalcColorsForGroundOutside(
             vec3 pos )
 {
     vec3  raySta;
-	vec3  rayDir;
-	float rayLen;
+    vec3  rayDir;
+    float rayLen;
     ONAS_CalcRayFromCameraLen( pos, raySta, rayDir, rayLen );
 
-	// Calculate the closest intersection of the ray with the outer atmosphere
+    // Calculate the closest intersection of the ray with the outer atmosphere
     // (which is the near point of the ray passing through the atmosphere)
     float near = ONAS_CalcRaySphereClosestInters(
                                 raySta,
