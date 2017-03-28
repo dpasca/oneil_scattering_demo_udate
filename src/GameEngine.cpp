@@ -39,6 +39,8 @@ POSSIBILITY OF SUCH DAMAGE.
 // DAVIDE - this is dangerous... the camera may end up in a horrible place...
 //#define USE_SAVED_CAMERA_POS
 
+//#define START_IN_ATMOSPHERE
+
 #define NO_POSTFX
 
 //#define DRAW_SPACE
@@ -92,21 +94,25 @@ CGameEngine::CGameEngine()
     m_ASState.SetPlanetRadius( PLANET_RADIUS );
 
     // setup starting position
-    CVector vPos( 0, 0, PLANET_RADIUS * 2.5f );
-#ifdef USE_SAVED_CAMERA_POS
-    if ( const auto *psz = GetApp()->GetProfileString("Camera", "Position", NULL) )
-        sscanf(psz, "%f, %f, %f", &vPos.x, &vPos.y, &vPos.z);
+    {
+        CVector pos;
+#ifdef START_IN_ATMOSPHERE
+        pos = CVector( 0, PLANET_RADIUS * (1 + (0.025f/8)), 0 );
+#else
+        pos = CVector( 0, 0, PLANET_RADIUS * 2.5f );
 #endif
-    m_3DCamera.SetPosition(CDoubleVector(vPos));
+        m_3DCamera.SetPosition( CDoubleVector(pos) );
+    }
 
     // setup starting orientation
-    CQuaternion qOrientation(0.0f, 0.0f, 0.0f, 1.0f);
+    {
+        m_3DCamera = CQuaternion(0.0f, 0.0f, 0.0f, 1.0f);
+    }
+
 #ifdef USE_SAVED_CAMERA_POS
-    if ( const auto *psz = GetApp()->GetProfileString("Camera", "Orientation", NULL) )
-        sscanf(psz, "%f, %f, %f, %f", &qOrientation.x, &qOrientation.y, &qOrientation.z, &qOrientation.w);
+    // load the saved position and orientation, if any
+    loadSavedCameraLoc();
 #endif
-    qOrientation.Normalize();
-    m_3DCamera = qOrientation;
 
     // setup light source
     m_vLight = CVector(0, 0, 1000);
@@ -180,6 +186,28 @@ CGameEngine::~CGameEngine()
 
     //
     m_pBuffer.Cleanup();
+}
+
+//==================================================================
+void CGameEngine::loadSavedCameraLoc()
+{
+    if ( const auto *psz = GetApp()->GetProfileString("Camera", "Position", NULL) )
+    {
+        CVector pos( 0, 0, 0 );
+        sscanf(psz, "%f, %f, %f", &pos.x, &pos.y, &pos.z);
+
+        m_3DCamera.SetPosition( CDoubleVector(pos) );
+    }
+
+    if ( const auto *psz = GetApp()->GetProfileString("Camera", "Orientation", NULL) )
+    {
+        CQuaternion orient(0.0f, 0.0f, 0.0f, 1.0f);
+
+        sscanf(psz, "%f, %f, %f, %f", &orient.x, &orient.y, &orient.z, &orient.w);
+
+        orient.Normalize();
+        m_3DCamera = orient;
+    }
 }
 
 //==================================================================

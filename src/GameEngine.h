@@ -86,6 +86,9 @@ public:
     void Restore()  {}
     void HandleInput(float fSeconds);
     void OnChar(WPARAM c);
+
+private:
+    void loadSavedCameraLoc();
 };
 
 #endif // __GameEngine_h__
