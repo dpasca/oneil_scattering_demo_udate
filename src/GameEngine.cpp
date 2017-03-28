@@ -42,9 +42,6 @@ POSSIBILITY OF SUCH DAMAGE.
 
 //#define ENABLE_SPACE
 
-// DAVIDE - currently acting weird... why ?!
-//#define DONT_USE_GLU
-
 static const float PLANET_RADIUS = 1.0f;
 
 // Acceleration rate due to thrusters (units/s*s)
@@ -52,7 +49,6 @@ static const float CAM_MOVE_THRUST     = PLANET_RADIUS / 10;
 
 // Damping effect on velocity
 static const float CAM_MOVE_RESISTANCE = 0.1f;
-
 
 //==================================================================
 static void drawSphere(
@@ -67,7 +63,6 @@ static void drawSphere(
         glTranslatef( pPosOff[0], pPosOff[1], pPosOff[2] );
     }
 
-#ifdef DONT_USE_GLU
     auto output_vertex = [=](int lat, int lon)
     {
         //static const double pi = 3.14159265358979323846;
@@ -77,7 +72,7 @@ static void drawSphere(
         glTexCoord2f( u, v );
 
         auto lo = (float)(2.0*M_PI) * u;
-        auto la = (float)(2.0*M_PI) * v;
+        auto la = (float)(1.0*M_PI) * v;
 
         float vec[3] {
             cos(lo)*sin(la),
@@ -105,11 +100,6 @@ static void drawSphere(
         }
         glEnd();
     }
-#else
-    auto *pSphere = gluNewQuadric();
-    gluSphere( pSphere, r, longs, lats );
-    gluDeleteQuadric( pSphere );
-#endif
 
     if ( pPosOff )
     {
