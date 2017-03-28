@@ -131,8 +131,8 @@ vec3 ONAS_RaytraceScatterSky(
     {
         float height = length(samplePoint);
         // clamp to avoid numerical explosion leading to inf/NaN by exp()
-        // the 0.01 epsilon is arbitrary, and for extra safety
-        height = clamp( height, u_InnerRadius * 1.01, u_OuterRadius );
+        // the 0.0001 epsilon is arbitrary, and for extra safety
+        height = clamp( height, u_InnerRadius * 1.0001, u_OuterRadius );
 
         float depth = exp( u_ScaleOverScaleDepth * (u_InnerRadius - height) );
 
