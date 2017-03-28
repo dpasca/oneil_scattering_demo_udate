@@ -34,6 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "PixelBuffer.h"
 #include "Texture.h"
 #include "GLUtil.h"
+#include "DrawPrims.h"
 
 // DAVIDE - this is dangerous... the camera may end up in a horrible place...
 //#define USE_SAVED_CAMERA_POS
@@ -49,63 +50,6 @@ static const float CAM_MOVE_THRUST     = PLANET_RADIUS / 10;
 
 // Damping effect on velocity
 static const float CAM_MOVE_RESISTANCE = 0.1f;
-
-//==================================================================
-static void drawSphere(
-                double r,
-                int longs,
-                int lats,
-                const float *pPosOff=nullptr )
-{
-    if ( pPosOff )
-    {
-        glPushMatrix();
-        glTranslatef( pPosOff[0], pPosOff[1], pPosOff[2] );
-    }
-
-    auto output_vertex = [=](int lat, int lon)
-    {
-        //static const double pi = 3.14159265358979323846;
-        auto u = (float)lon / (float)longs;
-        auto v = (float)lat / (float)lats;
-
-        glTexCoord2f( u, v );
-
-        auto lo = (float)(2.0*M_PI) * u;
-        auto la = (float)(1.0*M_PI) * v;
-
-        float vec[3] {
-            cos(lo)*sin(la),
-            sin(lo)*sin(la),
-            cos(la)
-        };
-
-        glNormal3fv(vec);
-
-        vec[0] *= (float)r;
-        vec[1] *= (float)r;
-        vec[2] *= (float)r;
-        glVertex3fv(vec);
-    };
-
-    /* this is probably doing almost exactly the same thing as gluSphere */
-    for (int lat=0; lat<lats; ++lat)
-    {
-        glBegin(GL_TRIANGLE_STRIP);
-        for (int lon=0; lon<=longs; ++lon)
-        {
-            /* glColor3f(FRAND(), FRAND(), FRAND()); */
-            output_vertex(lat, lon);
-            output_vertex(lat+1, lon);
-        }
-        glEnd();
-    }
-
-    if ( pPosOff )
-    {
-        glPopMatrix();
-    }
-}
 
 //==================================================================
 static void setASUniforms(
@@ -355,7 +299,7 @@ void CGameEngine::RenderFrame(int nMilliseconds)
     {
     auto bindScope = m_tEarth.BindTexture();
     m_tEarth.EnableTexture();
-    drawSphere(m_ASState.m_InnerRadius, 100, 50);
+    DP_DrawSphere(m_ASState.m_InnerRadius, 100, 50);
     m_tEarth.DisableTexture();
     }
     pGroundShader->Disable();
@@ -374,7 +318,7 @@ void CGameEngine::RenderFrame(int nMilliseconds)
     glEnable(GL_BLEND);
     glBlendFunc(GL_ONE, GL_ONE);
 
-    drawSphere(m_ASState.m_OuterRadius, 100, 50);
+    DP_DrawSphere(m_ASState.m_OuterRadius, 100, 50);
 
     glDisable(GL_BLEND);
     glFrontFace(GL_CCW);

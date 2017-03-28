@@ -161,6 +161,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="res\resource.h" />
+    <ClInclude Include="src\DrawPrims.h" />
     <ClInclude Include="src\ONAS_State.h" />
     <ClInclude Include="src\DateTime.h" />
     <ClInclude Include="src\Font.h" />

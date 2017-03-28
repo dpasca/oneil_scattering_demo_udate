@@ -124,7 +124,8 @@
     <ClInclude Include="src\ShaderObject.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="src\ONAS_State.h">
+    <ClInclude Include="src\ONAS_State.h" />
+    <ClInclude Include="src\DrawPrims.h">
       <Filter>src</Filter>
     </ClInclude>
   </ItemGroup>
@@ -139,6 +140,15 @@
     </Image>
   </ItemGroup>
   <ItemGroup>
+    <None Include="HDR.vert">
+      <Filter>GLSL Shader Files</Filter>
+    </None>
+    <None Include="HDRRect.frag">
+      <Filter>GLSL Shader Files</Filter>
+    </None>
+    <None Include="HDRSquare.frag">
+      <Filter>GLSL Shader Files</Filter>
+    </None>
     <None Include="ONAS_GroundFromAtmosphere.frag">
       <Filter>GLSL Shader Files</Filter>
     </None>
@@ -173,15 +183,6 @@
       <Filter>GLSL Shader Files</Filter>
     </None>
     <None Include="ONAS_SpaceFromSpace.vert">
-      <Filter>GLSL Shader Files</Filter>
-    </None>
-    <None Include="HDR.vert">
-      <Filter>GLSL Shader Files</Filter>
-    </None>
-    <None Include="HDRRect.frag">
-      <Filter>GLSL Shader Files</Filter>
-    </None>
-    <None Include="HDRSquare.frag">
       <Filter>GLSL Shader Files</Filter>
     </None>
   </ItemGroup>
