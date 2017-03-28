@@ -41,6 +41,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 //#define START_IN_ATMOSPHERE
 
+//#define DEBUG_ANIM_SUN
+
 #define NO_POSTFX
 
 //#define DRAW_SPACE
@@ -116,7 +118,7 @@ CGameEngine::CGameEngine()
 
     // setup light source
     m_vLight = CVector(0, 0, 1000);
-    m_vLightDirection = m_vLight / m_vLight.Magnitude();
+    m_vLightDirection.Normalize();
 
     //
     CTexture::InitStaticMembers(238653, 256);
@@ -278,6 +280,19 @@ void CGameEngine::RenderFrame(int nMilliseconds)
     }
 #endif
 
+    //
+#ifdef DEBUG_ANIM_SUN
+    {
+    static double ang;
+    ang += ((double)nMilliseconds / 1000.0);
+
+    auto newDir = CVector( 0.f, (float)cos( ang ), (float)sin( ang ) );
+
+    m_vLightDirection = newDir;
+    }
+#endif
+
+    //
     const auto camPos = (CVector)m_3DCamera.GetPosition();
 
 #ifdef DRAW_SPACE // -- space

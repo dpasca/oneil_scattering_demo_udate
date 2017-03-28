@@ -50,7 +50,6 @@ protected:
     CFont m_fFont;
 
     C3DObject m_3DCamera;
-    CVector m_vLight;
     CVector m_vLightDirection;
     
     // Variables that can be tweaked with keypresses
