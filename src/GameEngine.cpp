@@ -41,7 +41,9 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #define NO_POSTFX
 
-//#define ENABLE_SPACE
+//#define DRAW_SPACE
+#define DRAW_GROUND
+#define DRAW_SKY
 
 static const float PLANET_RADIUS = 1.0f;
 
@@ -250,79 +252,86 @@ void CGameEngine::RenderFrame(int nMilliseconds)
 
     const auto camPos = (CVector)m_3DCamera.GetPosition();
 
-#ifdef ENABLE_SPACE
-    // -- space
-    CShaderObject *pSpaceShader = NULL;
-    if(camPos.Magnitude() < m_ASState.m_OuterRadius)
-        pSpaceShader = &m_shSpaceFromAtmosphere;
-    else if(camPos.z > 0.0f)
-        pSpaceShader = &m_shSpaceFromSpace;
-
-    if(pSpaceShader)
+#ifdef DRAW_SPACE // -- space
     {
-        pSpaceShader->Enable();
-        setASUniforms( m_ASState, pSpaceShader, camPos, m_vLightDirection );
-        pSpaceShader->SetUniformParameter1i("s2Tex1", 0);
-    }
+        CShaderObject *pSpaceShader = NULL;
+        if(camPos.Magnitude() < m_ASState.m_OuterRadius)
+            pSpaceShader = &m_shSpaceFromAtmosphere;
+        else if(camPos.z > 0.0f)
+            pSpaceShader = &m_shSpaceFromSpace;
 
-    {
-    auto bindScope = m_tMoonGlow.BindTexture();
-    m_tMoonGlow.EnableTexture();
-    glBegin(GL_QUADS);
-    glTexCoord2f(0, 0);
-    glVertex3f(-4.0f, 4.0f, -50.0f);
-    glTexCoord2f(0, 1);
-    glVertex3f(-4.0f, -4.0f, -50.0f);
-    glTexCoord2f(1, 1);
-    glVertex3f(4.0f, -4.0f, -50.0f);
-    glTexCoord2f(1, 0);
-    glVertex3f(4.0f, 4.0f, -50.0f);
-    glEnd();
-    m_tMoonGlow.DisableTexture();
-    }
+        if(pSpaceShader)
+        {
+            pSpaceShader->Enable();
+            setASUniforms( m_ASState, pSpaceShader, camPos, m_vLightDirection );
+            pSpaceShader->SetUniformParameter1i("s2Tex1", 0);
+        }
 
-    if(pSpaceShader)
-        pSpaceShader->Disable();
+        {
+        auto bindScope = m_tMoonGlow.BindTexture();
+        m_tMoonGlow.EnableTexture();
+        glBegin(GL_QUADS);
+        glTexCoord2f(0, 0);
+        glVertex3f(-4.0f, 4.0f, -50.0f);
+        glTexCoord2f(0, 1);
+        glVertex3f(-4.0f, -4.0f, -50.0f);
+        glTexCoord2f(1, 1);
+        glVertex3f(4.0f, -4.0f, -50.0f);
+        glTexCoord2f(1, 0);
+        glVertex3f(4.0f, 4.0f, -50.0f);
+        glEnd();
+        m_tMoonGlow.DisableTexture();
+        }
+
+        if(pSpaceShader)
+            pSpaceShader->Disable();
+    }
 #endif
 
-    // -- ground
-    CShaderObject *pGroundShader;
-    if(camPos.Magnitude() >= m_ASState.m_OuterRadius)
-        pGroundShader = &m_shGroundFromSpace;
-    else
-        pGroundShader = &m_shGroundFromAtmosphere;
-
-    pGroundShader->Enable();
-    setASUniforms( m_ASState, pGroundShader, camPos, m_vLightDirection );
-    pGroundShader->SetUniformParameter1i("s2Tex1", 0);
-
+#ifdef DRAW_GROUND // -- ground
     {
-    auto bindScope = m_tEarth.BindTexture();
-    m_tEarth.EnableTexture();
-    DP_DrawSphere(m_ASState.m_InnerRadius, 100, 50);
-    m_tEarth.DisableTexture();
+        CShaderObject *pGroundShader;
+        if(camPos.Magnitude() >= m_ASState.m_OuterRadius)
+            pGroundShader = &m_shGroundFromSpace;
+        else
+            pGroundShader = &m_shGroundFromAtmosphere;
+
+        pGroundShader->Enable();
+        setASUniforms( m_ASState, pGroundShader, camPos, m_vLightDirection );
+        pGroundShader->SetUniformParameter1i("s2Tex1", 0);
+
+        {
+        auto bindScope = m_tEarth.BindTexture();
+        m_tEarth.EnableTexture();
+        DP_DrawSphere(m_ASState.m_InnerRadius, 100, 50);
+        m_tEarth.DisableTexture();
+        }
+        pGroundShader->Disable();
     }
-    pGroundShader->Disable();
+#endif
 
-    // -- sky
-    CShaderObject *pSkyShader;
-    if(camPos.Magnitude() >= m_ASState.m_OuterRadius)
-        pSkyShader = &m_shSkyFromSpace;
-    else
-        pSkyShader = &m_shSkyFromAtmosphere;
+#ifdef DRAW_SKY // -- sky
+    {
+        CShaderObject *pSkyShader;
+        if(camPos.Magnitude() >= m_ASState.m_OuterRadius)
+            pSkyShader = &m_shSkyFromSpace;
+        else
+            pSkyShader = &m_shSkyFromAtmosphere;
 
-    pSkyShader->Enable();
-    setASUniforms( m_ASState, pSkyShader, camPos, m_vLightDirection );
+        pSkyShader->Enable();
+        setASUniforms( m_ASState, pSkyShader, camPos, m_vLightDirection );
 
-    glFrontFace(GL_CW);
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_ONE, GL_ONE);
+        glFrontFace(GL_CW);
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_ONE, GL_ONE);
 
-    DP_DrawSphere(m_ASState.m_OuterRadius, 100, 50);
+        DP_DrawSphere(m_ASState.m_OuterRadius, 100, 50);
 
-    glDisable(GL_BLEND);
-    glFrontFace(GL_CCW);
-    pSkyShader->Disable();
+        glDisable(GL_BLEND);
+        glFrontFace(GL_CCW);
+        pSkyShader->Disable();
+    }
+#endif
 
     //
     glPopMatrix();
