@@ -117,7 +117,7 @@ CGameEngine::CGameEngine()
 #endif
 
     // setup light source
-    m_vLight = CVector(0, 0, 1000);
+    m_vLightDirection = CVector(0, 1, 0);
     m_vLightDirection.Normalize();
 
     //

@@ -34,8 +34,8 @@ inline void DP_DrawSphere(
 
         float vec[3] {
             cos(lo)*sin(la),
+            cos(la),
             sin(lo)*sin(la),
-            cos(la)
         };
 
         glNormal3fv(vec);
