@@ -57,9 +57,15 @@ void ONAS_CalcRayFromCameraLen(
 }
 
 //==================================================================
+bool ONAS_IsGoodScaleParam( float cosA )
+{
+    return (1.0 - cosA) < 1.2;
+}
+
+//==================================================================
 float ONAS_Scale( float cosA )
 {
-    float x = 1.0 - cosA;
+    float x = max( 1.0 - cosA, 0.0 );
 
     return
         u_ScaleDepth *
@@ -117,6 +123,12 @@ vec3 ONAS_RaytraceScatterSky(
     float segmentLength = rayLen - near;
 
     float startAngle = dot(rayDir, samplePointStart) / useOuterRadius;
+
+    if ( !ONAS_IsGoodScaleParam( startAngle ) )
+    {
+        return vec3(0.0);
+    }
+
     float startOffset = startDepth * ONAS_Scale( startAngle );
 
     // Initialize the scattering loop variables
