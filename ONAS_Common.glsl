@@ -59,7 +59,7 @@ void ONAS_CalcRayFromCameraLen(
 //==================================================================
 bool ONAS_IsGoodScaleParam( float cosA )
 {
-    return (1.0 - cosA) < 1.2;
+    return (1.0 - cosA) < 1.3;
 }
 
 //==================================================================
