@@ -15,6 +15,8 @@
 class ONAS_State
 {
 public:
+    constexpr static float INNER_RAD_TO_OUTER_SCALE = 1.025f;
+
     using SetUniform1F_FnT = std::function<void (const char *, float)>;
     using SetUniform3F_FnT = std::function<void (const char *, const float *)>;
 
@@ -23,8 +25,8 @@ public:
 	float m_ESun    =  20.0f;   // Sun brightness constant
 	float m_g       = -0.990f;  // The Mie phase asymmetry factor
 
-	float m_InnerRadius        = 10.0f;
-	float m_OuterRadius        = 10.25f;
+	float m_InnerRadius        = 1.0f;
+	float m_OuterRadius        = 1.0f * INNER_RAD_TO_OUTER_SCALE;
 	float m_Wavelength[3]      = {0,0,0};
 	float m_RayleighScaleDepth = 0;
 	float m_MieScaleDepth      = 0;
@@ -43,7 +45,7 @@ public:
     void SetPlanetRadius( float innerR )
     {
         m_InnerRadius = innerR;
-        m_OuterRadius = innerR * 1.025f;
+        m_OuterRadius = innerR * INNER_RAD_TO_OUTER_SCALE;
     }
 
     //

@@ -49,6 +49,11 @@ POSSIBILITY OF SUCH DAMAGE.
 #define DRAW_GROUND
 #define DRAW_SKY
 
+// DAVIDE --
+// should really always be 1.0 for simplicity
+// user-shaders should then adapt to this "ONAS" frame of references
+// where the planet is an unit sphere with center at (0,0,0) and
+// with an outer radius of ONAS_State::INNER_RAD_TO_OUTER_SCALE
 static const float PLANET_RADIUS = 1.0f;
 
 // Acceleration rate due to thrusters (units/s*s)
