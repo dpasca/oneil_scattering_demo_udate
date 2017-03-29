@@ -17,15 +17,20 @@ void main(void)
     vec3 rayDir;
     ONAS_CalcRayFromCamera( pos, raySta, rayDir );
 
-    // Calculate the farther intersection of the ray with the outer atmosphere
-    // (which is the far point of the ray passing through the atmosphere)
-    float near = ONAS_CalcRaySphereClosestInters(
-                        raySta,
-                        rayDir,
-                        vec3(0.0, 0.0, 0.0),
-                        u_OuterRadius * u_OuterRadius );
-
     vec3 start = raySta;
+
+    if ( length( u_CameraPos ) >= u_OuterRadius )
+    {
+        // Calculate the farther intersection of the ray with the outer atmosphere
+        // (which is the far point of the ray passing through the atmosphere)
+        float near = ONAS_CalcRaySphereClosestInters(
+                            raySta,
+                            rayDir,
+                            vec3(0.0, 0.0, 0.0),
+                            u_OuterRadius * u_OuterRadius );
+
+        start += rayDir * near;
+    }
 
     // Calculate attenuation from the camera to the top of the atmosphere toward the vertex
     float height = length(start);
@@ -34,6 +39,7 @@ void main(void)
     float angle = dot(rayDir, start) / height;
     float scatter = depth * ONAS_Scale( angle );
     gl_FrontSecondaryColor.rgb = exp(-scatter * (u_InvWavelength * u_Kr4PI + u_Km4PI));
+
     gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;
     gl_TexCoord[0].st = gl_MultiTexCoord0.st;
 }

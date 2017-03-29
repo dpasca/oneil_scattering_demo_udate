@@ -16,7 +16,10 @@ void main(void)
 {
     vec3 pos = gl_Vertex.xyz;
 
-    ONAS_CalcMieAndRayleighForSkyInside( v_mieCol, v_rayleighCol, v_posToCam, pos );
+    if ( length( u_CameraPos ) >= u_OuterRadius )
+        ONAS_CalcMieAndRayleighForSkyOutside( v_mieCol, v_rayleighCol, v_posToCam, pos );
+    else
+        ONAS_CalcMieAndRayleighForSkyInside( v_mieCol, v_rayleighCol, v_posToCam, pos );
 
     gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;
 }

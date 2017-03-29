@@ -122,7 +122,7 @@ CGameEngine::CGameEngine()
 #endif
 
     // setup light source
-    m_vLightDirection = CVector(0, 1, 0);
+    m_vLightDirection = CVector(0, 0, 1);
     m_vLightDirection.Normalize();
 
     //
@@ -148,12 +148,9 @@ CGameEngine::CGameEngine()
                 srcVertName + ".vert",
                 srcFragName + ".frag");
     };
-    loadASShader( m_shSkyFromSpace        , "ONAS_SkyFromSpace"        , "ONAS_Sky"    );
-    loadASShader( m_shSkyFromAtmosphere   , "ONAS_SkyFromAtmosphere"   , "ONAS_Sky"    );
-    loadASShader( m_shGroundFromSpace     , "ONAS_GroundFromSpace"     , "ONAS_Ground" );
-    loadASShader( m_shGroundFromAtmosphere, "ONAS_GroundFromAtmosphere", "ONAS_Ground" );
-    loadASShader( m_shSpaceFromSpace      , "ONAS_SpaceFromSpace"      , "ONAS_Space"  );
-    loadASShader( m_shSpaceFromAtmosphere , "ONAS_SpaceFromAtmosphere" , "ONAS_Space"  );
+    loadASShader( m_shSky   , "ONAS_Sky"    , "ONAS_Sky"    );
+    loadASShader( m_shGround, "ONAS_Ground" , "ONAS_Ground" );
+    loadASShader( m_shSpace , "ONAS_Space"  , "ONAS_Space"  );
 
     //
     {
@@ -302,11 +299,9 @@ void CGameEngine::RenderFrame(int nMilliseconds)
 
 #ifdef DRAW_SPACE // -- space
     {
-        CShaderObject *pSpaceShader = NULL;
-        if(camPos.Magnitude() < m_ASState.m_OuterRadius)
-            pSpaceShader = &m_shSpaceFromAtmosphere;
-        else if(camPos.z > 0.0f)
-            pSpaceShader = &m_shSpaceFromSpace;
+        CShaderObject *pSpaceShader = nullptr;
+        if ( camPos.Magnitude() >= m_ASState.m_OuterRadius && camPos.z <= 0.0f )
+            pSpaceShader = &m_shSpace;
 
         if(pSpaceShader)
         {
@@ -338,11 +333,7 @@ void CGameEngine::RenderFrame(int nMilliseconds)
 
 #ifdef DRAW_GROUND // -- ground
     {
-        CShaderObject *pGroundShader;
-        if(camPos.Magnitude() >= m_ASState.m_OuterRadius)
-            pGroundShader = &m_shGroundFromSpace;
-        else
-            pGroundShader = &m_shGroundFromAtmosphere;
+        auto *pGroundShader = &m_shGround;
 
         pGroundShader->Enable();
         setASUniforms( m_ASState, pGroundShader, camPos, m_vLightDirection );
@@ -360,11 +351,7 @@ void CGameEngine::RenderFrame(int nMilliseconds)
 
 #ifdef DRAW_SKY // -- sky
     {
-        CShaderObject *pSkyShader;
-        if(camPos.Magnitude() >= m_ASState.m_OuterRadius)
-            pSkyShader = &m_shSkyFromSpace;
-        else
-            pSkyShader = &m_shSkyFromAtmosphere;
+        auto *pSkyShader = &m_shSky;
 
         pSkyShader->Enable();
         setASUniforms( m_ASState, pSkyShader, camPos, m_vLightDirection );

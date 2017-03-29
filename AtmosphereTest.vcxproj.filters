@@ -155,28 +155,19 @@
     <None Include="ONAS_Ground.frag">
       <Filter>GLSL Shader Files</Filter>
     </None>
-    <None Include="ONAS_GroundFromAtmosphere.vert">
-      <Filter>GLSL Shader Files</Filter>
-    </None>
-    <None Include="ONAS_GroundFromSpace.vert">
-      <Filter>GLSL Shader Files</Filter>
-    </None>
     <None Include="ONAS_Sky.frag">
-      <Filter>GLSL Shader Files</Filter>
-    </None>
-    <None Include="ONAS_SkyFromAtmosphere.vert">
-      <Filter>GLSL Shader Files</Filter>
-    </None>
-    <None Include="ONAS_SkyFromSpace.vert">
       <Filter>GLSL Shader Files</Filter>
     </None>
     <None Include="ONAS_Space.frag">
       <Filter>GLSL Shader Files</Filter>
     </None>
-    <None Include="ONAS_SpaceFromAtmosphere.vert">
+    <None Include="ONAS_Ground.vert">
       <Filter>GLSL Shader Files</Filter>
     </None>
-    <None Include="ONAS_SpaceFromSpace.vert">
+    <None Include="ONAS_Sky.vert">
+      <Filter>GLSL Shader Files</Filter>
+    </None>
+    <None Include="ONAS_Space.vert">
       <Filter>GLSL Shader Files</Filter>
     </None>
   </ItemGroup>

@@ -17,7 +17,10 @@ void main(void)
     //  (which is the far point of the ray passing through the atmosphere)
     vec3 pos = gl_Vertex.xyz;
 
-    ONAS_CalcColorsForGroundOutside( v_groundCol, v_attenuation, pos );
+    if ( length( u_CameraPos ) >= u_OuterRadius )
+        ONAS_CalcColorsForGroundOutside( v_groundCol, v_attenuation, pos );
+    else
+        ONAS_CalcColorsForGroundInside( v_groundCol, v_attenuation, pos );
 
     gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;
     gl_TexCoord[0] = gl_TextureMatrix[0] * gl_MultiTexCoord0;

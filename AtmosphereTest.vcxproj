@@ -198,14 +198,11 @@
     <None Include="HDRSquare.frag" />
     <None Include="ONAS_Common.glsl" />
     <None Include="ONAS_Ground.frag" />
-    <None Include="ONAS_GroundFromAtmosphere.vert" />
-    <None Include="ONAS_GroundFromSpace.vert" />
+    <None Include="ONAS_Ground.vert" />
     <None Include="ONAS_Sky.frag" />
-    <None Include="ONAS_SkyFromAtmosphere.vert" />
-    <None Include="ONAS_SkyFromSpace.vert" />
+    <None Include="ONAS_Sky.vert" />
     <None Include="ONAS_Space.frag" />
-    <None Include="ONAS_SpaceFromAtmosphere.vert" />
-    <None Include="ONAS_SpaceFromSpace.vert" />
+    <None Include="ONAS_Space.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

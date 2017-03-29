@@ -68,12 +68,9 @@ protected:
     CTexture m_tMoonGlow;
     CTexture m_tEarth;
 
-    CShaderObject m_shSkyFromSpace;
-    CShaderObject m_shSkyFromAtmosphere;
-    CShaderObject m_shGroundFromSpace;
-    CShaderObject m_shGroundFromAtmosphere;
-    CShaderObject m_shSpaceFromSpace;
-    CShaderObject m_shSpaceFromAtmosphere;
+    CShaderObject m_shSky;
+    CShaderObject m_shGround;
+    CShaderObject m_shSpace;
 
     CPBuffer m_pBuffer;
 
